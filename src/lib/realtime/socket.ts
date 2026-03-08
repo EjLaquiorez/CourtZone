@@ -158,20 +158,20 @@ class SocketService {
   // Handle reconnection logic
   private handleReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.warn('🏀 LaroHub: Max reconnection attempts reached. Real-time features will be disabled.');
+      console.warn('🏀 Court Zone: Max reconnection attempts reached. Real-time features will be disabled.');
       return;
     }
 
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(`🏀 LaroHub: Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
+    console.log(`🏀 Court Zone: Attempting to reconnect in ${delay}ms (attempt ${this.reconnectAttempts})`);
 
     setTimeout(() => {
       const token = useAuthStore.getState().tokens?.accessToken;
       if (token) {
         this.connect(token).catch((error) => {
-          console.warn('🏀 LaroHub: Reconnection failed:', error.message);
+          console.warn('🏀 Court Zone: Reconnection failed:', error.message);
         });
       }
     }, delay);
@@ -297,20 +297,20 @@ export const useSocket = () => {
         setIsConnected(true);
         setConnectionError(null);
         setIsConnecting(false);
-        console.log('🏀 LaroHub: Socket connected successfully');
+        console.log('🏀 Court Zone: Socket connected successfully');
       };
 
       const handleDisconnect = () => {
         setIsConnected(false);
         setIsConnecting(false);
-        console.log('🏀 LaroHub: Socket disconnected');
+        console.log('🏀 Court Zone: Socket disconnected');
       };
 
       const handleConnectError = (error: any) => {
         setIsConnected(false);
         setIsConnecting(false);
         setConnectionError(error.message || 'Connection failed');
-        console.error('🏀 LaroHub: Socket connection error:', error);
+        console.error('🏀 Court Zone: Socket connection error:', error);
       };
 
       socket.on('connect', handleConnect);
@@ -374,7 +374,7 @@ if (typeof window !== 'undefined') {
       const { tokens } = useAuthStore.getState();
       if (tokens?.accessToken) {
         socketService.connect(tokens.accessToken).catch((error) => {
-          console.warn('🏀 LaroHub: Auto-connect failed (this is expected in development):', error.message);
+          console.warn('🏀 Court Zone: Auto-connect failed (this is expected in development):', error.message);
         });
       }
     }, 100);

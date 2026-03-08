@@ -80,7 +80,7 @@ function DashboardPageContent() {
   useEffect(() => {
     if (connectionError) {
       // Only show error once and don't spam the user
-      console.warn('🏀 LaroHub: Real-time features temporarily unavailable:', connectionError);
+      console.warn('🏀 Court Zone: Real-time features temporarily unavailable:', connectionError);
       // Optionally show a less intrusive notification
       // toast.info('Real-time features temporarily unavailable');
     }
@@ -111,7 +111,7 @@ function DashboardPageContent() {
       if (shouldAttemptConnection) {
         connectSocket().catch((error) => {
           const errorMessage = error instanceof Error ? error.message : 'Failed to connect to real-time server';
-          console.warn('🏀 LaroHub: Socket connection failed (this is expected in development):', errorMessage);
+          console.warn('🏀 Court Zone: Socket connection failed (this is expected in development):', errorMessage);
           // Socket error handled by connectionError state
         });
       }

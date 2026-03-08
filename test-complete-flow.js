@@ -1,10 +1,10 @@
-// Complete LaroHub functionality test
+// Complete Court Zone functionality test
 const fetch = require('node-fetch');
 
 const BASE_URL = 'http://localhost:3003';
 
 async function testCompleteFlow() {
-  console.log('🏀 Testing Complete LaroHub Application Flow...\n');
+  console.log('🏀 Testing Complete Court Zone Application Flow...\n');
 
   try {
     // Test 1: Home page accessibility
@@ -122,7 +122,7 @@ async function testCompleteFlow() {
       console.log('❌ Database connectivity issues');
     }
 
-    console.log('\n🎉 LaroHub Application Test Complete!');
+    console.log('\n🎉 Court Zone Application Test Complete!');
     console.log('\n📊 Summary:');
     console.log('- Frontend: ✅ Working');
     console.log('- Backend API: ✅ Working');

@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     title: "Court Zone - Basketball Community Platform",
     description: "Find your game, build your legacy. Connect with basketball players, discover courts, build teams, and compete.",
     images: ["/og-image.jpg"],
-    creator: "@LaroBasketball"
+    creator: "@CourtZone"
   },
   robots: {
     index: true,

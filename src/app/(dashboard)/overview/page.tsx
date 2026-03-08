@@ -353,7 +353,7 @@ export default function OverviewPage() {
                   transition={{ duration: 0.6, delay: 1.2 }}
                 >
                   <h2 className="text-lg font-display font-bold text-white mb-4">
-                    🚀 Laro Features
+                    🚀 Court Zone Features
                   </h2>
                   
                   <div className="space-y-3 text-sm">

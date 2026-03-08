@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const BASE_URL = 'http://localhost:3002';
 
 async function testAuthFlow() {
-  console.log('🧪 Testing LaroHub Authentication Flow...\n');
+  console.log('🧪 Testing Court Zone Authentication Flow...\n');
 
   try {
     // Test 1: Register a new user

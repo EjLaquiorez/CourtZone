@@ -109,7 +109,7 @@ export class SocketManager {
       };
 
       const connectErrorHandler = async (error: Error) => {
-        console.warn('🏀 LaroHub: WebSocket connection failed, falling back to polling:', error.message);
+        console.warn('🏀 Court Zone: WebSocket connection failed, falling back to polling:', error.message);
         
         // If WebSocket fails, try polling
         if (this.socket?.io && this.socket.io.opts.transports[0] === 'websocket') {
@@ -147,51 +147,51 @@ export class SocketManager {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('🏀 LaroHub: Socket connected');
+      console.log('🏀 Court Zone: Socket connected');
       toast.success('Connected to game server');
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('🏀 LaroHub: Socket disconnected:', reason);
+      console.log('🏀 Court Zone: Socket disconnected:', reason);
       toast.error('Disconnected from game server');
       this.handleDisconnect(reason);
     });
 
     this.socket.on('error', (error) => {
-      console.error('🏀 LaroHub: Socket error:', error);
+      console.error('🏀 Court Zone: Socket error:', error);
       toast.error('Game server connection error');
       this.handleError(error);
     });
 
     this.socket.on('reconnect_attempt', (attemptNumber) => {
-      console.log(`🏀 LaroHub: Attempting to reconnect (${attemptNumber}/${this.maxReconnectAttempts})`);
+      console.log(`🏀 Court Zone: Attempting to reconnect (${attemptNumber}/${this.maxReconnectAttempts})`);
       toast.loading(`Reconnecting to game server (${attemptNumber}/${this.maxReconnectAttempts})`);
     });
 
     this.socket.on('reconnect', (attemptNumber) => {
-      console.log('🏀 LaroHub: Socket reconnected after', attemptNumber, 'attempts');
+      console.log('🏀 Court Zone: Socket reconnected after', attemptNumber, 'attempts');
       toast.success('Reconnected to game server');
       this.reconnectAttempts = 0;
     });
 
     this.socket.on('reconnect_error', (error) => {
-      console.error('🏀 LaroHub: Socket reconnection error:', error);
+      console.error('🏀 Court Zone: Socket reconnection error:', error);
       this.handleReconnectionError(error);
     });
 
     this.socket.on('reconnect_failed', () => {
-      console.error('🏀 LaroHub: Socket reconnection failed after all attempts');
+      console.error('🏀 Court Zone: Socket reconnection failed after all attempts');
       toast.error('Failed to reconnect to game server');
       this.handleReconnectionFailed();
     });
   }
 
   private handleConnectionError(error: Error): void {
-    console.error('🏀 LaroHub: Socket connection error:', error);
+    console.error('🏀 Court Zone: Socket connection error:', error);
     
     // Check if it's a WebSocket-specific error
     if (error.message.includes('websocket')) {
-      console.warn('🏀 LaroHub: WebSocket connection failed, will retry with polling');
+      console.warn('🏀 Court Zone: WebSocket connection failed, will retry with polling');
       toast.error('Connection issue detected, switching to alternative connection method');
     } else {
       toast.error('Failed to connect to game server');
@@ -208,13 +208,13 @@ export class SocketManager {
   }
 
   private handleError(error: Error): void {
-    console.error('🏀 LaroHub: Socket error:', error);
+    console.error('🏀 Court Zone: Socket error:', error);
     // Don't attempt reconnect on general errors
     // Let the socket.io client handle reconnection
   }
 
   private handleReconnectionError(error: Error): void {
-    console.error('🏀 LaroHub: Socket reconnection error:', error);
+    console.error('🏀 Court Zone: Socket reconnection error:', error);
     this.reconnectAttempts++;
     
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
@@ -223,7 +223,7 @@ export class SocketManager {
   }
 
   private handleReconnectionFailed(): void {
-    console.error('🏀 LaroHub: Socket reconnection failed after all attempts');
+    console.error('🏀 Court Zone: Socket reconnection failed after all attempts');
     toast.error('Failed to reconnect to game server. Please refresh the page.');
     this.cleanup();
   }
@@ -234,7 +234,7 @@ export class SocketManager {
     }
 
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('🏀 LaroHub: Max reconnection attempts reached');
+      console.error('🏀 Court Zone: Max reconnection attempts reached');
       return;
     }
 
@@ -247,7 +247,7 @@ export class SocketManager {
       try {
         await this.connect();
       } catch (error) {
-        console.error('🏀 LaroHub: Reconnection attempt failed:', error);
+        console.error('🏀 Court Zone: Reconnection attempt failed:', error);
         this.reconnectAttempts++;
         this.attemptReconnect();
       }
@@ -290,7 +290,7 @@ export class SocketManager {
 
   public emit(event: string, ...args: any[]): void {
     if (!this.socket?.connected) {
-      console.warn('🏀 LaroHub: Cannot emit event, socket not connected');
+      console.warn('🏀 Court Zone: Cannot emit event, socket not connected');
       return;
     }
     this.socket.emit(event, ...args);
@@ -298,7 +298,7 @@ export class SocketManager {
 
   public on(event: string, callback: (...args: any[]) => void): void {
     if (!this.socket) {
-      console.warn('🏀 LaroHub: Cannot add listener, socket not initialized');
+      console.warn('🏀 Court Zone: Cannot add listener, socket not initialized');
       return;
     }
     this.socket.on(event, callback);
@@ -306,7 +306,7 @@ export class SocketManager {
 
   public off(event: string, callback?: (...args: any[]) => void): void {
     if (!this.socket) {
-      console.warn('🏀 LaroHub: Cannot remove listener, socket not initialized');
+      console.warn('🏀 Court Zone: Cannot remove listener, socket not initialized');
       return;
     }
     this.socket.off(event, callback);

@@ -20,7 +20,7 @@ export function useSocket(options: UseSocketOptions = {}) {
   useEffect(() => {
     if (autoConnect) {
       socketManager.connect().catch((error) => {
-        console.error('🏀 LaroHub: Failed to connect socket:', error);
+        console.error('🏀 Court Zone: Failed to connect socket:', error);
         onError?.(error);
       });
     }
@@ -68,7 +68,7 @@ export function useSocket(options: UseSocketOptions = {}) {
     try {
       await socketManager.connect();
     } catch (error) {
-      console.error('🏀 LaroHub: Failed to connect:', error);
+      console.error('🏀 Court Zone: Failed to connect:', error);
       onError?.(error as Error);
     }
   }, [onError]);

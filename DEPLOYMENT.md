@@ -1,4 +1,4 @@
-# 🚀 Laro Basketball App - Deployment Guide
+# 🚀 Court Zone Basketball App - Deployment Guide
 
 ## ✅ Pre-Deployment Checklist
 
@@ -124,7 +124,7 @@ CMD ["node", "server.js"]
 ```env
 # .env.production
 NEXT_PUBLIC_APP_URL=https://your-domain.com
-NEXT_PUBLIC_APP_NAME=Laro Basketball
+NEXT_PUBLIC_APP_NAME=Court Zone Basketball
 NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
 NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
 
@@ -318,9 +318,9 @@ jobs:
 - **Troubleshooting** - Common issues and solutions
 
 ### Contact Information
-- **Technical Support**: tech@laro-basketball.com
-- **User Support**: support@laro-basketball.com
-- **Emergency Contact**: emergency@laro-basketball.com
+- **Technical Support**: tech@Court Zone-basketball.com
+- **User Support**: support@Court Zone-basketball.com
+- **Emergency Contact**: emergency@Court Zone-basketball.com
 
 ---
 
@@ -337,4 +337,4 @@ jobs:
 - [ ] **Launch announcement** prepared
 - [ ] **User onboarding** flow tested
 
-**🏀 Ready to launch Laro Basketball App! 🚀**
+**🏀 Ready to launch Court Zone Basketball App! 🚀**

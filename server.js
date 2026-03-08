@@ -39,7 +39,7 @@ app.prepare().then(() => {
     });
 
     io.on('connection', (socket) => {
-      console.log('🏀 LaroHub: User connected:', socket.id);
+      console.log('🏀 Court Zone: User connected:', socket.id);
 
       // Authentication middleware
       socket.on('authenticate', (data) => {
@@ -83,21 +83,21 @@ app.prepare().then(() => {
       });
 
       socket.on('disconnect', () => {
-        console.log('🏀 LaroHub: User disconnected:', socket.id);
+        console.log('🏀 Court Zone: User disconnected:', socket.id);
       });
 
       // Send welcome message
       socket.emit('welcome', {
-        message: 'Welcome to LaroHub!',
+        message: 'Welcome to Court Zone!',
         socketId: socket.id,
         timestamp: new Date().toISOString()
       });
     });
 
-    console.log('🏀 LaroHub: Socket.IO server initialized successfully');
+    console.log('🏀 Court Zone: Socket.IO server initialized successfully');
   } catch (error) {
     console.warn('⚠️ Socket.IO not available:', error.message);
-    console.log('📱 LaroHub: Running without real-time features');
+    console.log('📱 Court Zone: Running without real-time features');
   }
 
   httpServer

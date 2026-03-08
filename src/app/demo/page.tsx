@@ -104,7 +104,7 @@ export default function DemoPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-display font-bold text-white mb-2">
-                🏀 Laro Basketball App Demo
+                🏀 Court Zone Basketball App Demo
               </h1>
               <p className="text-primary-200">
                 Complete basketball community platform - Ready for testing and deployment
@@ -360,7 +360,7 @@ export default function DemoPage() {
               icon={<Play className="w-6 h-6" />}
               glow
             >
-              Start Using Laro Basketball App
+              Start Using Court Zone Basketball App
             </GameButton>
           </div>
         </motion.div>

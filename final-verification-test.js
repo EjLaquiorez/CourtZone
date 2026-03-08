@@ -6,7 +6,7 @@ const BASE_URL = 'http://localhost:3003';
 const SOCKET_URL = 'http://localhost:3003';
 
 async function runFinalVerification() {
-  console.log('🏀 LaroHub Final Verification Test');
+  console.log('🏀 Court Zone Final Verification Test');
   console.log('=====================================\n');
 
   let allTestsPassed = true;
@@ -151,7 +151,7 @@ async function runFinalVerification() {
   console.log(`\n📊 Overall Score: ${totalPassed}/${totalTests} tests passed`);
   
   if (totalPassed === totalTests) {
-    console.log('\n🎉 ALL TESTS PASSED! LaroHub is fully functional! 🏀');
+    console.log('\n🎉 ALL TESTS PASSED! Court Zone is fully functional! 🏀');
   } else {
     console.log('\n⚠️  Some tests failed. Check the logs above for details.');
   }

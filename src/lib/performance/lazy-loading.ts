@@ -73,7 +73,7 @@ class LazyLoadingPerformanceMonitor {
 
     // Log performance in development
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🏀 LaroHub Lazy Load: ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
+      console.log(`🏀 Court Zone Lazy Load: ${componentName} loaded in ${loadTime.toFixed(2)}ms`);
     }
 
     // Send to analytics in production
@@ -98,7 +98,7 @@ class LazyLoadingPerformanceMonitor {
     // In a real app, you would send this to your analytics service
     // For now, we'll just log it in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('🏀 LaroHub Analytics:', {
+      console.log('🏀 Court Zone Analytics:', {
         event: 'lazy_load_performance',
         component_name: metric.componentName,
         load_time: metric.loadTime,

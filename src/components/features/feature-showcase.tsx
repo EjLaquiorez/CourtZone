@@ -194,7 +194,7 @@ export function FeatureShowcase() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-            LaroHub <span className="text-primary-500">Features</span>
+            Court Zone <span className="text-primary-500">Features</span>
           </h1>
           <p className="text-xl text-primary-200 max-w-3xl mx-auto">
             A comprehensive basketball platform with advanced features for players, teams, and communities
