@@ -38,6 +38,19 @@ LARO is a comprehensive basketball matchmaking web application that connects pla
 
 ## 🚀 Getting Started
 
+### Before You Start (After Cloning)
+
+Files listed in `.gitignore` are not downloaded from GitHub by design.
+
+- `node_modules/` and build output folders are recreated locally.
+- `.env*` files are not committed, so you must create your own `.env.local`.
+
+Setup order for a new machine:
+1. `npm install`
+2. create `.env.local`
+3. `npm run db:migrate`
+4. `npm run dev`
+
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
@@ -47,8 +60,8 @@ LARO is a comprehensive basketball matchmaking web application that connects pla
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd laro-app
+   git clone https://github.com/EjLaquiorez/CourtZone.git
+   cd CourtZone
    ```
 
 2. **Install dependencies**
