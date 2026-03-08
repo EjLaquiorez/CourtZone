@@ -63,6 +63,11 @@ export const useAuthStore = create<AuthState>()(
       },
 
       clearAuth: () => {
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('laro-auth-storage');
+          sessionStorage.removeItem('laro-auth-storage');
+        }
+
         set({
           user: null,
           tokens: null,

@@ -16,6 +16,8 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+import { useAuthStore } from '@/lib/stores/auth-store';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -66,6 +68,40 @@ const navigationItems = [
 export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
   const pathname = usePathname();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {
+      console.error('Logout request failed:', error);
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('laro-auth-storage');
+        sessionStorage.removeItem('laro-auth-storage');
+      }
+
+      apiClient.clearAuthToken();
+      clearAuth();
+
+      // Use a full page navigation so logout is not blocked by stale client state.
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+        return;
+      }
+
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <motion.aside
@@ -230,13 +266,21 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
 
           {/* Logout */}
           <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
             className={cn(
               'w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200',
-              'text-red-300 hover:text-red-200 hover:bg-red-400/10'
+              'text-red-300 hover:text-red-200 hover:bg-red-400/10',
+              isLoggingOut && 'cursor-not-allowed opacity-60'
             )}
           >
             <LogOut className="w-5 h-5" />
-            {isOpen && <span className="font-medium font-primary text-red-300">Logout</span>}
+            {isOpen && (
+              <span className="font-medium font-primary text-red-300">
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
+              </span>
+            )}
           </button>
         </div>
 

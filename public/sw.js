@@ -1,11 +1,6 @@
 // Service Worker for push notifications
-const CACHE_NAME = 'laro-v1';
-const urlsToCache = [
-  '/',
-  '/dashboard',
-  '/games',
-  '/teams',
-  '/courts',
+const CACHE_NAME = 'courtzone-static-v2';
+const STATIC_ASSETS = [
   '/manifest.webmanifest',
 ];
 
@@ -14,18 +9,56 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(urlsToCache);
+        return cache.addAll(STATIC_ASSETS);
       })
   );
+  self.skipWaiting();
 });
 
 // Fetch event
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+
+  // Never cache navigation/document requests with a cache-first strategy.
+  // This prevents stale dashboard bundles from masking recent UI fixes.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match('/'))
+    );
+    return;
+  }
+
+  // Skip non-GET and API requests entirely.
+  if (request.method !== 'GET' || request.url.includes('/api/')) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    caches.match(request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        if (response) {
+          return response;
+        }
+
+        return fetch(request).then((networkResponse) => {
+          const isHttpRequest = request.url.startsWith('http');
+          const isStaticAsset =
+            request.destination === 'style' ||
+            request.destination === 'script' ||
+            request.destination === 'image' ||
+            request.destination === 'font' ||
+            request.url.includes('/_next/static/') ||
+            request.url.endsWith('/manifest.webmanifest');
+
+          if (isHttpRequest && isStaticAsset) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseClone);
+            });
+          }
+
+          return networkResponse;
+        });
       })
   );
 });
@@ -151,13 +184,15 @@ async function syncData() {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
+      return Promise.all([
+        ...cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
-        })
-      );
+          return Promise.resolve();
+        }),
+        self.clients.claim(),
+      ]);
     })
   );
 });

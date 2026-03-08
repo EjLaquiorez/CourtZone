@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { useToast } from '@/components/ui/toast';
 
+const REMEMBERED_EMAIL_KEY = 'courtzone-remembered-email';
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,9 +22,47 @@ export default function LoginPage() {
     email: '',
     password: ''
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const legacyRememberedLogin = localStorage.getItem('courtzone-remembered-login');
+    const rememberedEmail = localStorage.getItem(REMEMBERED_EMAIL_KEY);
+
+    if (rememberedEmail) {
+      setFormData(prev => ({
+        ...prev,
+        email: rememberedEmail,
+      }));
+      setRememberMe(true);
+      return;
+    }
+
+    if (!legacyRememberedLogin) {
+      return;
+    }
+
+    try {
+      const parsedLogin = JSON.parse(legacyRememberedLogin) as { email?: string; password?: string };
+      const migratedEmail = parsedLogin.email || '';
+
+      if (migratedEmail) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, migratedEmail);
+      }
+
+      setFormData({
+        email: migratedEmail,
+        password: '',
+      });
+      setRememberMe(Boolean(migratedEmail));
+    } catch (error) {
+      console.error('Failed to load remembered login:', error);
+    } finally {
+      localStorage.removeItem('courtzone-remembered-login');
+    }
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -64,6 +104,13 @@ export default function LoginPage() {
     setIsSubmitting(true);
     try {
       await login({ email: formData.email, password: formData.password });
+
+      if (rememberMe) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, formData.email);
+      } else {
+        localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+      }
+
       toast({ title: 'Login successful!' });
       // Redirect to return URL or dashboard
       const returnUrl = searchParams.get('returnUrl') || '/dashboard';
@@ -235,6 +282,15 @@ export default function LoginPage() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setRememberMe(isChecked);
+
+                    if (!isChecked) {
+                      localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+                    }
+                  }}
                   className="rounded border-primary-400/30 bg-dark-200/50 text-primary-500 focus:ring-primary-500 focus:ring-offset-0"
                 />
                 <span className="ml-2 text-sm text-primary-200">Remember me</span>
