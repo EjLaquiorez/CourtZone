@@ -1,0 +1,336 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  password    String
+  avatar      String?
+  position    Position?
+  skillLevel  Int      @default(5)
+  rating      Int      @default(1000)
+  latitude    Float?
+  longitude   Float?
+  city        String?
+  maxDistance Int      @default(10)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  captainTeams    Team[]       @relation("TeamCaptain")
+  teamMemberships TeamMember[]
+  organizedGames  Game[]       @relation("GameOrganizer")
+  gameParticipants GameParticipant[]
+  gameWaitlist    GameWaitlist[]
+  courtReviews    CourtReview[]
+  createdCourts   Court[]      @relation("CourtCreator")
+  courtReservations CourtReservation[]
+  gameStats       GameStats[]
+  seasonStats     PlayerSeasonStats[]
+
+  @@map("users")
+}
+
+model Team {
+  id            String   @id @default(cuid())
+  name          String
+  logoUrl       String?
+  description   String?
+  maxSize       Int      @default(12)
+  minSkillLevel Int      @default(1)
+  maxSkillLevel Int      @default(10)
+  isPublic      Boolean  @default(true)
+  rating        Int      @default(1000)
+  gamesPlayed   Int      @default(0)
+  wins          Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  captainId String
+  captain   User         @relation("TeamCaptain", fields: [captainId], references: [id])
+  members   TeamMember[]
+  hostGames Game[]       @relation("HostTeam")
+  opponentGames Game[]   @relation("OpponentTeam")
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  role      Role     @default(MEMBER)
+  position  Position?
+  isStarter Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+
+  // Relations
+  teamId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+model Game {
+  id            String     @id @default(cuid())
+  title         String
+  description   String?
+  gameType      GameType   @default(PICKUP)
+  status        GameStatus @default(SCHEDULED)
+  scheduledAt   DateTime
+  duration      Int        @default(120) // minutes
+  maxPlayers    Int        @default(10)
+  skillLevelMin Int        @default(1)
+  skillLevelMax Int        @default(10)
+  isPrivate     Boolean    @default(false)
+  hostScore     Int?
+  opponentScore Int?
+  winnerTeamId  String?
+  finalScore    String?    // e.g., "21-18" for pickup games
+  gameEndedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  organizerId String
+  organizer   User   @relation("GameOrganizer", fields: [organizerId], references: [id])
+
+  courtId String
+  court   Court  @relation(fields: [courtId], references: [id])
+
+  hostTeamId     String?
+  hostTeam       Team?   @relation("HostTeam", fields: [hostTeamId], references: [id])
+
+  opponentTeamId String?
+  opponentTeam   Team?   @relation("OpponentTeam", fields: [opponentTeamId], references: [id])
+
+  participants GameParticipant[]
+  waitlist     GameWaitlist[]
+  reservation  CourtReservation?
+  gameStats    GameStats[]
+
+  @@map("games")
+}
+
+model GameParticipant {
+  id       String @id @default(cuid())
+  status   ParticipantStatus @default(JOINED)
+  joinedAt DateTime @default(now())
+  leftAt   DateTime?
+  position Position?
+  isStarter Boolean @default(false)
+
+  // Relations
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@map("game_participants")
+}
+
+model GameWaitlist {
+  id        String   @id @default(cuid())
+  position  Int      // Position in waitlist
+  joinedAt  DateTime @default(now())
+  notified  Boolean  @default(false)
+
+  // Relations
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@map("game_waitlist")
+}
+
+model Court {
+  id          String    @id @default(cuid())
+  name        String
+  address     String
+  latitude    Float
+  longitude   Float
+  courtType   CourtType
+  surfaceType String?
+  hasLighting Boolean   @default(false)
+  hasParking  Boolean   @default(false)
+  rating      Float     @default(0)
+  reviewCount Int       @default(0)
+  isVerified  Boolean   @default(false)
+  amenities   String?   // JSON string of amenities array
+  photos      String?   // JSON string of photos array
+  hourlyRate  Float?    // Cost per hour for booking
+  isBookable  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  createdById String?
+  createdBy   User?   @relation("CourtCreator", fields: [createdById], references: [id])
+  games       Game[]
+  reviews     CourtReview[]
+  reservations CourtReservation[]
+  availability CourtAvailability[]
+
+  @@map("courts")
+}
+
+model CourtReview {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  courtId String
+  court   Court  @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([courtId, userId])
+  @@map("court_reviews")
+}
+
+enum Position {
+  PG // Point Guard
+  SG // Shooting Guard
+  SF // Small Forward
+  PF // Power Forward
+  C  // Center
+}
+
+enum Role {
+  CAPTAIN
+  CO_CAPTAIN
+  MEMBER
+}
+
+enum GameType {
+  PICKUP
+  SCRIMMAGE
+  PRACTICE
+  TOURNAMENT
+}
+
+enum GameStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum CourtType {
+  INDOOR
+  OUTDOOR
+}
+
+enum ParticipantStatus {
+  JOINED
+  LEFT
+  KICKED
+  NO_SHOW
+}
+
+model CourtReservation {
+  id          String            @id @default(cuid())
+  startTime   DateTime
+  endTime     DateTime
+  status      ReservationStatus @default(CONFIRMED)
+  totalCost   Float?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  // Relations
+  courtId String
+  court   Court  @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId  String? @unique // Optional link to game
+  game    Game?   @relation(fields: [gameId], references: [id])
+
+  @@map("court_reservations")
+}
+
+model CourtAvailability {
+  id        String    @id @default(cuid())
+  dayOfWeek Int       // 0 = Sunday, 1 = Monday, etc.
+  startTime String    // HH:MM format
+  endTime   String    // HH:MM format
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  // Relations
+  courtId String
+  court   Court  @relation(fields: [courtId], references: [id], onDelete: Cascade)
+
+  @@map("court_availability")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model GameStats {
+  id        String   @id @default(cuid())
+  points    Int      @default(0)
+  assists   Int      @default(0)
+  rebounds  Int      @default(0)
+  steals    Int      @default(0)
+  blocks    Int      @default(0)
+  turnovers Int      @default(0)
+  fouls     Int      @default(0)
+  minutesPlayed Int  @default(0)
+  createdAt DateTime @default(now())
+
+  // Relations
+  gameId String
+  game   Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@map("game_stats")
+}
+
+model PlayerSeasonStats {
+  id            String   @id @default(cuid())
+  season        String   // e.g., "2024", "2024-spring"
+  gamesPlayed   Int      @default(0)
+  wins          Int      @default(0)
+  losses        Int      @default(0)
+  totalPoints   Int      @default(0)
+  totalAssists  Int      @default(0)
+  totalRebounds Int      @default(0)
+  totalSteals   Int      @default(0)
+  totalBlocks   Int      @default(0)
+  avgPoints     Float    @default(0)
+  avgAssists    Float    @default(0)
+  avgRebounds   Float    @default(0)
+  winPercentage Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, season])
+  @@map("player_season_stats")
+}
