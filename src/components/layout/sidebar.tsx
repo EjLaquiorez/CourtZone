@@ -93,7 +93,7 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
                 <span className="text-white font-bold text-sm">🏀</span>
               </div>
-              <span className="text-lg font-display font-bold text-white">LARO</span>
+              <span className="text-lg font-display font-bold text-white">Court Zone</span>
             </motion.div>
           )}
 

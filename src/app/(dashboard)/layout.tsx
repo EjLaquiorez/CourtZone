@@ -2,11 +2,11 @@ import { Metadata } from 'next';
 import { AuthGuard } from '@/components/auth/auth-guard';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - LARO',
+  title: 'Dashboard - Court Zone',
   description: 'Your basketball matchmaking dashboard - Find games, build teams, dominate the court.',
   keywords: ['basketball', 'dashboard', 'games', 'teams', 'courts', 'matchmaking'],
   openGraph: {
-    title: 'Dashboard - LARO',
+    title: 'Dashboard - Court Zone',
     description: 'Your basketball matchmaking dashboard - Find games, build teams, dominate the court.',
     type: 'website',
     images: [
@@ -14,13 +14,13 @@ export const metadata: Metadata = {
         url: '/og-dashboard.jpg',
         width: 1200,
         height: 630,
-        alt: 'LARO Dashboard'
+        alt: 'Court Zone Dashboard'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Dashboard - LARO',
+    title: 'Dashboard - Court Zone',
     description: 'Your basketball matchmaking dashboard - Find games, build teams, dominate the court.',
     images: ['/og-dashboard.jpg']
   }

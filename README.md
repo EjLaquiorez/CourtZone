@@ -1,8 +1,8 @@
-# 🏀 LARO - Basketball Matchmaking Platform
+# 🏀 Court Zone - Basketball Matchmaking Platform
 
 **Find Your Game, Build Your Legacy**
 
-LARO is a comprehensive basketball matchmaking web application that connects players, facilitates team creation, and enables court-based game scheduling with a basketball-themed user interface.
+Court Zone is a comprehensive basketball matchmaking web application that connects players, facilitates team creation, and enables court-based game scheduling with a basketball-themed user interface.
 
 ## ✨ Features
 
@@ -140,7 +140,7 @@ Setup order for a new machine:
 
 ## 🎯 Next Steps
 
-The foundation of LARO is now complete with a fully functional landing page, authentication system, and dashboard. The application features:
+The foundation of Court Zone is now complete with a fully functional landing page, authentication system, and dashboard. The application features:
 
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 - **Basketball Theme**: Custom orange/navy color scheme with court green accents
@@ -152,4 +152,4 @@ The foundation of LARO is now complete with a fully functional landing page, aut
 
 ---
 
-Made with ❤️ and 🏀 by the LARO team
+Made with ❤️ and 🏀 by the Court Zone team

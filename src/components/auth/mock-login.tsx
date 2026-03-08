@@ -50,7 +50,7 @@ export function MockLogin() {
       >
         <div className="text-center mb-8">
           <h1 className="text-3xl font-display font-bold text-white mb-2">
-            Welcome to <span className="text-primary-500">LARO</span>
+            Welcome to <span className="text-primary-500">Court Zone</span>
           </h1>
           <p className="text-primary-200">
             Basketball Community Platform

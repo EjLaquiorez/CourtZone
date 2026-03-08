@@ -41,7 +41,7 @@ export default function Home() {
           <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow mx-auto mb-4">
             <span className="text-white font-bold text-2xl">🏀</span>
           </div>
-          <p className="text-primary-200">Loading LARO...</p>
+          <p className="text-primary-200">Loading Court Zone...</p>
         </motion.div>
       </div>
     );
@@ -203,7 +203,7 @@ export default function Home() {
               <span className="text-primary-500"> Dominate the Court</span>
             </h2>
             <p className="text-lg text-primary-200 max-w-2xl mx-auto">
-              From finding the perfect match to building championship teams, LARO has all the tools you need.
+              From finding the perfect match to building championship teams, Court Zone has all the tools you need.
             </p>
           </motion.div>
 
@@ -346,10 +346,10 @@ export default function Home() {
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
                 <span className="text-white font-bold" role="img" aria-label="Basketball">🏀</span>
               </div>
-              <span className="text-xl font-display font-bold text-primary-400">LARO</span>
+              <span className="text-xl font-display font-bold text-primary-400">Court Zone</span>
             </div>
             <p className="text-primary-300 text-sm">
-              © 2024 LARO. All rights reserved. Find Your Game, Build Your Legacy.
+              © 2024 Court Zone. All rights reserved. Find Your Game, Build Your Legacy.
             </p>
           </div>
         </div>

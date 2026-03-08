@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'LARO - Basketball Community Platform',
-    short_name: 'LARO Basketball',
+    name: 'Court Zone - Basketball Community Platform',
+    short_name: 'Court Zone Basketball',
     description: 'Find your game, build your legacy. Connect with basketball players, discover courts, build teams, and compete.',
     start_url: '/',
     display: 'standalone',
@@ -68,14 +68,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '1280x720',
         type: 'image/png',
         form_factor: 'wide',
-        label: 'LARO Basketball Dashboard'
+        label: 'Court Zone Basketball Dashboard'
       },
       {
         src: '/screenshot-narrow.png',
         sizes: '750x1334',
         type: 'image/png',
         form_factor: 'narrow',
-        label: 'LARO Basketball Mobile'
+        label: 'Court Zone Basketball Mobile'
       }
     ]
   };

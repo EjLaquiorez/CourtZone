@@ -20,34 +20,34 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "LARO - Basketball Community Platform",
-    template: "%s | LARO Basketball"
+    default: "Court Zone - Basketball Community Platform",
+    template: "%s | Court Zone Basketball"
   },
   description: "Find your game, build your legacy. Connect with basketball players, discover courts, build teams, and compete in the ultimate basketball matchmaking platform.",
   keywords: ["basketball", "sports", "community", "teams", "courts", "games", "matchmaking"],
-  authors: [{ name: "LARO Team" }],
-  creator: "LARO Basketball",
-  publisher: "LARO Basketball",
+  authors: [{ name: "Court Zone Team" }],
+  creator: "Court Zone Basketball",
+  publisher: "Court Zone Basketball",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "LARO - Basketball Community Platform",
+    title: "Court Zone - Basketball Community Platform",
     description: "Find your game, build your legacy. Connect with basketball players, discover courts, build teams, and compete.",
-    siteName: "LARO Basketball",
+    siteName: "Court Zone Basketball",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "LARO Basketball Community Platform"
+        alt: "Court Zone Basketball Community Platform"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "LARO - Basketball Community Platform",
+    title: "Court Zone - Basketball Community Platform",
     description: "Find your game, build your legacy. Connect with basketball players, discover courts, build teams, and compete.",
     images: ["/og-image.jpg"],
     creator: "@LaroBasketball"

@@ -81,7 +81,7 @@ export default function ProfileSetupPage() {
       };
 
       await updateProfile(profileData);
-      toast.success('Profile setup complete! Welcome to LARO!');
+      toast.success('Profile setup complete! Welcome to Court Zone!');
       router.push('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');

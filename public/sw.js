@@ -81,7 +81,7 @@ self.addEventListener('push', (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification('LARO Basketball', options)
+    self.registration.showNotification('Court Zone Basketball', options)
   );
 });
 

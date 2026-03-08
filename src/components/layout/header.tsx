@@ -61,7 +61,7 @@ export function Header({ onMenuToggle, showMobileMenu = false, className }: Head
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-                  LARO
+                  Court Zone
                 </h1>
                 <p className="text-xs text-primary-200 font-accent -mt-1">
                   Find Your Game
@@ -203,7 +203,7 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-                  LARO
+                  Court Zone
                 </h1>
               </div>
             </motion.div>

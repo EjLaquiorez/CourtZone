@@ -207,7 +207,7 @@ export default function RegisterPage() {
               <span className="text-white font-bold text-xl">🏀</span>
             </div>
             <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
-              LARO
+              Court Zone
             </h1>
           </motion.div>
           <h2 className="text-2xl font-display font-bold text-white mb-2">
