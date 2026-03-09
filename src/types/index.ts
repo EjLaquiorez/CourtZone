@@ -18,11 +18,14 @@ export interface User {
   position?: Position;
   skillLevel: number; // 1-10 scale
   rating: number;
+  latitude?: number;
+  longitude?: number;
   locationLat?: number;
   locationLng?: number;
   city?: string;
   maxDistance: number;
   isVerified: boolean;
+  profileComplete?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -94,38 +97,66 @@ export interface Court {
   rating: number;
   reviewCount: number;
   isVerified: boolean;
-  createdBy?: string;
+  createdBy?: string | User;
+  hourlyRate?: number | null;
+  isBookable?: boolean;
+  distance?: number;
   createdAt: Date;
   photos?: string[];
   amenities?: string[];
 }
 
 // Game Types
-export type GameType = 'casual' | 'competitive' | 'tournament' | 'pickup';
-export type GameStatus = 'open' | 'matched' | 'in_progress' | 'completed' | 'cancelled';
+export type GameType = 'pickup' | 'scrimmage' | 'practice' | 'tournament' | 'casual' | 'competitive';
+export type GameStatus =
+  | 'scheduled'
+  | 'open'
+  | 'matched'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
 
 export interface Game {
   id: string;
-  hostTeamId: string;
+  title?: string;
+  description?: string;
+  organizerId?: string;
+  hostTeamId?: string;
   opponentTeamId?: string;
   courtId: string;
-  scheduledTime: Date;
-  durationMinutes: number;
+  scheduledAt?: Date | string;
+  scheduledTime?: Date | string;
+  duration?: number;
+  durationMinutes?: number;
   gameType: GameType;
   status: GameStatus;
   minSkillLevel?: number;
   maxSkillLevel?: number;
+  skillLevelMin?: number;
+  skillLevelMax?: number;
+  maxPlayers?: number;
+  currentPlayers?: number;
+  participantCount?: number;
+  spotsLeft?: number;
   maxDistance?: number;
   winnerTeamId?: string;
+  finalScore?: string;
   hostScore?: number;
   opponentScore?: number;
+  organizer?: User;
+  court?: Court;
+  hostTeam?: Team;
+  opponentTeam?: Team;
+  participants?: TeamMember[];
   createdAt: Date;
+  updatedAt?: Date;
 }
 
 export interface GameWithDetails extends Game {
-  hostTeam: Team;
+  hostTeam?: Team;
   opponentTeam?: Team;
   court: Court;
+  organizer?: User;
 }
 
 export interface GameInvitation {
@@ -217,13 +248,17 @@ export interface TeamForm {
 }
 
 export interface GameForm {
+  title: string;
   courtId: string;
-  scheduledTime: Date;
-  durationMinutes: number;
+  scheduledAt: string;
+  duration: number;
+  maxPlayers: number;
   gameType: GameType;
-  minSkillLevel?: number;
-  maxSkillLevel?: number;
-  maxDistance?: number;
+  skillLevel: {
+    min: number;
+    max: number;
+  };
+  isPrivate?: boolean;
   description?: string;
 }
 

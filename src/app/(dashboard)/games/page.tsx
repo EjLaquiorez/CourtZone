@@ -20,6 +20,8 @@ import { GameButton } from '@/components/ui/game-button';
 import { GameCard } from '@/components/game/game-card';
 import { cn } from '@/lib/utils';
 import { Game, GameFilters, GameStatus } from '@/types';
+import { useCurrentUser, useGames, useJoinGame } from '@/lib/hooks/use-api';
+import { trackEvent } from '@/lib/analytics';
 
 // Mock data for games
 const mockUser = {
@@ -82,11 +84,19 @@ export default function GamesPage() {
     dateRange: undefined as string | undefined,
     status: undefined as string | undefined
   });
+  const { data: currentUserResponse } = useCurrentUser();
+  const { data: gamesResponse } = useGames(undefined, 1, 50);
+  const joinGameMutation = useJoinGame();
+  const user = currentUserResponse?.data || mockUser;
+  const games = gamesResponse?.data?.data || mockGames;
 
-  const filteredGames = mockGames.filter(game => {
+  const filteredGames = games.filter(game => {
+    const scheduledAt = game.scheduledAt || game.scheduledTime;
+
     // Search filter - simplified since Game interface changed
-    if (searchQuery && !game.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
-        !game.gameType.toLowerCase().includes(searchQuery.toLowerCase())) {
+    if (searchQuery && !String(game.title || game.id).toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !game.gameType.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !String(game.court?.name || '').toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
 
@@ -94,12 +104,11 @@ export default function GamesPage() {
     const now = new Date();
     switch (activeTab) {
       case 'upcoming':
-        return game.status === 'open' && new Date(game.scheduledTime) > now;
+        return (game.status === 'open' || game.status === 'scheduled') && new Date(scheduledAt || now).getTime() > now.getTime();
       case 'my_games':
-        // In real app, filter by user participation
-        return Math.random() > 0.7; // Mock participation
+        return Boolean(game.organizerId === user.id || game.participants?.some((participant) => participant.userId === user.id));
       case 'past':
-        return game.status === 'completed' || new Date(game.scheduledTime) < now;
+        return game.status === 'completed' || new Date(scheduledAt || now).getTime() < now.getTime();
       default:
         return true;
     }
@@ -110,8 +119,11 @@ export default function GamesPage() {
   };
 
   const handleJoinGame = (gameId: string) => {
-    console.log('Joining game:', gameId);
-    // Implement join game logic
+    trackEvent({
+      name: 'game_join_attempted',
+      properties: { gameId },
+    });
+    joinGameMutation.mutate(gameId);
   };
 
   const handleViewGame = (gameId: string) => {
@@ -119,14 +131,14 @@ export default function GamesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -136,15 +148,15 @@ export default function GamesPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
-            user={mockUser}
+            user={user}
             onMenuToggle={() => setMobileSidebarOpen(true)}
           />
 
           {/* Page Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
               className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8"

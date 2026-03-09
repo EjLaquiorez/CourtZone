@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User } from '@/types';
-import { authService } from '@/lib/api';
+import { apiClient, authService } from '@/lib/api';
 import type { LoginFormData, RegisterFormData } from '@/lib/validation';
 
 export interface AuthTokens {
@@ -64,9 +64,12 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () => {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('laro-auth-storage');
-          sessionStorage.removeItem('laro-auth-storage');
+          localStorage.removeItem('courtzone-auth-storage');
+          sessionStorage.removeItem('courtzone-auth-storage');
+          localStorage.removeItem('auth-token');
         }
+
+        apiClient.clearAuthToken();
 
         set({
           user: null,
@@ -81,6 +84,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.login(data);
           if (response.success && response.data) {
+            apiClient.setAuthToken(response.data.tokens.accessToken);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('auth-token', response.data.tokens.accessToken);
+            }
             set({
               user: response.data.user,
               tokens: response.data.tokens,
@@ -103,6 +110,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.register(data);
           if (response.success && response.data) {
+            apiClient.setAuthToken(response.data.tokens.accessToken);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('auth-token', response.data.tokens.accessToken);
+            }
             set({
               user: response.data.user,
               tokens: response.data.tokens,
@@ -141,7 +152,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'laro-auth-storage',
+      name: 'courtzone-auth-storage',
       storage: createJSONStorage(() => {
         // Safe localStorage access for SSR
         if (typeof window !== 'undefined') {

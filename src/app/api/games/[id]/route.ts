@@ -150,6 +150,11 @@ export async function GET(
     // Transform data to include additional computed fields
     const transformedGame = {
       ...game,
+      scheduledTime: game.scheduledAt,
+      durationMinutes: game.duration,
+      minSkillLevel: game.skillLevelMin,
+      maxSkillLevel: game.skillLevelMax,
+      currentPlayers: game._count.participants,
       participantCount: game._count.participants,
       waitlistCount: game._count.waitlist,
       spotsLeft: game.maxPlayers - game._count.participants,

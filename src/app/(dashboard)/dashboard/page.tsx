@@ -66,7 +66,7 @@ function DashboardPageContent() {
 
   // Get upcoming games
   const { data: upcomingGamesResponse, isLoading: upcomingLoading, error: upcomingError } = useGames(
-    { status: 'open' },
+    { status: 'scheduled' },
     1,
     5
   );
@@ -129,21 +129,23 @@ function DashboardPageContent() {
   // Show loading skeleton while data is loading
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
-        <div className="flex">
+      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+        <div className="flex lg:h-full">
           <div className="hidden lg:block">
             <Sidebar
               isOpen={sidebarOpen}
               onToggle={() => setSidebarOpen(!sidebarOpen)}
             />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
             <AuthenticatedHeader
               user={user || { username: 'Loading...', avatar: '', rating: 0 }}
               onMenuToggle={() => setMobileSidebarOpen(true)}
               socketConnected={socketConnected}
             />
-            <DashboardSkeleton />
+            <div className="lg:flex-1 lg:overflow-y-auto">
+              <DashboardSkeleton />
+            </div>
           </div>
         </div>
         <MobileBottomNav />
@@ -152,14 +154,14 @@ function DashboardPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -169,7 +171,7 @@ function DashboardPageContent() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
             user={user || { username: 'Loading...', avatar: '', rating: 0 }}
@@ -178,7 +180,7 @@ function DashboardPageContent() {
           />
 
           {/* Dashboard Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Welcome Section */}
             <motion.div
               className="mb-8"

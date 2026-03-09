@@ -3,7 +3,7 @@ import { ApiResponse, PaginatedResponse } from '@/types';
 
 // Development mode flag
 const isDevelopmentMode = () => {
-  return process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
+  return process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
 };
 
 // Mock data for development
@@ -147,13 +147,15 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    const normalizedEndpoint = endpoint.split('?')[0];
+
     // Use mock data in development mode
     if (isDevelopmentMode()) {
       console.log(`🔧 Development mode: Using mock data for ${endpoint}`);
       await simulateApiDelay(300); // Simulate network delay
 
       // Check if we have mock data for this endpoint
-      const mockResponse = mockApiResponses[endpoint as keyof typeof mockApiResponses];
+      const mockResponse = mockApiResponses[normalizedEndpoint as keyof typeof mockApiResponses];
       if (mockResponse) {
         return mockResponse() as ApiResponse<T>;
       }
@@ -167,11 +169,16 @@ export class ApiClient {
     }
 
     const url = `${this.baseURL}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
+    const defaultHeaders = isFormData
+      ? Object.fromEntries(Object.entries(this.defaultHeaders).filter(([key]) => key.toLowerCase() !== 'content-type'))
+      : this.defaultHeaders;
 
     const config: RequestInit = {
       ...options,
+      credentials: 'include',
       headers: {
-        ...this.defaultHeaders,
+        ...defaultHeaders,
         ...options.headers,
       },
     };
@@ -192,7 +199,7 @@ export class ApiClient {
       // Fallback to mock data if real API fails in development
       if (isDevelopmentMode()) {
         console.log(`🔧 API failed, falling back to mock data for ${endpoint}`);
-        const mockResponse = mockApiResponses[endpoint as keyof typeof mockApiResponses];
+        const mockResponse = mockApiResponses[normalizedEndpoint as keyof typeof mockApiResponses];
         if (mockResponse) {
           return mockResponse() as ApiResponse<T>;
         }
@@ -208,29 +215,32 @@ export class ApiClient {
     return this.request<T>(url, { method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
+      ...options,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
+      ...options,
       method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
-  async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, data?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
+      ...options,
       method: 'PATCH',
-      body: data ? JSON.stringify(data) : undefined,
+      body: data ? (data instanceof FormData ? data : JSON.stringify(data)) : undefined,
     });
   }
 
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+  async delete<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 }
 

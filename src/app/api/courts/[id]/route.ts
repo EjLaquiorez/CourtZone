@@ -94,6 +94,8 @@ export async function GET(
     // Transform data to include computed fields
     const transformedCourt = {
       ...court,
+      amenities: typeof court.amenities === 'string' ? JSON.parse(court.amenities || '[]') : court.amenities,
+      photos: typeof court.photos === 'string' ? JSON.parse(court.photos || '[]') : court.photos,
       averageRating: Math.round(avgRating * 10) / 10,
       totalReviews: court._count.reviews,
       totalGames: court._count.games,
@@ -193,8 +195,8 @@ export async function PUT(
         ...(surfaceType !== undefined && { surfaceType }),
         ...(hasLighting !== undefined && { hasLighting }),
         ...(hasParking !== undefined && { hasParking }),
-        ...(amenities !== undefined && { amenities }),
-        ...(photos !== undefined && { photos }),
+        ...(amenities !== undefined && { amenities: JSON.stringify(amenities) }),
+        ...(photos !== undefined && { photos: JSON.stringify(photos) }),
         ...(hourlyRate !== undefined && { hourlyRate: parseFloat(hourlyRate) }),
         ...(isBookable !== undefined && { isBookable }),
         // Reset verification if location changed

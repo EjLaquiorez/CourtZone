@@ -231,6 +231,19 @@ export const useCreateTeam = (options?: UseMutationOptions<ApiResponse<Team>, Ap
   });
 };
 
+export const useJoinTeam = (options?: UseMutationOptions<any, ApiError, string>) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (teamId: string) => teamsService.joinTeam(teamId),
+    onSuccess: (_, teamId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+    },
+    ...options,
+  });
+};
+
 // Courts hooks
 export const useCourts = (
   filters?: CourtFilters,

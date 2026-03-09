@@ -107,7 +107,7 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
     <motion.aside
       className={cn(
         'bg-gradient-to-b from-dark-400 to-dark-500 border-r border-primary-400/20',
-        'flex flex-col h-screen sticky top-0 z-40',
+        'flex shrink-0 flex-col h-screen overflow-y-auto sticky top-0 z-40',
         'transition-all duration-300 ease-in-out',
         isOpen ? 'w-64' : 'w-16',
         className
@@ -233,16 +233,6 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
                   </motion.div>
                 )}
 
-                {/* Basketball bounce effect on hover */}
-                {isActive && (
-                  <motion.div
-                    className="absolute right-3 text-primary-400"
-                    animate={{ y: [0, -2, 0] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  >
-                    🏀
-                  </motion.div>
-                )}
               </Link>
             </motion.div>
           );

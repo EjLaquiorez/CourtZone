@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { hashPassword, generateToken, generateRefreshToken, validateEmail, validatePassword, validateUsername, userToAuthUser } from '@/lib/auth'
+import {
+  authCookieOptions,
+  generateRefreshToken,
+  generateToken,
+  hashPassword,
+  userToAuthUser,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -106,10 +115,12 @@ export async function POST(request: NextRequest) {
 
     // Set secure cookie
     response.cookies.set('refresh-token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      ...authCookieOptions,
+      maxAge: 30 * 24 * 60 * 60
+    })
+    response.cookies.set('auth-token', accessToken, {
+      ...authCookieOptions,
+      maxAge: 7 * 24 * 60 * 60
     })
 
     return response

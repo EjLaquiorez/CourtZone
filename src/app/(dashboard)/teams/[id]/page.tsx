@@ -213,14 +213,14 @@ export default function TeamDetailPage() {
   const avgSkillLevel = mockTeam.members.reduce((sum, member) => sum + (member.user?.skillLevel || 0), 0) / mockTeam.members.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -230,7 +230,7 @@ export default function TeamDetailPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
             user={mockUser}
@@ -238,7 +238,7 @@ export default function TeamDetailPage() {
           />
 
           {/* Page Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Team Header */}
             <motion.div
               className="bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 mb-8"

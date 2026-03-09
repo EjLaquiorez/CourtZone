@@ -10,13 +10,13 @@ import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-n
 import { GameButton } from '@/components/ui/game-button';
 import { GameCreationForm } from '@/components/forms/game-form';
 import { GameForm, Court } from '@/types';
-import { useCurrentUser, useCourts } from '@/lib/hooks/use-api';
+import { useCreateGame, useCurrentUser, useCourts } from '@/lib/hooks/use-api';
+import { trackEvent } from '@/lib/analytics';
 
 export default function CreateGamePage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Fetch data using API hooks
@@ -29,28 +29,19 @@ export default function CreateGamePage() {
     50 // get more courts for selection
   );
   const courts = courtsResponse?.data?.data || [];
+  const createGameMutation = useCreateGame();
 
   const handleSubmit = async (formData: GameForm) => {
-    setIsLoading(true);
-
     try {
-      // Call real API to create game
-      const response = await fetch('/api/games', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+      const result = await createGameMutation.mutateAsync(formData);
+      await trackEvent({
+        name: 'game_created',
+        properties: {
+          gameId: result.data.id,
+          courtId: formData.courtId,
+          gameType: formData.gameType,
         },
-        body: JSON.stringify(formData)
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to create game');
-      }
-
-      console.log('Game created successfully:', result.data);
 
       // Show success state
       setIsSuccess(true);
@@ -64,8 +55,6 @@ export default function CreateGamePage() {
       console.error('Error creating game:', error);
       // You could add a toast notification here
       alert(error instanceof Error ? error.message : 'Failed to create game');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -120,14 +109,14 @@ export default function CreateGamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -137,7 +126,7 @@ export default function CreateGamePage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
             user={user}
@@ -145,7 +134,7 @@ export default function CreateGamePage() {
           />
 
           {/* Page Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Back Button */}
             <motion.div
               className="mb-6"
@@ -222,7 +211,7 @@ export default function CreateGamePage() {
                   courts={courts}
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
-                  isLoading={isLoading || courtsLoading}
+                  isLoading={createGameMutation.isPending || courtsLoading}
                 />
               </motion.div>
             </div>

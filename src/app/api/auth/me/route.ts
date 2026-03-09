@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getUserFromRequest, userToAuthUser } from '@/lib/auth'
+import { getUserFromRequest } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,17 +42,22 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Convert to safe format
-    const authUser = userToAuthUser(user)
-
     return NextResponse.json({
       success: true,
       data: {
-        ...authUser,
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        position: user.position,
+        skillLevel: user.skillLevel,
+        rating: user.rating,
         latitude: user.latitude,
         longitude: user.longitude,
         city: user.city,
         maxDistance: user.maxDistance,
+        isVerified: user.isVerified,
+        profileComplete: Boolean(user.position && user.city && user.maxDistance > 0),
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
       },

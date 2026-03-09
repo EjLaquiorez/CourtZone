@@ -13,6 +13,7 @@
     "test:manual:connection-simple": "node scripts/tests/test-connection-simple.js",
     "test:manual:dashboard": "node scripts/tests/test-dashboard.js",
     "test:manual:db-connection": "node scripts/tests/test-db-connection.js",
+    "test:manual:mvp-smoke": "node scripts/tests/test-mvp-smoke.js",
     "test:manual:profile-simple": "node scripts/tests/test-profile-simple.js",
     "test:manual:profile-update": "node scripts/tests/test-profile-update.js",
     "test:manual:socket": "node scripts/tests/test-socket.js",

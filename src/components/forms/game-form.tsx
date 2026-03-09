@@ -90,10 +90,10 @@ export function GameCreationForm({
       title: formData.title,
       description: formData.description,
       courtId: formData.courtId,
-      date: formData.scheduledAt.split('T')[0],
-      time: formData.scheduledAt.split('T')[1],
+      scheduledAt: formData.scheduledAt,
+      duration: formData.duration,
       maxPlayers: formData.maxPlayers,
-      skillLevel: 'intermediate', // Map skill level range to enum
+      skillLevel: formData.skillLevel,
       gameType: formData.gameType,
       isPrivate: formData.isPrivate,
     };
@@ -257,7 +257,6 @@ export function GameCreationForm({
               <option value="scrimmage">Scrimmage</option>
               <option value="tournament">Tournament</option>
               <option value="practice">Practice</option>
-              <option value="league">League Game</option>
             </select>
           </div>
 

@@ -15,6 +15,7 @@ import {
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { GameButton } from '@/components/ui/game-button';
 import { useToastHelpers } from '@/components/ui/toast';
+import { trackEvent } from '@/lib/analytics';
 
 const positions = [
   { value: 'PG', label: 'Point Guard', description: 'Floor general, playmaker' },
@@ -41,9 +42,10 @@ export default function ProfileSetupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: user?.username || '',
-    position: '',
-    skillLevel: 0,
-    location: '',
+    position: user?.position || '',
+    skillLevel: user?.skillLevel || 0,
+    location: user?.city || '',
+    maxDistance: user?.maxDistance || 10,
     bio: '',
     preferredPlayStyle: '',
     availability: [] as string[],
@@ -77,10 +79,19 @@ export default function ProfileSetupPage() {
         position: formData.position,
         skillLevel: formData.skillLevel,
         city: formData.location, // Map location to city
+        maxDistance: formData.maxDistance,
         // Note: bio is not supported by the current API, but we can add it later
       };
 
       await updateProfile(profileData);
+      await trackEvent({
+        name: 'profile_completed',
+        properties: {
+          position: formData.position,
+          skillLevel: formData.skillLevel,
+          maxDistance: formData.maxDistance,
+        },
+      });
       toast.success('Profile setup complete! Welcome to Court Zone!');
       router.push('/dashboard');
     } catch (error: any) {
@@ -292,6 +303,23 @@ export default function ProfileSetupPage() {
                     className="w-full px-4 py-3 bg-dark-200/50 border border-primary-400/30 rounded-lg text-white placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="City, State"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-primary-200 mb-2">
+                    Travel Distance
+                  </label>
+                  <input
+                    type="range"
+                    min={1}
+                    max={50}
+                    value={formData.maxDistance}
+                    onChange={(e) => setFormData({ ...formData, maxDistance: Number(e.target.value) })}
+                    className="w-full accent-primary-500"
+                  />
+                  <p className="text-xs text-primary-300 mt-1">
+                    Willing to travel up to {formData.maxDistance} miles for games and teams
+                  </p>
                 </div>
 
                 <div>

@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { verifyPassword, generateToken, generateRefreshToken, validateEmail, userToAuthUser } from '@/lib/auth'
+import { isPrismaInitializationError } from '@/lib/db'
+import {
+  authCookieOptions,
+  generateRefreshToken,
+  generateToken,
+  userToAuthUser,
+  validateEmail,
+  verifyPassword,
+} from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
@@ -72,16 +80,29 @@ export async function POST(request: NextRequest) {
 
     // Set secure cookie
     response.cookies.set('refresh-token', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      ...authCookieOptions,
+      maxAge: 30 * 24 * 60 * 60
+    })
+    response.cookies.set('auth-token', accessToken, {
+      ...authCookieOptions,
+      maxAge: 7 * 24 * 60 * 60
     })
 
     return response
 
   } catch (error) {
     console.error('Login error:', error)
+
+    if (isPrismaInitializationError(error)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Database client is not ready. Run "npm run db:generate" and restart the dev server.',
+        },
+        { status: 503 }
+      )
+    }
+
     return NextResponse.json(
       { success: false, message: 'Internal server error' },
       { status: 500 }

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import { NextRequest } from 'next/server'
 import { User } from '@prisma/client'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key'
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-for-development-only'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
 
 export interface JWTPayload {
@@ -22,7 +22,12 @@ export interface AuthUser {
   position: string | null
   skillLevel: number
   rating: number
+  latitude?: number | null
+  longitude?: number | null
+  city?: string | null
+  maxDistance?: number
   isVerified: boolean
+  profileComplete?: boolean
 }
 
 // Password hashing
@@ -63,7 +68,10 @@ export async function getUserFromRequest(request: NextRequest): Promise<JWTPaylo
 
     // Fallback to cookies if no Authorization header
     if (!token) {
-      token = request.cookies.get('auth-token')?.value || null
+      token =
+        request.cookies.get('auth-token')?.value ||
+        request.cookies.get('refresh-token')?.value ||
+        null
     }
 
     if (!token) {
@@ -141,7 +149,12 @@ export function userToAuthUser(user: User): AuthUser {
     position: user.position,
     skillLevel: user.skillLevel,
     rating: user.rating,
-    isVerified: user.isVerified
+    latitude: user.latitude,
+    longitude: user.longitude,
+    city: user.city,
+    maxDistance: user.maxDistance,
+    isVerified: user.isVerified,
+    profileComplete: Boolean(user.position && user.skillLevel > 0 && user.city && user.maxDistance > 0)
   }
 }
 
@@ -162,4 +175,11 @@ export function verifyRefreshToken(token: string): { userId: string } | null {
     console.error('Refresh token verification failed:', error)
     return null
   }
+}
+
+export const authCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  path: '/',
 }

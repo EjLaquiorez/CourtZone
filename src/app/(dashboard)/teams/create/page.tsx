@@ -10,41 +10,29 @@ import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-n
 import { GameButton } from '@/components/ui/game-button';
 import { TeamCreationForm } from '@/components/forms/team-form';
 import { TeamForm } from '@/types';
-
-const mockUser = {
-  username: 'CourtKing23',
-  avatar: '',
-  rating: 1847
-};
+import { useCreateTeam, useCurrentUser } from '@/lib/hooks/use-api';
+import { trackEvent } from '@/lib/analytics';
 
 export default function CreateTeamPage() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const { data: currentUserResponse } = useCurrentUser();
+  const createTeamMutation = useCreateTeam();
+  const user = currentUserResponse?.data || { username: 'Loading...', avatar: '', rating: 0 };
 
   const handleSubmit = async (formData: TeamForm) => {
-    setIsLoading(true);
-
     try {
-      // Call real API to create team
-      const response = await fetch('/api/teams', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
+      const result = await createTeamMutation.mutateAsync(formData);
+      await trackEvent({
+        name: 'team_created',
+        properties: {
+          teamId: result.data.id,
+          teamName: formData.name,
+          isPublic: formData.isPublic,
         },
-        body: JSON.stringify(formData)
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to create team');
-      }
-
-      console.log('Team created successfully:', result.data);
 
       // Show success state
       setIsSuccess(true);
@@ -58,8 +46,6 @@ export default function CreateTeamPage() {
       console.error('Error creating team:', error);
       // You could add a toast notification here
       alert(error instanceof Error ? error.message : 'Failed to create team');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -114,14 +100,14 @@ export default function CreateTeamPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -131,15 +117,15 @@ export default function CreateTeamPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
-            user={mockUser}
+            user={user}
             onMenuToggle={() => setMobileSidebarOpen(true)}
           />
 
           {/* Page Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Back Button */}
             <motion.div
               className="mb-6"
@@ -216,7 +202,7 @@ export default function CreateTeamPage() {
                 <TeamCreationForm
                   onSubmit={handleSubmit}
                   onCancel={handleCancel}
-                  isLoading={isLoading}
+                  isLoading={createTeamMutation.isPending}
                 />
               </motion.div>
             </div>

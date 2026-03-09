@@ -2,6 +2,14 @@
 
 ## ✅ Pre-Deployment Checklist
 
+Current deployment priority should follow the MVP flow, not total feature breadth:
+
+1. Auth works with production cookies and JWT secrets
+2. Profile completion is required before advanced flows
+3. Scheduled games can be listed, created, and joined with real database writes
+4. Team and court flows are verified after the game flow is stable
+5. Mock mode is disabled in production
+
 ### 🔧 Technical Requirements
 - [x] **Next.js 14** - App Router implementation
 - [x] **TypeScript** - Zero compilation errors
@@ -124,13 +132,19 @@ CMD ["node", "server.js"]
 ```env
 # .env.production
 NEXT_PUBLIC_APP_URL=https://your-domain.com
+NEXT_PUBLIC_API_URL=/api
 NEXT_PUBLIC_APP_NAME=Court Zone Basketball
+NEXT_PUBLIC_USE_MOCK_DATA=false
 NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
 NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+NEXT_PUBLIC_ENABLE_WEBSOCKET=false
+NEXT_PUBLIC_SOCKET_URL=https://your-socket-host
+NEXT_PUBLIC_WEBSOCKET_URL=https://your-socket-host
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=7d
 
 # Optional: Database and API endpoints
 DATABASE_URL=your_database_url
-API_BASE_URL=https://api.your-domain.com
 ```
 
 ### Build Configuration
@@ -223,8 +237,18 @@ module.exports = {
 - [x] **Input Validation** - Form validation
 - [x] **Authentication** - Secure login flows
 - [x] **Data Sanitization** - User input cleaning
+- [x] **Mock Mode Disabled** - `NEXT_PUBLIC_USE_MOCK_DATA=false` in production
 
 ## 📊 Monitoring & Analytics
+
+Track the MVP funnel first:
+
+- signup completed
+- profile completed
+- game created
+- game joined
+- court booking attempted
+- team join attempted
 
 ### Performance Monitoring
 ```javascript

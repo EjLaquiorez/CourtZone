@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    if (isPublic !== null) {
+    if (isPublic !== null && isPublic !== '') {
       where.isPublic = isPublic === 'true'
     }
 
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        teams: transformedTeams,
+        data: transformedTeams,
         pagination: {
           page,
           limit,

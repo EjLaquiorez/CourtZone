@@ -65,7 +65,9 @@ function isProfileComplete(user: any): boolean {
     user.username &&
     user.position &&
     user.skillLevel &&
-    user.skillLevel > 0
+    user.skillLevel > 0 &&
+    user.city &&
+    user.maxDistance > 0
   );
 }
 

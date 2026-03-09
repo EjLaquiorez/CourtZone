@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (status) {
-      where.status = status.toUpperCase()
+      where.status = status === 'open' ? 'SCHEDULED' : status.toUpperCase()
     }
 
     if (gameType) {
@@ -119,6 +119,11 @@ export async function GET(request: NextRequest) {
     // Transform data to include participant count
     const transformedGames = games.map(game => ({
       ...game,
+      scheduledTime: game.scheduledAt,
+      durationMinutes: game.duration,
+      minSkillLevel: game.skillLevelMin,
+      maxSkillLevel: game.skillLevelMax,
+      currentPlayers: game._count.participants,
       participantCount: game._count.participants,
       spotsLeft: game.maxPlayers - game._count.participants
     }))
@@ -126,7 +131,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        games: transformedGames,
+        data: transformedGames,
         pagination: {
           page,
           limit,

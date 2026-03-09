@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Plus, Search, Filter, Users, Trophy, Star, MapPin } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
@@ -10,6 +10,8 @@ import { GameButton, CreateTeamButton } from '@/components/ui/game-button';
 import { TeamCard } from '@/components/game/team-card';
 import { cn } from '@/lib/utils';
 import { TeamWithMembers, TeamFilters } from '@/types';
+import { useCurrentUser, useJoinTeam, useTeams } from '@/lib/hooks/use-api';
+import { trackEvent } from '@/lib/analytics';
 
 // Mock data for teams
 const mockUser = {
@@ -140,51 +142,12 @@ export default function TeamsPage() {
     maxDistance: undefined
   });
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [teams, setTeams] = useState<TeamWithMembers[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Load teams data (mock data for development)
-  useEffect(() => {
-    const loadTeams = async () => {
-      try {
-        setLoading(true);
-
-        // Use mock data for development
-        // TODO: Replace with real API call when backend is ready
-        if (process.env.NODE_ENV === 'development') {
-          // Simulate API delay for realistic UX
-          await new Promise(resolve => setTimeout(resolve, 800));
-          setTeams(mockTeams);
-          setError(null);
-        } else {
-          // Production API call
-          const response = await fetch('/api/teams', {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('auth-token')}`
-            }
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch teams');
-          }
-
-          const result = await response.json();
-          setTeams(result.data.teams || []);
-          setError(null);
-        }
-      } catch (err) {
-        console.error('Error loading teams:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load teams');
-        // Fallback to mock data if API fails
-        setTeams(mockTeams);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadTeams();
-  }, []);
+  const { data: currentUserResponse } = useCurrentUser();
+  const { data: teamsResponse, isLoading: loading, error: teamsError } = useTeams(filters, 1, 50);
+  const joinTeamMutation = useJoinTeam();
+  const user = currentUserResponse?.data || mockUser;
+  const teams = teamsResponse?.data?.data || mockTeams;
+  const error = teamsError ? teamsError.message : null;
 
   const filteredTeams = teams.filter(team => {
     // Search filter
@@ -207,45 +170,12 @@ export default function TeamsPage() {
 
   const handleJoinTeam = async (teamId: string) => {
     try {
-      if (process.env.NODE_ENV === 'development') {
-        // Mock join team behavior for development
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Update teams list to show updated membership
-        const updatedTeams = teams.map(team =>
-          team.id === teamId
-            ? { ...team, memberCount: team.memberCount + 1 }
-            : team
-        );
-        setTeams(updatedTeams);
-
-        alert('Successfully joined team! (Mock behavior)');
-      } else {
-        // Production API call
-        const response = await fetch(`/api/teams/${teamId}/join`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth-token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.message || 'Failed to join team');
-        }
-
-        // Refresh teams list to show updated membership
-        const updatedTeams = teams.map(team =>
-          team.id === teamId
-            ? { ...team, memberCount: team.memberCount + 1 }
-            : team
-        );
-        setTeams(updatedTeams);
-
-        alert(result.message || 'Successfully joined team!');
-      }
+      await trackEvent({
+        name: 'team_join_attempted',
+        properties: { teamId },
+      });
+      const result = await joinTeamMutation.mutateAsync(teamId);
+      alert(result.message || 'Successfully joined team!');
     } catch (error) {
       console.error('Error joining team:', error);
       alert(error instanceof Error ? error.message : 'Failed to join team');
@@ -257,14 +187,14 @@ export default function TeamsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />
 
-      <div className="flex">
+      <div className="flex lg:h-full">
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -274,15 +204,15 @@ export default function TeamsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
-            user={mockUser}
+            user={user}
             onMenuToggle={() => setMobileSidebarOpen(true)}
           />
 
           {/* Page Content */}
-          <main className="p-4 lg:p-8">
+          <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
               className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8"

@@ -83,6 +83,24 @@ Setup order for a new machine:
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+### Local Environment Variables
+
+Create `.env.local` with at least:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/courtzone"
+JWT_SECRET="replace-with-a-strong-secret"
+JWT_EXPIRES_IN="7d"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_API_URL="/api"
+NEXT_PUBLIC_USE_MOCK_DATA="false"
+NEXT_PUBLIC_ENABLE_WEBSOCKET="false"
+NEXT_PUBLIC_SOCKET_URL="http://localhost:3003"
+NEXT_PUBLIC_WEBSOCKET_URL="http://localhost:3003"
+NEXT_PUBLIC_MAPBOX_TOKEN=""
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
+```
+
 ## 🎨 Design System
 
 ### Color Palette
@@ -148,7 +166,22 @@ The foundation of Court Zone is now complete with a fully functional landing pag
 - **Type Safety**: Full TypeScript implementation
 - **Modern Architecture**: Next.js 14 with App Router
 
-**Ready for Phase 5**: Team Management, Court Discovery, and Game Scheduling features.
+## Current Development Focus
+
+Court Zone is now organized around a single real-data MVP flow:
+
+`register/login -> complete profile -> discover scheduled games -> create or join a game`
+
+Current build priority:
+
+1. Finish auth and profile completeness.
+2. Ship `games` as the first complete Prisma-backed flow.
+3. Expand the same pattern to `teams` and `courts`.
+4. Add automated verification and deployment checks.
+
+Mock mode should be treated as opt-in only and enabled with `NEXT_PUBLIC_USE_MOCK_DATA=true`.
+
+Supporting implementation notes live in [`DEVELOPMENT_CHECKLIST.md`](DEVELOPMENT_CHECKLIST.md).
 
 ---
 

@@ -44,6 +44,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   // Get auth state from store
   const {
+    user,
     isAuthenticated,
     isLoading,
     error: authError,
@@ -67,6 +68,13 @@ export default function AuthProvider({ children }: AuthProviderProps) {
           // Set up API client with token
           apiClient.setAuthToken(tokens.accessToken);
 
+          if (!user) {
+            const meResponse = await apiClient.get('/auth/me');
+            if (meResponse.success && meResponse.data) {
+              useAuthStore.getState().setUser(meResponse.data);
+            }
+          }
+
           // Set up token refresh interval
           if (tokens.expiresIn) {
             // Refresh token 5 minutes before expiry
@@ -80,6 +88,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
                 if (response.data?.accessToken) {
                   // Update tokens in store
+                  apiClient.setAuthToken(response.data.accessToken);
+                  localStorage.setItem('auth-token', response.data.accessToken);
                   useAuthStore.getState().setTokens({
                     ...tokens,
                     accessToken: response.data.accessToken,
@@ -128,7 +138,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         clearInterval(refreshInterval);
       }
     };
-  }, [tokens, setLoading, setError, clearAuth, toast]);
+  }, [tokens, user, setLoading, setError, clearAuth, toast]);
 
   // Handle auth errors
   useEffect(() => {

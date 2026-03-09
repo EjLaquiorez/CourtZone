@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { verifyToken } from '@/lib/auth';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
@@ -83,21 +83,11 @@ export async function PATCH(
 ) {
   try {
     const gameId = params.id;
-    const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, message: 'Authorization required' },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.substring(7);
-    const payload = verifyToken(token);
+    const payload = await getUserFromRequest(request);
     
     if (!payload) {
       return NextResponse.json(
-        { success: false, message: 'Invalid token' },
+        { success: false, message: 'Authorization required' },
         { status: 401 }
       );
     }

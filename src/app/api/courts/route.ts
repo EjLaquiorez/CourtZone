@@ -38,11 +38,11 @@ export async function GET(request: NextRequest) {
       where.courtType = courtType.toUpperCase()
     }
 
-    if (hasLighting !== null) {
+    if (hasLighting !== null && hasLighting !== '') {
       where.hasLighting = hasLighting === 'true'
     }
 
-    if (hasParking !== null) {
+    if (hasParking !== null && hasParking !== '') {
       where.hasParking = hasParking === 'true'
     }
 
@@ -97,15 +97,26 @@ export async function GET(request: NextRequest) {
       
       courtsWithDistance = courts.map(court => {
         const distance = calculateDistance(userLat, userLng, court.latitude, court.longitude)
-        return { ...court, distance }
+        return {
+          ...court,
+          amenities: typeof court.amenities === 'string' ? JSON.parse(court.amenities || '[]') : court.amenities,
+          photos: typeof court.photos === 'string' ? JSON.parse(court.photos || '[]') : court.photos,
+          distance
+        }
       }).filter(court => court.distance <= radius)
         .sort((a, b) => a.distance - b.distance)
+    } else {
+      courtsWithDistance = courts.map(court => ({
+        ...court,
+        amenities: typeof court.amenities === 'string' ? JSON.parse(court.amenities || '[]') : court.amenities,
+        photos: typeof court.photos === 'string' ? JSON.parse(court.photos || '[]') : court.photos,
+      }))
     }
 
     return NextResponse.json({
       success: true,
       data: {
-        courts: courtsWithDistance,
+        data: courtsWithDistance,
         pagination: {
           page,
           limit,
@@ -193,8 +204,8 @@ export async function POST(request: NextRequest) {
         surfaceType: surfaceType || null,
         hasLighting: hasLighting || false,
         hasParking: hasParking || false,
-        amenities: amenities || [],
-        photos: photos || [],
+        amenities: JSON.stringify(amenities || []),
+        photos: JSON.stringify(photos || []),
         createdById: user.userId,
         isVerified: false // New courts need verification
       },

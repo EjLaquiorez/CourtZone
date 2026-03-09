@@ -46,17 +46,7 @@ export const authService = {
 
   // Get current user profile
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    try {
-      return await apiClient.get<User>('/auth/me');
-    } catch (error) {
-      console.error('getCurrentUser failed:', error);
-      // Return a mock response to prevent app crash
-      return {
-        success: false,
-        message: 'Failed to get current user',
-        data: null as any
-      };
-    }
+    return apiClient.get<User>('/auth/me');
   },
 
   // Update user profile

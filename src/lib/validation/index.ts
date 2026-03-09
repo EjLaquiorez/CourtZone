@@ -26,15 +26,10 @@ export const userSchemas = {
     email: commonValidation.email,
     password: commonValidation.password,
     confirmPassword: z.string(),
-    firstName: z.string().min(1, 'First name is required'),
-    lastName: z.string().min(1, 'Last name is required'),
-    dateOfBirth: z.string().refine((date) => {
-      const birthDate = new Date(date);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      return age >= 13;
-    }, 'You must be at least 13 years old'),
-    agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the terms and conditions'),
+    position: z.enum(['PG', 'SG', 'SF', 'PF', 'C']).optional(),
+    skillLevel: z.number().min(1, 'Skill level must be at least 1').max(10, 'Skill level cannot exceed 10').default(5),
+    city: z.string().max(100, 'City name too long').optional(),
+    agreeToTerms: z.boolean().optional(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -115,22 +110,24 @@ export const gameSchemas = {
     title: z.string().min(3, 'Game title must be at least 3 characters').max(100, 'Title too long'),
     description: z.string().max(500, 'Description must be less than 500 characters').optional(),
     courtId: z.string().min(1, 'Please select a court'),
-    date: z.string().refine((date) => {
+    scheduledAt: z.string().refine((date) => {
       const gameDate = new Date(date);
       const now = new Date();
       return gameDate > now;
     }, 'Game date must be in the future'),
-    time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Please enter a valid time'),
+    duration: z.number().min(30, 'Game must be at least 30 minutes').max(240, 'Game duration cannot exceed 4 hours'),
     maxPlayers: z.number().min(2, 'At least 2 players required').max(20, 'Maximum 20 players allowed'),
-    skillLevel: z.enum(['beginner', 'intermediate', 'advanced', 'pro'], {
-      errorMap: () => ({ message: 'Please select a skill level' })
+    skillLevel: z.object({
+      min: z.number().min(1, 'Minimum skill level must be at least 1').max(10),
+      max: z.number().min(1).max(10),
+    }).refine((value) => value.min <= value.max, {
+      message: 'Minimum skill level cannot exceed maximum',
+      path: ['min'],
     }),
     gameType: z.enum(['pickup', 'tournament', 'scrimmage', 'practice'], {
       errorMap: () => ({ message: 'Please select a game type' })
     }),
     isPrivate: z.boolean().optional(),
-    entryFee: z.number().min(0, 'Entry fee cannot be negative').optional(),
-    rules: z.string().max(1000, 'Rules must be less than 1000 characters').optional(),
   }),
 
   join: z.object({
@@ -144,13 +141,13 @@ export const teamSchemas = {
   create: z.object({
     name: z.string().min(3, 'Team name must be at least 3 characters').max(50, 'Team name too long'),
     description: z.string().max(500, 'Description must be less than 500 characters').optional(),
-    isPrivate: z.boolean().optional(),
-    maxMembers: z.number().min(5, 'Team must allow at least 5 members').max(50, 'Maximum 50 members allowed'),
-    skillLevel: z.enum(['beginner', 'intermediate', 'advanced', 'pro'], {
-      errorMap: () => ({ message: 'Please select a skill level' })
-    }),
-    location: z.string().max(100, 'Location must be less than 100 characters').optional(),
-    requirements: z.string().max(300, 'Requirements must be less than 300 characters').optional(),
+    isPublic: z.boolean().default(true),
+    maxSize: z.number().min(5, 'Team must allow at least 5 members').max(20, 'Maximum 20 members allowed'),
+    minSkillLevel: z.number().min(1).max(10),
+    maxSkillLevel: z.number().min(1).max(10),
+  }).refine((data) => data.minSkillLevel <= data.maxSkillLevel, {
+    message: 'Minimum skill level cannot exceed maximum',
+    path: ['minSkillLevel'],
   }),
 
   join: z.object({

@@ -1,6 +1,5 @@
 import { apiClient, withCache, withRetry } from '../client';
-import type { ApiResponse, PaginatedResponse } from '../types';
-import type { User } from '@/types';
+import type { ApiResponse, PaginatedResponse, User } from '@/types';
 
 export const usersService = {
   // Get current user profile
@@ -133,7 +132,7 @@ export const usersService = {
     return withRetry(() =>
       apiClient.post<{ avatarUrl: string }>(`/users/${userId}/avatar`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Accept: 'application/json',
         },
       })
     );
