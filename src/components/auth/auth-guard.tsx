@@ -61,13 +61,13 @@ export function AuthGuard({
 // Helper function to check if user profile is complete
 function isProfileComplete(user: any): boolean {
   // Define what constitutes a complete profile
+  // Location and travel distance are optional in the UI,
+  // so we only require the core basketball attributes.
   return !!(
     user.username &&
     user.position &&
     user.skillLevel &&
-    user.skillLevel > 0 &&
-    user.city &&
-    user.maxDistance > 0
+    user.skillLevel > 0
   );
 }
 

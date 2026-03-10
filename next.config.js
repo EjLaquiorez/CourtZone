@@ -1,10 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
-  },
+  // Enable Turbopack explicitly so custom webpack config doesn't cause errors
+  turbopack: {},
+
   typescript: {
     // Warning: This allows production builds to successfully complete even if
     // your project has type errors.
@@ -29,48 +27,6 @@ const nextConfig = {
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-  },
-
-  // Webpack optimizations for code splitting
-  webpack: (config, { dev, isServer }) => {
-    // Optimize bundle splitting for better lazy loading
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          // Vendor chunks
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: 10,
-          },
-          // Basketball-specific components
-          basketball: {
-            test: /[\\/]src[\\/]components[\\/](maps|stats|game|courts)[\\/]/,
-            name: 'basketball-components',
-            chunks: 'all',
-            priority: 20,
-          },
-          // UI components
-          ui: {
-            test: /[\\/]src[\\/]components[\\/]ui[\\/]/,
-            name: 'ui-components',
-            chunks: 'all',
-            priority: 15,
-          },
-          // Common utilities
-          common: {
-            test: /[\\/]src[\\/]lib[\\/]/,
-            name: 'common',
-            chunks: 'all',
-            priority: 5,
-          },
-        },
-      };
-    }
-
-    return config;
   },
 
   // Headers for better caching

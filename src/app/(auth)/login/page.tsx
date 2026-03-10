@@ -1,5 +1,6 @@
 'use client';
 
+import type { ChangeEvent, FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
@@ -72,7 +73,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, isLoading, router, searchParams]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     // Clear error when user starts typing
@@ -81,15 +82,21 @@ export default function LoginPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitting || isLoading) {
+      return;
+    }
+
     setErrors({});
 
     // Basic validation
     const newErrors: Record<string, string> = {};
-    if (!formData.email) {
+    const normalizedEmail = formData.email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!/\S+@\S+\.\S+/.test(normalizedEmail)) {
       newErrors.email = 'Please enter a valid email';
     }
     if (!formData.password) {
@@ -103,7 +110,7 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     try {
-      await login({ email: formData.email, password: formData.password });
+      await login({ email: normalizedEmail, password: formData.password });
 
       if (rememberMe) {
         localStorage.setItem(REMEMBERED_EMAIL_KEY, formData.email);
@@ -117,10 +124,16 @@ export default function LoginPage() {
       router.push(returnUrl);
     } catch (error: any) {
       console.error('Login failed:', error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Login failed. Please try again.';
+
       setErrors({
-        general: error.message || 'Login failed. Please try again.'
+        general: message
       });
-      toast({ title: error.message || 'Login failed', variant: 'destructive' });
+      toast({ title: message, variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }

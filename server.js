@@ -29,10 +29,16 @@ app.prepare().then(() => {
   try {
     const { Server } = require('socket.io');
 
+    // Allow both app URL and socket URL origins to avoid CORS issues
+    const allowedOrigins = [
+      process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3003'
+    ];
+
     const io = new Server(httpServer, {
       cors: {
-        origin: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-        methods: ["GET", "POST"],
+        origin: allowedOrigins,
+        methods: ['GET', 'POST'],
         credentials: true
       },
       transports: ['websocket', 'polling']

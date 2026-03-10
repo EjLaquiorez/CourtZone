@@ -73,6 +73,7 @@ class SocketService {
         transports: ['websocket', 'polling'],
         timeout: 10000,
         forceNew: true,
+        path: '/socket.io',
       });
 
       this.socket.on('connect', () => {

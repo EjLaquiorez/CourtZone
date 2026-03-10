@@ -92,7 +92,7 @@ export default function ProfileSetupPage() {
           maxDistance: formData.maxDistance,
         },
       });
-      toast.success('Profile setup complete! Welcome to Court Zone!');
+      toast.success('Profile setup complete! Redirecting to your dashboard.');
       router.push('/dashboard');
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');
