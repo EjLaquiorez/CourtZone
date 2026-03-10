@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Bell, Search, Menu, User } from 'lucide-react';
 import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { GameButton } from '@/components/ui/game-button';
 import { NotificationCenter } from '@/components/ui/notification-center';
@@ -13,9 +14,11 @@ interface HeaderProps {
   className?: string;
 }
 
-export function Header({ onMenuToggle, showMobileMenu = false, className }: HeaderProps) {
+export function Header({ onMenuToggle, className }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationCount] = useState(3); // Mock notification count
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <motion.header
@@ -119,6 +122,10 @@ export function Header({ onMenuToggle, showMobileMenu = false, className }: Head
                 variant="ghost"
                 size="sm"
                 className="text-primary-400 hover:text-primary-300"
+                onClick={() => {
+                  const returnUrl = pathname || '/';
+                  router.push(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                }}
               >
                 Sign In
               </GameButton>
@@ -126,6 +133,10 @@ export function Header({ onMenuToggle, showMobileMenu = false, className }: Head
                 variant="primary"
                 size="sm"
                 glow
+                onClick={() => {
+                  const returnUrl = pathname || '/';
+                  router.push(`/register?returnUrl=${encodeURIComponent(returnUrl)}`);
+                }}
               >
                 Get Started
               </GameButton>

@@ -17,7 +17,9 @@ export function GameButton({
   fullWidth = false,
   onClick,
   children,
-  className
+  className,
+  type = 'button',
+  ...rest
 }: GameButtonProps) {
   const baseClasses = 'font-accent font-semibold transition-all duration-200 relative overflow-hidden inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900 disabled:opacity-50 disabled:cursor-not-allowed';
   
@@ -58,10 +60,12 @@ export function GameButton({
       whileHover={!isDisabled ? { scale: 1.02 } : {}}
       whileTap={!isDisabled ? { scale: 0.98 } : {}}
       disabled={isDisabled}
+      type={type}
       onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      {...rest}
     >
       {/* Loading spinner */}
       {loading && (
