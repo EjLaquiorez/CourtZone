@@ -58,14 +58,21 @@ export const userSchemas = {
   basketballProfile: z.object({
     // Personal Information
     username: commonValidation.username,
-    firstName: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-    lastName: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
-    dateOfBirth: z.string().refine((date) => {
-      const birthDate = new Date(date);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      return age >= 13 && age <= 100;
-    }, 'You must be between 13 and 100 years old'),
+    // These are optional for now (schema doesn't persist them yet)
+    firstName: z.string().max(50, 'First name too long').optional().or(z.literal('')),
+    lastName: z.string().max(50, 'Last name too long').optional().or(z.literal('')),
+    dateOfBirth: z
+      .string()
+      .optional()
+      .or(z.literal(''))
+      .refine((date) => {
+        if (!date) return true;
+        const birthDate = new Date(date);
+        if (Number.isNaN(birthDate.getTime())) return false;
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 13 && age <= 100;
+      }, 'You must be between 13 and 100 years old'),
     bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
 
     // Basketball Details

@@ -21,20 +21,35 @@ model User {
   city        String?
   maxDistance Int      @default(10)
   isVerified  Boolean  @default(false)
+
+  // Referral: who invited this user (set at signup via ?ref=code)
+  referrerId  String?
+  referrer    User?    @relation("UserReferrals", fields: [referrerId], references: [id])
+  referredUsers User[] @relation("UserReferrals")
+
+  // Reliability counters
+  gamesPlayed               Int @default(0)
+  gamesCompleted            Int @default(0)
+  gamesWithNoShowIssues     Int @default(0)
+  gamesHosted               Int @default(0)
+  gamesHostedCompleted      Int @default(0)
+  gamesHostedWithNoShowIssues Int @default(0)
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relations
-  captainTeams    Team[]       @relation("TeamCaptain")
-  teamMemberships TeamMember[]
-  organizedGames  Game[]       @relation("GameOrganizer")
-  gameParticipants GameParticipant[]
-  gameWaitlist    GameWaitlist[]
-  courtReviews    CourtReview[]
-  createdCourts   Court[]      @relation("CourtCreator")
+  captainTeams      Team[]       @relation("TeamCaptain")
+  teamMemberships   TeamMember[]
+  organizedGames    Game[]       @relation("GameOrganizer")
+  gameParticipants  GameParticipant[]
+  gameWaitlist      GameWaitlist[]
+  gamesMarkedCompleted Game[]     @relation("GameCompletedBy")
+  courtReviews      CourtReview[]
+  createdCourts     Court[]      @relation("CourtCreator")
   courtReservations CourtReservation[]
-  gameStats       GameStats[]
-  seasonStats     PlayerSeasonStats[]
+  gameStats         GameStats[]
+  seasonStats       PlayerSeasonStats[]
 
   @@map("users")
 }
@@ -93,6 +108,7 @@ model Game {
   skillLevelMin Int        @default(1)
   skillLevelMax Int        @default(10)
   isPrivate     Boolean    @default(false)
+  hasNoShowIssues Boolean  @default(false)
   hostScore     Int?
   opponentScore Int?
   winnerTeamId  String?
@@ -104,6 +120,9 @@ model Game {
   // Relations
   organizerId String
   organizer   User   @relation("GameOrganizer", fields: [organizerId], references: [id])
+
+  completedById String?
+  completedBy   User?  @relation("GameCompletedBy", fields: [completedById], references: [id])
 
   courtId String
   court   Court  @relation(fields: [courtId], references: [id])

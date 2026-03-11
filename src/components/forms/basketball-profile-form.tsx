@@ -21,7 +21,7 @@ import { GameButton } from '@/components/ui/game-button';
 import { cn } from '@/lib/utils';
 import { POSITIONS, Position } from '@/types';
 import { BasketballProfileFormData, userSchemas } from '@/lib/validation';
-import { useToast } from '@/components/ui/toast';
+import { useToastHelpers } from '@/components/ui/toast';
 import { validateForm } from '@/lib/validation';
 
 interface BasketballProfileFormProps {
@@ -109,7 +109,7 @@ export function BasketballProfileForm({
     ...initialData
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { toast } = useToast();
+  const toast = useToastHelpers();
 
   const steps = [
     { title: 'Personal Info', icon: <User className="w-5 h-5" /> },
@@ -201,7 +201,25 @@ export function BasketballProfileForm({
 
     if (!result.success && result.errors) {
       setErrors(result.errors);
-      toast.error('Please fix the validation errors');
+      // Jump user to first step that contains an error so they can fix it quickly.
+      const stepFields: Record<number, string[]> = {
+        0: ['username', 'firstName', 'lastName', 'dateOfBirth'],
+        1: ['position', 'skillLevel', 'yearsOfExperience', 'height', 'weight'],
+        2: ['playingStyle', 'strengths', 'weaknesses'],
+        3: ['preferredGameTypes', 'availability', 'preferredTimes'],
+        4: ['phone', 'city', 'maxDistance', 'socialMedia']
+      };
+      const errorFields = new Set(Object.keys(result.errors));
+      const firstStepWithError =
+        Object.entries(stepFields).find(([_, fields]) =>
+          fields.some((f) => errorFields.has(f))
+        )?.[0] ?? null;
+
+      if (firstStepWithError != null) {
+        setCurrentStep(Number(firstStepWithError));
+      }
+
+      toast.error('Please fix the highlighted fields to save');
       return;
     }
 

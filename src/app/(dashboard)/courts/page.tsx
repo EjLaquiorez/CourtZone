@@ -131,12 +131,14 @@ export default function CourtsPage() {
   // Add distance to courts
   const courtsWithDistance = filteredCourts.map(court => ({
     ...court,
-    distance: userLocation ? calculateDistance(
-      userLocation.lat,
-      userLocation.lng,
-      court.latitude,
-      court.longitude
-    ) : undefined
+    distance: userLocation
+      ? calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          court.latitude,
+          court.longitude
+        )
+      : undefined
   }));
 
   const handleCourtSelect = (court: Court) => {
@@ -386,24 +388,36 @@ export default function CourtsPage() {
                 </div>
               ) : (
                 /* List View */
-                <div className="space-y-6">
-                  {courtsWithDistance.map((court, index) => (
-                    <motion.div
-                      key={court.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * index }}
-                    >
-                      <CourtCard
-                        court={court}
-                        variant="detailed"
-                        distance={court.distance}
-                        onViewDetails={() => setSelectedCourt(court)}
-                        onGetDirections={() => handleGetDirections(court)}
-                        onBookCourt={() => handleBookCourt(court)}
-                      />
-                    </motion.div>
-                  ))}
+                <div className="space-y-8">
+                  {/* Frequent players banner placeholder to reinforce community at each court */}
+                  <div className="bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/30 rounded-xl p-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-primary-100 font-medium">Frequent Players (coming soon)</p>
+                      <p className="text-sm text-primary-300">
+                        Courts will highlight regulars and their reliability so you know who really shows up.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    {courtsWithDistance.map((court, index) => (
+                      <motion.div
+                        key={court.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 * index }}
+                      >
+                        <CourtCard
+                          court={court}
+                          variant="detailed"
+                          distance={court.distance}
+                          onViewDetails={() => setSelectedCourt(court)}
+                          onGetDirections={() => handleGetDirections(court)}
+                          onBookCourt={() => handleBookCourt(court)}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               )}
             </motion.div>

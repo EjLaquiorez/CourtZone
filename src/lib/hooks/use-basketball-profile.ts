@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BasketballProfileFormData } from '@/lib/validation';
+import { queryKeys } from '@/lib/hooks/use-api';
 
 interface BasketballProfile extends BasketballProfileFormData {
   id: string;
@@ -79,9 +80,9 @@ export function useUpdateBasketballProfile() {
     onSuccess: (data) => {
       // Update the basketball profile cache
       queryClient.setQueryData(['basketball-profile'], data);
-      
-      // Also update the current user cache if it exists
-      queryClient.setQueryData(['current-user'], (oldData: any) => {
+
+      // Sync current user so header/dashboard show updated profile
+      queryClient.setQueryData(queryKeys.auth.user, (oldData: any) => {
         if (oldData?.data) {
           return {
             ...oldData,
@@ -98,9 +99,10 @@ export function useUpdateBasketballProfile() {
         return oldData;
       });
 
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ['current-user'] });
-      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+      // Invalidate so next dashboard load gets fresh stats and Rookie Card status
+      queryClient.invalidateQueries({ queryKey: queryKeys.auth.user });
+      queryClient.invalidateQueries({ queryKey: ['users', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['basketball-profile'] });
     },
     onError: (error) => {
       console.error('Basketball profile update error:', error);

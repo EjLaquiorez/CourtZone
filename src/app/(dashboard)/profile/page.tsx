@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   User,
   Edit3,
@@ -29,7 +30,7 @@ import { cn } from '@/lib/utils';
 import type { User as UserType, Position } from '@/types';
 import { useCurrentUser } from '@/lib/hooks/use-api';
 import { BasketballProfileFormData } from '@/lib/validation';
-import { useToast } from '@/components/ui/toast';
+import { useToastHelpers } from '@/components/ui/toast';
 import { useUpdateBasketballProfile, transformUserToBasketballProfile } from '@/lib/hooks/use-basketball-profile';
 
 // Utility function to safely format dates - completely bulletproof
@@ -130,7 +131,7 @@ function ProfilePageContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [showBasketballForm, setShowBasketballForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
+  const toast = useToastHelpers();
   const updateBasketballProfile = useUpdateBasketballProfile();
 
   // Fetch current user data
@@ -174,7 +175,12 @@ function ProfilePageContent() {
   const handleBasketballProfileSubmit = async (data: BasketballProfileFormData) => {
     try {
       await updateBasketballProfile.mutateAsync(data);
-      toast.success('Basketball profile updated successfully!');
+      const hasRequired = data.username && data.position && (data.skillLevel ?? 0) > 0;
+      toast.success(
+        hasRequired
+          ? 'Profile updated! You’ve unlocked the Rookie Card. Check your dashboard — the completion banner is gone and your badge is in the Trophy Room.'
+          : 'Basketball profile updated successfully!'
+      );
       setShowBasketballForm(false);
     } catch (error: any) {
       toast.error(error.message || 'Failed to update basketball profile');
@@ -484,9 +490,11 @@ function ProfilePageContent() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-display font-bold text-white">Achievements</h2>
-                  <GameButton variant="ghost" size="sm">
-                    View All
-                  </GameButton>
+                  <Link href="/achievements">
+                    <GameButton variant="ghost" size="sm">
+                      View Trophy Room
+                    </GameButton>
+                  </Link>
                 </div>
 
                 <div className="space-y-4">

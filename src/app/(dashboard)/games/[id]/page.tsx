@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import {
   ArrowLeft,
@@ -27,158 +27,23 @@ import { GameButton } from '@/components/ui/game-button';
 import { StatCard } from '@/components/ui/stat-card';
 import { PlayerCard } from '@/components/ui/player-card';
 import { GameChat } from '@/components/game/game-chat';
-import { cn } from '@/lib/utils';
-import { useJoinGame, useLeaveGame, useGameParticipants, useCompleteGame } from '@/lib/hooks/use-api';
-import { formatDate, formatTime } from '@/lib/utils';
-import { Game, GameStatus, User, GameWithDetails } from '@/types';
+import { GameCompletionForm } from '@/components/games/game-completion-form';
+import { cn, formatDate, formatTime } from '@/lib/utils';
+import {
+  useCurrentUser,
+  useGame,
+  useJoinGame,
+  useLeaveGame,
+  useGameParticipants,
+  useCompleteGame
+} from '@/lib/hooks/use-api';
+import { GameStatus, User } from '@/types';
 
-const mockUser = {
-  username: 'CourtKing23',
+const fallbackUser = {
+  username: 'Player',
   avatar: '',
-  rating: 1847
+  rating: 0
 };
-
-// Mock game data - in real app, would fetch based on ID
-const mockGame: GameWithDetails = {
-  id: '1',
-  hostTeamId: 'team1',
-  courtId: '1',
-  scheduledTime: new Date('2024-12-28T18:00:00'),
-  durationMinutes: 120,
-  gameType: 'pickup',
-  status: 'open' as GameStatus,
-  minSkillLevel: 4,
-  maxSkillLevel: 8,
-  maxDistance: 25,
-  createdAt: new Date('2024-12-20'),
-  hostTeam: {
-    id: 'team1',
-    name: 'Venice Ballers',
-    captainId: 'user1',
-    maxSize: 10,
-    minSkillLevel: 4,
-    maxSkillLevel: 8,
-    description: 'Competitive pickup team at Venice Beach',
-    isPublic: true,
-    rating: 1750,
-    gamesPlayed: 25,
-    wins: 18,
-    createdAt: new Date('2024-01-01')
-  },
-  court: {
-    id: '1',
-    name: 'Venice Beach Basketball Courts',
-    address: '1800 Ocean Front Walk, Venice, CA 90291',
-    latitude: 33.9850,
-    longitude: -118.4695,
-    courtType: 'outdoor',
-    surfaceType: 'Asphalt',
-    hasLighting: true,
-    hasParking: true,
-    rating: 4.5,
-    reviewCount: 127,
-    isVerified: true,
-    createdAt: new Date()
-  }
-};
-
-// Mock participants
-const mockParticipants: User[] = [
-  {
-    id: 'user1',
-    username: 'PickupKing',
-    email: 'pickup@example.com',
-    rating: 1850,
-    skillLevel: 7,
-    position: 'PG',
-    city: 'Venice',
-    maxDistance: 25,
-    isVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user2',
-    username: 'SharpShooter',
-    email: 'shooter@example.com',
-    rating: 1720,
-    skillLevel: 6,
-    position: 'SG',
-    city: 'Santa Monica',
-    maxDistance: 20,
-    isVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user3',
-    username: 'BigMan',
-    email: 'center@example.com',
-    rating: 1680,
-    skillLevel: 5,
-    position: 'C',
-    city: 'Los Angeles',
-    maxDistance: 30,
-    isVerified: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user4',
-    username: 'SpeedDemon',
-    email: 'speed@example.com',
-    rating: 1790,
-    skillLevel: 7,
-    position: 'SF',
-    city: 'Venice',
-    maxDistance: 15,
-    isVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user5',
-    username: 'CourtVision',
-    email: 'vision@example.com',
-    rating: 1650,
-    skillLevel: 6,
-    position: 'PF',
-    city: 'Marina del Rey',
-    maxDistance: 25,
-    isVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user6',
-    username: 'Clutch23',
-    email: 'clutch@example.com',
-    rating: 1880,
-    skillLevel: 8,
-    position: 'SG',
-    city: 'Beverly Hills',
-    maxDistance: 40,
-    isVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: 'user7',
-    username: 'Rookie',
-    email: 'rookie@example.com',
-    rating: 1420,
-    skillLevel: 4,
-    position: 'SF',
-    city: 'Culver City',
-    maxDistance: 20,
-    isVerified: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
-// Mock organizer (first participant)
-const mockOrganizer = mockParticipants[0];
 
 export default function GameDetailPage() {
   const params = useParams();
@@ -187,8 +52,15 @@ export default function GameDetailPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'participants' | 'chat' | 'details'>('overview');
+  const [showCompletionForm, setShowCompletionForm] = useState(false);
 
   // API hooks
+  const { data: currentUserResponse } = useCurrentUser();
+  const currentUser = currentUserResponse?.data;
+
+  const { data: gameResponse, isLoading: gameLoading } = useGame(gameId);
+  const game = gameResponse?.data;
+
   const joinGameMutation = useJoinGame({
     onSuccess: (data) => {
       console.log('Successfully joined game:', data);
@@ -210,9 +82,24 @@ export default function GameDetailPage() {
   const { data: participantsData, isLoading: participantsLoading } = useGameParticipants(gameId);
   const completeGameMutation = useCompleteGame();
 
-  // Mock user role - in real app, this would come from auth/API
-  const userRole = 'none'; // 'organizer' | 'participant' | 'none'
-  const isUserParticipant = mockParticipants.some(p => p.username === mockUser.username);
+  const participants =
+    participantsData?.data?.participants?.map((p: any) => ({
+      id: p.id,
+      userId: p.userId,
+      user: p.user
+    })) || [];
+
+  const organizer: User | undefined = game?.organizer;
+
+  const isUserParticipant = useMemo(() => {
+    if (!currentUser) return false;
+    return participants.some((p) => p.userId === currentUser.id);
+  }, [currentUser, participants]);
+
+  const isOrganizer = Boolean(currentUser && game && game.organizerId === currentUser.id);
+
+  type UserRole = 'organizer' | 'participant' | 'none';
+  const userRole: UserRole = isOrganizer ? 'organizer' : isUserParticipant ? 'participant' : 'none';
 
   const handleJoinGame = () => {
     joinGameMutation.mutate(gameId);
@@ -233,11 +120,16 @@ export default function GameDetailPage() {
   };
 
   const handleShare = () => {
-    const gameTitle = `${mockGame.gameType} Game at ${mockGame.court.name}`;
+    const safeGame = game;
+    const gameTitle = safeGame
+      ? `${safeGame.gameType} Game at ${safeGame.court?.name ?? 'Court'}`
+      : 'CourtZone Game';
     if (navigator.share) {
       navigator.share({
         title: gameTitle,
-        text: `Join me for a ${mockGame.gameType} game at ${mockGame.court.name}`,
+        text: safeGame
+          ? `Join me for a ${safeGame.gameType} game at ${safeGame.court?.name ?? 'this court'}`
+          : 'Join me for a game on CourtZone',
         url: window.location.href
       });
     } else {
@@ -245,12 +137,37 @@ export default function GameDetailPage() {
     }
   };
 
-  // Mock game capacity data
-  const maxPlayers = 10;
-  const currentPlayers = mockParticipants.length;
+  // Capacity & timing
+  const maxPlayers = game?.maxPlayers ?? 10;
+  const currentPlayers = participants.length;
   const spotsRemaining = maxPlayers - currentPlayers;
   const isGameFull = spotsRemaining <= 0;
-  const isGameSoon = new Date(mockGame.scheduledTime).getTime() - Date.now() < 2 * 60 * 60 * 1000; // 2 hours
+  const scheduledTime = (game as any)?.scheduledAt || (game as any)?.scheduledTime;
+  const isGameSoon =
+    scheduledTime &&
+    new Date(scheduledTime).getTime() - Date.now() < 2 * 60 * 60 * 1000; // 2 hours
+
+  const canShowPostGameActions =
+    isOrganizer &&
+    game &&
+    (game.status === 'scheduled' || game.status === 'in_progress') &&
+    scheduledTime &&
+    new Date(scheduledTime).getTime() <= Date.now();
+
+  const handleQuickComplete = (resolutionType: 'completed' | 'no_show_issues') => {
+    if (!game) return;
+    const confirmMessage =
+      resolutionType === 'no_show_issues'
+        ? 'Mark this game as completed with no-show issues?'
+        : 'Mark this game as completed?';
+
+    if (!window.confirm(confirmMessage)) return;
+
+    completeGameMutation.mutate({
+      gameId,
+      data: { resolutionType }
+    });
+  };
 
   const getStatusColor = (status: GameStatus) => {
     switch (status) {
@@ -293,7 +210,7 @@ export default function GameDetailPage() {
         <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
-            user={mockUser}
+            user={currentUser || fallbackUser}
             onMenuToggle={() => setMobileSidebarOpen(true)}
           />
 
@@ -331,7 +248,7 @@ export default function GameDetailPage() {
                       <span className="text-3xl">🏀</span>
                     </div>
                     {/* Urgency indicator */}
-                    {isGameSoon && mockGame.status === 'open' && (
+                    {isGameSoon && game?.status === 'scheduled' && (
                       <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
                         <AlertCircle className="w-4 h-4 text-white" />
                       </div>
@@ -340,20 +257,34 @@ export default function GameDetailPage() {
 
                   {/* Game Info */}
                   <div>
-                    <h1 className="text-3xl font-display font-bold text-white mb-2">{mockGame.gameType} Game</h1>
+                    <h1 className="text-3xl font-display font-bold text-white mb-2">
+                      {game?.gameType ?? 'pickup'} Game
+                    </h1>
                     <div className="flex items-center space-x-4 text-primary-300 mb-2">
-                      <span className="text-primary-200 font-medium capitalize">{mockGame.gameType.replace('_', ' ')}</span>
-                      <span>•</span>
-                      <span>Skill Level: {mockGame.minSkillLevel}-{mockGame.maxSkillLevel}</span>
+                      {game?.gameType && (
+                        <>
+                          <span className="text-primary-200 font-medium capitalize">
+                            {String(game.gameType).replace('_', ' ')}
+                          </span>
+                          <span>•</span>
+                        </>
+                      )}
+                      {game && (
+                        <span>
+                          Skill Level:{' '}
+                          {game.skillLevelMin ?? (game as any).minSkillLevel}-
+                          {game.skillLevelMax ?? (game as any).maxSkillLevel}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center space-x-4 text-sm text-primary-300">
                       <span className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {formatDate(mockGame.scheduledTime)}
+                        {scheduledTime && formatDate(scheduledTime)}
                       </span>
                       <span className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
-                        {formatTime(mockGame.scheduledTime)}
+                        {scheduledTime && formatTime(scheduledTime)}
                       </span>
                       <span className="flex items-center">
                         <Users className="w-4 h-4 mr-1" />
@@ -366,9 +297,14 @@ export default function GameDetailPage() {
                 {/* Status and Actions */}
                 <div className="flex flex-col items-end space-y-3">
                   {/* Status Badge */}
-                  <div className={cn('px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1', getStatusColor(mockGame.status))}>
-                    {getStatusIcon(mockGame.status)}
-                    <span>{mockGame.status.replace('_', ' ')}</span>
+                  <div
+                    className={cn(
+                      'px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1',
+                      game ? getStatusColor(game.status as GameStatus) : 'text-primary-400 bg-primary-500/20'
+                    )}
+                  >
+                    {game && getStatusIcon(game.status as GameStatus)}
+                    <span>{game ? String(game.status).replace('_', ' ') : 'loading'}</span>
                   </div>
 
                   {/* Action Buttons */}
@@ -389,7 +325,7 @@ export default function GameDetailPage() {
                         >
                           Edit
                         </GameButton>
-                        {mockGame.status === 'open' && (
+                        {game?.status === 'scheduled' && (
                           <GameButton
                             variant="ghost"
                             size="sm"
@@ -401,7 +337,7 @@ export default function GameDetailPage() {
                         )}
                       </>
                     )}
-                    {!isUserParticipant && !isGameFull && mockGame.status === 'open' && (
+                    {!isUserParticipant && !isGameFull && game?.status === 'scheduled' && (
                       <GameButton
                         variant="primary"
                         size="sm"
@@ -412,7 +348,7 @@ export default function GameDetailPage() {
                         Join Game
                       </GameButton>
                     )}
-                    {isUserParticipant && mockGame.status === 'open' && (
+                    {isUserParticipant && game?.status === 'scheduled' && (
                       <GameButton
                         variant="ghost"
                         size="sm"
@@ -459,7 +395,7 @@ export default function GameDetailPage() {
             </motion.div>
 
             {/* Warning for game starting soon */}
-            {isGameSoon && mockGame.status === 'open' && (
+            {isGameSoon && game?.status === 'scheduled' && (
               <motion.div
                 className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -474,6 +410,72 @@ export default function GameDetailPage() {
                   </div>
                 </div>
               </motion.div>
+            )}
+
+            {/* Host post-game quick actions */}
+            {canShowPostGameActions && (
+              <motion.div
+                className="mb-6 p-4 bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/30 rounded-lg flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0 lg:space-x-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="flex items-center space-x-3">
+                  <Trophy className="w-5 h-5 text-yellow-400" />
+                  <div>
+                    <p className="text-primary-100 font-medium">Wrap up this game</p>
+                    <p className="text-sm text-primary-300">
+                      Mark it as completed or note if there were no-show issues. You can add scores and stats after.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <GameButton
+                    variant="primary"
+                    size="sm"
+                    onClick={() => handleQuickComplete('completed')}
+                    loading={completeGameMutation.isPending}
+                    icon={<Check className="w-4 h-4" />}
+                  >
+                    Game Completed
+                  </GameButton>
+                  <GameButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleQuickComplete('no_show_issues')}
+                    loading={completeGameMutation.isPending}
+                    icon={<AlertCircle className="w-4 h-4" />}
+                  >
+                    No-Show Issues
+                  </GameButton>
+                  <GameButton
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowCompletionForm(true)}
+                  >
+                    Add score & stats
+                  </GameButton>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Optional detailed completion form */}
+            {showCompletionForm && game && (
+              <div className="mb-8">
+                <GameCompletionForm
+                  gameId={gameId}
+                  participants={participants}
+                  teams={{
+                    hostTeam: game.hostTeam
+                      ? { id: game.hostTeam.id, name: game.hostTeam.name }
+                      : undefined,
+                    opponentTeam: game.opponentTeam
+                      ? { id: game.opponentTeam.id, name: game.opponentTeam.name }
+                      : undefined
+                  }}
+                  onComplete={() => setShowCompletionForm(false)}
+                  onCancel={() => setShowCompletionForm(false)}
+                />
+              </div>
             )}
 
             {/* Tab Content */}
@@ -501,13 +503,25 @@ export default function GameDetailPage() {
                     />
                     <StatCard
                       title="Skill Range"
-                      value={`${mockGame.minSkillLevel}-${mockGame.maxSkillLevel}`}
+                      value={
+                        game
+                          ? `${game.skillLevelMin ?? (game as any).minSkillLevel}-${
+                              game.skillLevelMax ?? (game as any).maxSkillLevel
+                            }`
+                          : '—'
+                      }
                       icon={<Star className="w-6 h-6" />}
                       trend={{ direction: 'neutral', value: 0, label: 'balanced' }}
                     />
                     <StatCard
                       title="Duration"
-                      value={`${mockGame.durationMinutes / 60}h`}
+                      value={
+                        (game as any)?.duration
+                          ? `${(game as any).duration / 60}h`
+                          : (game as any)?.durationMinutes
+                          ? `${(game as any).durationMinutes / 60}h`
+                          : '—'
+                      }
                       icon={<Clock className="w-6 h-6" />}
                       trend={{ direction: 'neutral', value: 0, label: 'scheduled' }}
                     />
@@ -517,9 +531,17 @@ export default function GameDetailPage() {
                   <div className="bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20">
                     <h3 className="text-xl font-display font-bold text-white mb-4">About This Game</h3>
                     <p className="text-primary-200 leading-relaxed">
-                      Join us for an exciting {mockGame.gameType} basketball game at {mockGame.court.name}.
-                      This is a great opportunity to meet new players, improve your skills, and enjoy competitive basketball.
-                      All skill levels between {mockGame.minSkillLevel} and {mockGame.maxSkillLevel} are welcome!
+                      {game?.description
+                        ? game.description
+                        : `Join us for an exciting ${game?.gameType ?? 'pickup'} basketball game${
+                            game?.court?.name ? ` at ${game.court.name}` : ''
+                          }. This is a great opportunity to meet new players, improve your skills, and enjoy competitive basketball.${
+                            game
+                              ? ` All skill levels between ${
+                                  game.skillLevelMin ?? (game as any).minSkillLevel
+                                } and ${game.skillLevelMax ?? (game as any).maxSkillLevel} are welcome!`
+                              : ''
+                          }`}
                     </p>
                   </div>
 
@@ -532,20 +554,28 @@ export default function GameDetailPage() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
-                        <h4 className="font-medium text-primary-100 mb-2">{mockGame.court.name}</h4>
-                        <p className="text-sm text-primary-300 mb-4">{mockGame.court.address}</p>
+                        <h4 className="font-medium text-primary-100 mb-2">
+                          {game?.court?.name ?? 'Court'}
+                        </h4>
+                        <p className="text-sm text-primary-300 mb-4">
+                          {game?.court?.address ?? 'Address to be announced'}
+                        </p>
 
                         <div className="flex items-center space-x-4 text-sm text-primary-300">
-                          <span className="flex items-center">
-                            <span className="mr-1">{mockGame.court.courtType === 'indoor' ? '🏢' : '🌳'}</span>
-                            {mockGame.court.courtType === 'indoor' ? 'Indoor' : 'Outdoor'}
-                          </span>
+                          {game?.court && (
+                            <span className="flex items-center">
+                              <span className="mr-1">
+                                {game.court.courtType === 'indoor' ? '🏢' : '🌳'}
+                              </span>
+                              {game.court.courtType === 'indoor' ? 'Indoor' : 'Outdoor'}
+                            </span>
+                          )}
                           <span>•</span>
-                          <span>{mockGame.court.surfaceType}</span>
+                          <span>{game?.court?.surfaceType}</span>
                           <span>•</span>
                           <div className="flex items-center">
                             <Star className="w-3 h-3 text-yellow-400 mr-1" />
-                            {mockGame.court.rating} ({mockGame.court.reviewCount})
+                            {game?.court?.rating ?? 0} ({game?.court?.reviewCount ?? 0})
                           </div>
                         </div>
                       </div>
@@ -553,7 +583,9 @@ export default function GameDetailPage() {
                       <div className="grid grid-cols-2 gap-4">
                         <div className={cn(
                           'flex items-center space-x-2 p-3 rounded-lg',
-                          mockGame.court.hasLighting ? 'bg-court-500/20 text-court-400' : 'bg-dark-200/50 text-gray-400'
+                          game?.court?.hasLighting
+                            ? 'bg-court-500/20 text-court-400'
+                            : 'bg-dark-200/50 text-gray-400'
                         )}>
                           <span className="text-lg">💡</span>
                           <span className="text-sm font-medium">Lighting</span>
@@ -561,7 +593,9 @@ export default function GameDetailPage() {
 
                         <div className={cn(
                           'flex items-center space-x-2 p-3 rounded-lg',
-                          mockGame.court.hasParking ? 'bg-blue-500/20 text-blue-400' : 'bg-dark-200/50 text-gray-400'
+                          game?.court?.hasParking
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-dark-200/50 text-gray-400'
                         )}>
                           <span className="text-lg">🚗</span>
                           <span className="text-sm font-medium">Parking</span>
@@ -574,7 +608,10 @@ export default function GameDetailPage() {
                         variant="secondary"
                         size="sm"
                         onClick={() => {
-                          const url = `https://www.google.com/maps/dir//${mockGame.court.latitude},${mockGame.court.longitude}`;
+                          if (!game?.court) return;
+                          const url = `https://www.google.com/maps/dir//${
+                            game.court.latitude
+                          },${game.court.longitude}`;
                           window.open(url, '_blank');
                         }}
                         icon={<MapPin className="w-4 h-4" />}
@@ -589,12 +626,14 @@ export default function GameDetailPage() {
                     <h3 className="text-xl font-display font-bold text-white mb-4">Game Organizer</h3>
                     <div className="flex items-center space-x-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
-                        {mockOrganizer.username.charAt(0).toUpperCase()}
+                        {(organizer?.username || 'U').charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
-                          <h4 className="font-bold text-primary-100">{mockOrganizer.username}</h4>
-                          {mockOrganizer.isVerified && (
+                          <h4 className="font-bold text-primary-100">
+                            {organizer?.username ?? 'Organizer'}
+                          </h4>
+                          {organizer?.isVerified && (
                             <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                               <Check className="w-3 h-3 text-white" />
                             </div>
@@ -602,11 +641,11 @@ export default function GameDetailPage() {
                           <Crown className="w-4 h-4 text-yellow-400" />
                         </div>
                         <div className="flex items-center space-x-4 text-sm text-primary-300">
-                          <span>Rating: {mockOrganizer.rating}</span>
+                          <span>Rating: {organizer?.rating ?? '—'}</span>
                           <span>•</span>
-                          <span>Skill Level: {mockOrganizer.skillLevel}/10</span>
+                          <span>Skill Level: {organizer?.skillLevel ?? '—'}/10</span>
                           <span>•</span>
-                          <span>Position: {mockOrganizer.position}</span>
+                          <span>Position: {organizer?.position ?? '—'}</span>
                         </div>
                       </div>
                       <GameButton variant="secondary" size="sm">
@@ -624,7 +663,7 @@ export default function GameDetailPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-xl font-display font-bold text-white">
-                        Players ({mockParticipants.length}/{maxPlayers})
+                        Players ({participants.length}/{maxPlayers})
                       </h3>
                       <p className="text-primary-300">
                         {spotsRemaining > 0 ? `${spotsRemaining} spots remaining` : 'Game is full'}
@@ -643,19 +682,22 @@ export default function GameDetailPage() {
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-lg font-medium text-primary-200">Game Capacity</span>
                       <span className="text-sm text-primary-300">
-                        {mockParticipants.length} of {maxPlayers} players
+                        {participants.length} of {maxPlayers} players
                       </span>
                     </div>
                     <div className="w-full bg-dark-200 rounded-full h-4">
                       <motion.div
                         className={cn(
                           'h-4 rounded-full transition-all duration-500',
-                          isGameFull ? 'bg-court-500' :
-                          mockParticipants.length / maxPlayers > 0.8 ? 'bg-yellow-500' : 'bg-primary-500'
+                          isGameFull
+                            ? 'bg-court-500'
+                            : participants.length / maxPlayers > 0.8
+                            ? 'bg-yellow-500'
+                            : 'bg-primary-500'
                         )}
-                        style={{ width: `${(mockParticipants.length / maxPlayers) * 100}%` }}
+                        style={{ width: `${(participants.length / maxPlayers) * 100}%` }}
                         initial={{ width: 0 }}
-                        animate={{ width: `${(mockParticipants.length / maxPlayers) * 100}%` }}
+                        animate={{ width: `${(participants.length / maxPlayers) * 100}%` }}
                       />
                     </div>
                     <div className="flex justify-between text-xs text-primary-300 mt-2">
@@ -666,16 +708,16 @@ export default function GameDetailPage() {
 
                   {/* Participants List */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {mockParticipants.map((participant, index) => (
+                    {participants.map((participant, index) => (
                       <motion.div
-                        key={participant.id}
+                        key={participant.user.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 * index }}
                       >
                         <div className="bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-4 border border-primary-400/20 relative">
                           {/* Organizer Crown */}
-                          {participant.id === mockOrganizer.id && (
+                          {participant.userId === organizer?.id && (
                             <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
                               <Crown className="w-4 h-4 text-white" />
                             </div>
@@ -684,19 +726,21 @@ export default function GameDetailPage() {
                           <div className="flex items-center space-x-4">
                             {/* Player Avatar */}
                             <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold">
-                              {participant.username.charAt(0).toUpperCase()}
+                              {participant.user.username.charAt(0).toUpperCase()}
                             </div>
 
                             {/* Player Info */}
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center space-x-2 mb-1">
-                                <h4 className="font-bold text-primary-100 truncate">{participant.username}</h4>
-                                {participant.isVerified && (
+                                <h4 className="font-bold text-primary-100 truncate">
+                                  {participant.user.username}
+                                </h4>
+                                {participant.user.isVerified && (
                                   <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                     <Check className="w-2 h-2 text-white" />
                                   </div>
                                 )}
-                                {participant.id === mockOrganizer.id && (
+                                {participant.userId === organizer?.id && (
                                   <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
                                     Organizer
                                   </span>
@@ -704,17 +748,18 @@ export default function GameDetailPage() {
                               </div>
 
                               <div className="flex items-center space-x-3 text-sm text-primary-300">
-                                <span>Rating: {participant.rating}</span>
+                                <span>Rating: {participant.user.rating}</span>
                                 <span>•</span>
-                                <span>Skill: {participant.skillLevel}/10</span>
+                                <span>Skill: {participant.user.skillLevel}/10</span>
                                 <span>•</span>
-                                <span>{participant.position}</span>
+                                <span>{participant.user.position}</span>
                               </div>
 
-                              {participant.city && (
+                              {/* City is not included in participant payload; omit for now */}
+                              {false && participant.user.city && (
                                 <div className="flex items-center space-x-1 text-xs text-primary-400 mt-1">
                                   <MapPin className="w-3 h-3" />
-                                  <span>{participant.city}</span>
+                                  <span>{participant.user.city}</span>
                                 </div>
                               )}
                             </div>
@@ -725,7 +770,7 @@ export default function GameDetailPage() {
                                 <MessageCircle className="w-4 h-4" />
                               </GameButton>
 
-                              {userRole === 'organizer' && participant.id !== mockOrganizer.id && (
+                              {userRole === 'organizer' && participant.userId !== organizer?.id && (
                                 <GameButton variant="ghost" size="sm">
                                   <X className="w-4 h-4" />
                                 </GameButton>
@@ -751,7 +796,7 @@ export default function GameDetailPage() {
                             className="bg-gradient-to-br from-dark-300/40 to-dark-400/40 backdrop-blur-sm rounded-xl p-4 border-2 border-dashed border-primary-400/30"
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * (mockParticipants.length + index) }}
+                            transition={{ delay: 0.1 * (participants.length + index) }}
                           >
                             <div className="flex items-center justify-center h-20 text-primary-400">
                               <div className="text-center">
@@ -836,15 +881,15 @@ export default function GameDetailPage() {
                 <GameChat
                   gameId={gameId}
                   currentUser={{
-                    id: 'current-user',
-                    username: mockUser.username,
-                    avatar: mockUser.avatar
+                    id: currentUser?.id || 'current-user',
+                    username: currentUser?.username || fallbackUser.username,
+                    avatar: currentUser?.avatar || fallbackUser.avatar
                   }}
-                  participants={mockParticipants.map(p => ({
-                    id: p.id,
-                    username: p.username,
-                    avatar: p.avatar,
-                    isOrganizer: p.id === mockOrganizer.id
+                  participants={participants.map(p => ({
+                    id: p.user.id,
+                    username: p.user.username,
+                    avatar: p.user.avatar,
+                    isOrganizer: p.userId === organizer?.id
                   }))}
                 />
               )}

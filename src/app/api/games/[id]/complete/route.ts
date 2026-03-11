@@ -23,7 +23,8 @@ export async function POST(
       hostScore, 
       opponentScore, 
       winnerTeamId, 
-      playerStats = [] 
+      playerStats = [],
+      resolutionType = 'completed'
     } = body;
 
     // Get game details
@@ -69,6 +70,8 @@ export async function POST(
       );
     }
 
+    const hasNoShowIssues = resolutionType === 'no_show_issues';
+
     // Update game with results
     const updatedGame = await prisma.$transaction(async (tx) => {
       // Update game status and scores
@@ -80,7 +83,9 @@ export async function POST(
           hostScore: hostScore || null,
           opponentScore: opponentScore || null,
           winnerTeamId: winnerTeamId || null,
-          gameEndedAt: new Date()
+          gameEndedAt: new Date(),
+          completedById: payload.userId,
+          hasNoShowIssues
         }
       });
 
@@ -194,6 +199,38 @@ export async function POST(
           });
         }
       }
+
+      // Update reliability counters for participants (as players)
+      if (game.participants.length > 0) {
+        const uniqueParticipantIds = Array.from(new Set(game.participants.map((p) => p.userId)));
+
+        await Promise.all(
+          uniqueParticipantIds.map((userId) =>
+            tx.user.update({
+              where: { id: userId },
+              data: {
+                gamesPlayed: { increment: 1 },
+                gamesCompleted: { increment: 1 },
+                ...(hasNoShowIssues
+                  ? { gamesWithNoShowIssues: { increment: 1 } }
+                  : {})
+              }
+            })
+          )
+        );
+      }
+
+      // Update reliability counters for organizer (as host)
+      await tx.user.update({
+        where: { id: game.organizerId },
+        data: {
+          gamesHosted: { increment: 1 },
+          gamesHostedCompleted: { increment: 1 },
+          ...(hasNoShowIssues
+            ? { gamesHostedWithNoShowIssues: { increment: 1 } }
+            : {})
+        }
+      });
 
       return gameUpdate;
     });

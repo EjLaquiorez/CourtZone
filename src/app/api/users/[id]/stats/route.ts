@@ -1,12 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import {
+  computeAchievements,
+  getTopBadges,
+  type CompletedGameEntry,
+  type ParticipationHistory,
+  type UserReliabilityCounters,
+  type OnboardingContext
+} from '@/lib/achievements/engine';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const userId = params.id;
+    const { id: userId } = await params;
     const { searchParams } = new URL(request.url);
     const season = searchParams.get('season') || new Date().getFullYear().toString();
     const timeframe = searchParams.get('timeframe') || 'all'; // all, last30, last7
@@ -21,7 +29,15 @@ export async function GET(
         skillLevel: true,
         rating: true,
         position: true,
-        createdAt: true
+        createdAt: true,
+        city: true,
+        // Reliability counters
+        gamesPlayed: true,
+        gamesCompleted: true,
+        gamesWithNoShowIssues: true,
+        gamesHosted: true,
+        gamesHostedCompleted: true,
+        gamesHostedWithNoShowIssues: true
       }
     });
 
@@ -101,11 +117,102 @@ export async function GET(
             winnerTeamId: true,
             hostTeamId: true,
             opponentTeamId: true,
-            organizerId: true
+            organizerId: true,
+            courtId: true,
+            scheduledAt: true
           }
         }
       }
     });
+
+    // Load participation history for achievement engine (all-time)
+    const completedAsPlayerRows = await prisma.gameParticipant.findMany({
+      where: {
+        userId: userId,
+        status: 'JOINED',
+        game: { status: 'COMPLETED' }
+      },
+      select: {
+        gameId: true,
+        game: { select: { courtId: true, scheduledAt: true } }
+      }
+    });
+    const completedAsHostRows = await prisma.game.findMany({
+      where: {
+        organizerId: userId,
+        status: 'COMPLETED'
+      },
+      select: { id: true, courtId: true, scheduledAt: true }
+    });
+
+    const completedAsPlayer: CompletedGameEntry[] = completedAsPlayerRows.map(
+      (r) => ({
+        gameId: r.gameId,
+        courtId: r.game.courtId,
+        scheduledAt: r.game.scheduledAt
+      })
+    );
+    const completedAsHost: CompletedGameEntry[] = completedAsHostRows.map(
+      (r) => ({
+        gameId: r.id,
+        courtId: r.courtId,
+        scheduledAt: r.scheduledAt
+      })
+    );
+    const participationHistory: ParticipationHistory = {
+      completedAsPlayer,
+      completedAsHost
+    };
+
+    // Onboarding context: profile complete, courts created, referrals, co-players
+    const profileComplete = Boolean(
+      user.username &&
+      user.position != null &&
+      user.skillLevel != null &&
+      user.skillLevel > 0
+    );
+    const courtsCreatedCount = await prisma.court.count({
+      where: { createdById: userId }
+    });
+    const referredUsers = await prisma.user.findMany({
+      where: { referrerId: userId },
+      select: { id: true, gamesCompleted: true }
+    });
+    const referralCount = referredUsers.filter((u) => (u.gamesCompleted ?? 0) >= 1).length;
+    const completedGameIds = completedAsPlayer.map((e) => e.gameId);
+    let distinctCoPlayersCount = 0;
+    if (completedGameIds.length > 0) {
+      const coPlayerIds = await prisma.gameParticipant.findMany({
+        where: {
+          gameId: { in: completedGameIds },
+          status: 'JOINED',
+          userId: { not: userId }
+        },
+        select: { userId: true }
+      });
+      distinctCoPlayersCount = new Set(coPlayerIds.map((p) => p.userId)).size;
+    }
+    const onboarding: OnboardingContext = {
+      profileComplete,
+      courtsCreatedCount,
+      referralCount,
+      distinctCoPlayersCount
+    };
+
+    const counters: UserReliabilityCounters = {
+      gamesPlayed: user.gamesPlayed ?? 0,
+      gamesCompleted: user.gamesCompleted ?? 0,
+      gamesWithNoShowIssues: user.gamesWithNoShowIssues ?? 0,
+      gamesHosted: user.gamesHosted ?? 0,
+      gamesHostedCompleted: user.gamesHostedCompleted ?? 0,
+      gamesHostedWithNoShowIssues: user.gamesHostedWithNoShowIssues ?? 0
+    };
+    const achievementsFromEngine = computeAchievements(
+      counters,
+      participationHistory,
+      onboarding
+    );
+    const topBadges = getTopBadges(achievementsFromEngine, 3);
 
     // Calculate win/loss record
     const wins = gameParticipation.filter(p => {
@@ -187,15 +294,43 @@ export async function GET(
 
     const userRank = positionRankings.findIndex(p => p.id === userId) + 1;
 
-    // Calculate achievements (simplified)
-    const achievements = [];
-    if (seasonStats) {
-      if (seasonStats.avgPoints >= 20) achievements.push({ name: 'Scorer', description: '20+ PPG average' });
-      if (seasonStats.avgAssists >= 5) achievements.push({ name: 'Playmaker', description: '5+ APG average' });
-      if (seasonStats.avgRebounds >= 10) achievements.push({ name: 'Rebounder', description: '10+ RPG average' });
-      if (seasonStats.winPercentage >= 70) achievements.push({ name: 'Winner', description: '70%+ win rate' });
-      if (seasonStats.gamesPlayed >= 50) achievements.push({ name: 'Iron Man', description: '50+ games played' });
-    }
+    // Reliability metrics derived from counters
+    const playerGamesPlayed = user.gamesPlayed ?? 0;
+    const playerGamesCompleted = user.gamesCompleted ?? 0;
+    const playerGamesWithNoShowIssues = user.gamesWithNoShowIssues ?? 0;
+
+    const hostGames = user.gamesHosted ?? 0;
+    const hostGamesCompleted = user.gamesHostedCompleted ?? 0;
+    const hostGamesWithNoShowIssues = user.gamesHostedWithNoShowIssues ?? 0;
+
+    const showUpRate =
+      playerGamesCompleted > 0
+        ? 1 - playerGamesWithNoShowIssues / playerGamesCompleted
+        : null;
+
+    const completionRate =
+      playerGamesPlayed > 0
+        ? playerGamesCompleted / playerGamesPlayed
+        : null;
+
+    const hostCompletionRate =
+      hostGames > 0
+        ? hostGamesCompleted / hostGames
+        : null;
+
+    // Achievements from centralized engine (full metadata + progress)
+    const achievements = achievementsFromEngine.map((a) => ({
+      id: a.id,
+      name: a.name,
+      description: a.description,
+      tier: a.tier,
+      category: a.category,
+      icon: a.icon,
+      points: a.points,
+      perkSummary: a.perkSummary,
+      isUnlocked: a.isUnlocked,
+      ...(a.progress && { progress: a.progress })
+    }));
 
     return NextResponse.json({
       success: true,
@@ -251,6 +386,29 @@ export async function GET(
           totalPlayers: positionRankings.length
         },
         achievements,
+        topBadges: topBadges.map((a) => ({
+          id: a.id,
+          name: a.name,
+          description: a.description,
+          tier: a.tier,
+          category: a.category,
+          icon: a.icon,
+          points: a.points,
+          isUnlocked: a.isUnlocked
+        })),
+        reliability: {
+          gamesPlayed: playerGamesPlayed,
+          gamesCompleted: playerGamesCompleted,
+          gamesWithNoShowIssues: playerGamesWithNoShowIssues,
+          showUpRate,
+          completionRate,
+          hostGames,
+          hostGamesCompleted,
+          hostGamesWithNoShowIssues,
+          hostCompletionRate,
+          // Internal flag-style metric, not intended for direct public display
+          noShowCount: playerGamesWithNoShowIssues
+        },
         timeframe,
         season
       }

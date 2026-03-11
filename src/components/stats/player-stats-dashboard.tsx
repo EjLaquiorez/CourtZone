@@ -84,9 +84,38 @@ interface PlayerStats {
     totalPlayers: number;
   };
   achievements: Array<{
+    id: string;
     name: string;
     description: string;
+    tier?: string;
+    category?: string;
+    icon?: string;
+    points?: number;
+    isUnlocked?: boolean;
+    progress?: { current: number; target: number };
   }>;
+  topBadges?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    tier: string;
+    category: string;
+    icon: string;
+    points: number;
+    isUnlocked: boolean;
+  }>;
+  reliability?: {
+    gamesPlayed: number;
+    gamesCompleted: number;
+    gamesWithNoShowIssues: number;
+    showUpRate: number | null;
+    completionRate: number | null;
+    hostGames: number;
+    hostGamesCompleted: number;
+    hostGamesWithNoShowIssues: number;
+    hostCompletionRate: number | null;
+    noShowCount?: number;
+  };
 }
 
 // Mock data for demonstration
@@ -150,10 +179,11 @@ const mockStats: PlayerStats = {
     totalPlayers: 156
   },
   achievements: [
-    { name: 'Playmaker', description: '5+ APG average' },
-    { name: 'Winner', description: '70%+ win rate' },
-    { name: 'Iron Man', description: '50+ games played' }
-  ]
+    { id: 'playmaker', name: 'Playmaker', description: '5+ APG average', icon: '🏀', isUnlocked: true },
+    { id: 'winner', name: 'Winner', description: '70%+ win rate', icon: '🏆', isUnlocked: true },
+    { id: 'iron-man', name: 'Iron Man', description: '50+ games played', icon: '🔥', isUnlocked: true }
+  ],
+  topBadges: []
 };
 
 export function PlayerStatsDashboard({ userId, season = '2024', timeframe = 'all' }: PlayerStatsProps) {
@@ -249,31 +279,39 @@ export function PlayerStatsDashboard({ userId, season = '2024', timeframe = 'all
         </div>
       </div>
 
-      {/* Performance Overview */}
+      {/* Performance & reliability overview */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           title="Games Played"
-          value={stats.currentPeriodStats.gamesPlayed}
+          value={stats.reliability?.gamesPlayed ?? stats.currentPeriodStats.gamesPlayed}
           icon={<Calendar className="w-6 h-6" />}
-          trend={{ direction: 'up', value: 2, label: 'this week' }}
+          trend={{ direction: 'up', value: 2, label: 'lifetime' }}
         />
         <StatCard
           title="Win Rate"
-          value={`${stats.currentPeriodStats.winPercentage}%`}
+          value={`${Math.round(stats.currentPeriodStats.winPercentage * 100) / 100}%`}
           icon={<Trophy className="w-6 h-6" />}
           trend={{ direction: 'up', value: 5, label: 'vs last period' }}
         />
         <StatCard
-          title="Points/Game"
-          value={stats.currentPeriodStats.averages.points}
-          icon={<Target className="w-6 h-6" />}
-          trend={{ direction: 'up', value: 2.8, label: 'vs season avg' }}
+          title="Show-Up Rate"
+          value={
+            stats.reliability?.showUpRate != null
+              ? `${Math.round(stats.reliability.showUpRate * 100)}%`
+              : '—'
+          }
+          icon={<Activity className="w-6 h-6" />}
+          trend={{ direction: 'neutral', value: 0, label: 'reliability' }}
         />
         <StatCard
-          title="Assists/Game"
-          value={stats.currentPeriodStats.averages.assists}
-          icon={<Users className="w-6 h-6" />}
-          trend={{ direction: 'up', value: 0.9, label: 'vs season avg' }}
+          title="Completion Rate"
+          value={
+            stats.reliability?.completionRate != null
+              ? `${Math.round(stats.reliability.completionRate * 100)}%`
+              : '—'
+          }
+          icon={<Target className="w-6 h-6" />}
+          trend={{ direction: 'neutral', value: 0, label: 'as player' }}
         />
         <StatCard
           title="Performance"
@@ -341,23 +379,32 @@ export function PlayerStatsDashboard({ userId, season = '2024', timeframe = 'all
               </div>
             </div>
 
-            {/* Achievements */}
-            {stats.achievements.length > 0 && (
+            {/* Achievements / Top badges */}
+            {((stats.topBadges && stats.topBadges.length > 0) || stats.achievements.length > 0) && (
               <div className="bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20">
-                <h3 className="text-xl font-display font-bold text-white mb-4">Achievements</h3>
+                <h3 className="text-xl font-display font-bold text-white mb-4">Top badges</h3>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  {stats.achievements.map((achievement, index) => (
+                  {(stats.topBadges && stats.topBadges.length > 0
+                    ? stats.topBadges
+                    : stats.achievements.slice(0, 3).map((a) => ({
+                        id: a.id ?? a.name,
+                        name: a.name,
+                        description: a.description,
+                        icon: a.icon ?? '🏅',
+                        isUnlocked: a.isUnlocked ?? true
+                      }))
+                  ).map((badge) => (
                     <motion.div
-                      key={achievement.name}
+                      key={badge.id}
                       className="flex items-center space-x-3 p-4 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 rounded-lg border border-yellow-500/30"
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
+                      transition={{ delay: 0.1 }}
                     >
-                      <Award className="w-8 h-8 text-yellow-400" />
+                      <span className="text-2xl">{badge.icon}</span>
                       <div>
-                        <div className="font-bold text-yellow-400">{achievement.name}</div>
-                        <div className="text-sm text-yellow-300">{achievement.description}</div>
+                        <div className="font-bold text-yellow-400">{badge.name}</div>
+                        <div className="text-sm text-yellow-300">{badge.description}</div>
                       </div>
                     </motion.div>
                   ))}

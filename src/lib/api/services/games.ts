@@ -100,6 +100,7 @@ export const gamesService = {
     hostScore?: number;
     opponentScore?: number;
     winnerTeamId?: string;
+    resolutionType?: 'completed' | 'no_show_issues';
     playerStats?: Array<{
       userId: string;
       points?: number;

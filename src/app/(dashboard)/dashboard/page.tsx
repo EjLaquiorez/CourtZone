@@ -12,7 +12,7 @@ import { WinRateCard, GamesPlayedCard, RatingCard, StreakCard } from '@/componen
 import { DashboardSkeleton } from '@/components/ui/skeleton';
 import { PageErrorBoundary } from '@/components/error/error-boundary';
 import { cn } from '@/lib/utils';
-import { useCurrentUser, useGames } from '@/lib/hooks/use-api';
+import { useCurrentUser, useGames, useUserStats } from '@/lib/hooks/use-api';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { useSocket } from '@/lib/realtime/socket';
 import { MockLogin } from '@/components/auth/mock-login';
@@ -55,6 +55,13 @@ function DashboardPageContent() {
   // Get current user data
   const { data: currentUserResponse, isLoading: userLoading, error: userError } = useCurrentUser();
   const user = currentUserResponse?.data;
+
+  // User stats (for onboarding badge banner)
+  const { data: userStatsResponse } = useUserStats(user?.id ?? '', undefined, 'all');
+  const achievements = (userStatsResponse?.data?.achievements ?? []) as Array<{ id: string; isUnlocked: boolean }>;
+  const rookieCardUnlocked = achievements.some((a) => a.id === 'rookie-card' && a.isUnlocked);
+  // Only show banner when stats have loaded and profile is not complete (so it disappears once Rookie Card is unlocked)
+  const showRookieCardBanner = user && userStatsResponse !== undefined && !rookieCardUnlocked;
 
   // Get recent games (user's game history)
   const { data: recentGamesResponse, isLoading: gamesLoading, error: gamesError } = useGames(
@@ -196,6 +203,36 @@ function DashboardPageContent() {
               </p>
             </motion.div>
 
+            {/* New User Banner: Complete profile to earn Rookie Card */}
+            {showRookieCardBanner && (
+              <motion.div
+                className="mb-8"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <a
+                  href="/profile/setup"
+                  className="block rounded-xl border border-primary-400/40 bg-gradient-to-r from-primary-500/25 to-primary-600/15 p-4 sm:p-5 hover:border-primary-400/60 transition-colors"
+                >
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary-500/30 text-2xl">
+                      🆔
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display font-bold text-white">
+                        Complete your profile to earn <span className="text-primary-400">Rookie Card</span>!
+                      </p>
+                      <p className="mt-0.5 text-sm text-primary-200">
+                        Add username, position, and skill level to unlock your first badge and appear in player search.
+                      </p>
+                    </div>
+                    <span className="text-primary-400 text-sm font-medium shrink-0">Complete profile →</span>
+                  </div>
+                </a>
+              </motion.div>
+            )}
+
             {/* Quick Action Cards */}
             <motion.div
               className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
@@ -252,7 +289,7 @@ function DashboardPageContent() {
               </motion.div>
             </motion.div>
 
-            {/* Stats Overview */}
+            {/* Stats Overview (reliability-focused) */}
             <motion.div
               className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
               initial={{ opacity: 0, y: 30 }}
@@ -260,20 +297,20 @@ function DashboardPageContent() {
               transition={{ duration: 0.6, delay: 0.4 }}
             >
               <GamesPlayedCard
-                games={127}
-                trend={{ direction: 'up', value: 12, label: 'this month' }}
+                games={recentGames.length}
+                trend={{ direction: 'up', value: 0, label: 'recent' }}
               />
               <WinRateCard
-                winRate={74}
-                trend={{ direction: 'up', value: 5, label: 'this week' }}
+                winRate={0}
+                trend={{ direction: 'neutral', value: 0, label: 'load analytics for details' }}
               />
               <RatingCard
-                rating={1847}
-                trend={{ direction: 'up', value: 3, label: 'this week' }}
+                rating={user?.rating || 0}
+                trend={{ direction: 'neutral', value: 0, label: 'current rating' }}
               />
               <StreakCard
-                streak={5}
-                trend={{ direction: 'up', value: 25, label: 'best: 12' }}
+                streak={0}
+                trend={{ direction: 'neutral', value: 0, label: 'streak' }}
               />
             </motion.div>
 

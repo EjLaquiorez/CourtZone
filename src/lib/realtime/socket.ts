@@ -58,6 +58,15 @@ class SocketService {
         return;
       }
 
+      // In development, skip connecting unless WebSocket is explicitly enabled
+      const shouldConnect = process.env.NODE_ENV === 'production' ||
+                           process.env.NEXT_PUBLIC_ENABLE_WEBSOCKET === 'true';
+      if (!shouldConnect) {
+        this.isConnecting = false;
+        resolve();
+        return;
+      }
+
       if (this.isConnecting) {
         return;
       }
@@ -85,7 +94,12 @@ class SocketService {
       });
 
       this.socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
+        const msg = error?.message || 'WebSocket connection failed';
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('🏀 Court Zone: Real-time server not running (expected in dev). Set NEXT_PUBLIC_ENABLE_WEBSOCKET=true and run a socket server to enable.');
+        } else {
+          console.warn('🏀 Court Zone: Socket connection error:', msg);
+        }
         this.isConnecting = false;
         this.handleReconnect();
         reject(error);
@@ -180,12 +194,18 @@ class SocketService {
 
   // Set up event listeners for store updates
   private setupEventListeners(): void {
-    // Listen for auth changes
+    const shouldAutoConnect = process.env.NODE_ENV === 'production' ||
+                             process.env.NEXT_PUBLIC_ENABLE_WEBSOCKET === 'true';
+
+    // Listen for auth changes – only connect when WebSocket is enabled
     useAuthStore.subscribe(
       (state) => state.tokens,
       (tokens) => {
+        if (!shouldAutoConnect) return;
         if (tokens?.accessToken && !this.isConnected()) {
-          this.connect(tokens.accessToken).catch(console.error);
+          this.connect(tokens.accessToken).catch(() => {
+            // Logged in connect_error; avoid duplicate console.error
+          });
         } else if (!tokens && this.isConnected()) {
           this.disconnect();
         }
@@ -310,8 +330,12 @@ export const useSocket = () => {
       const handleConnectError = (error: any) => {
         setIsConnected(false);
         setIsConnecting(false);
-        setConnectionError(error.message || 'Connection failed');
-        console.error('🏀 Court Zone: Socket connection error:', error);
+        setConnectionError(error?.message || 'Connection failed');
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('🏀 Court Zone: Real-time server unavailable (expected in dev).');
+        } else {
+          console.warn('🏀 Court Zone: Socket connection error:', error?.message || error);
+        }
       };
 
       socket.on('connect', handleConnect);

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Trophy,
   Star,
@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Award,
   Search,
-  Filter,
   Share2,
   Lock,
   CheckCircle,
@@ -19,216 +18,35 @@ import {
   Zap,
   Crown,
   Medal,
-  Flame
+  Flame,
+  MapPin
 } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
 import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
 import { PageErrorBoundary } from '@/components/error/error-boundary';
-import { GameButton } from '@/components/ui/game-button';
 import { StatCard } from '@/components/ui/stat-card';
 import { cn } from '@/lib/utils';
 import type { User as UserType } from '@/types';
+import { useCurrentUser, useUserStats } from '@/lib/hooks/use-api';
+import { CATEGORY_LABELS, BADGE_DEFINITIONS, PHASE_1_BADGE_IDS, type BadgeCategory } from '@/config/achievements';
 
-// Mock user data
-const mockUser: UserType = {
-  id: 'user1',
-  username: 'ThunderCap',
-  email: 'thunder@example.com',
-  avatar: '',
-  position: 'PG',
-  skillLevel: 8,
-  rating: 1847,
-  city: 'Los Angeles',
-  maxDistance: 25,
-  isVerified: true,
-  createdAt: new Date('2023-06-15'),
-  updatedAt: new Date()
-};
-
-// Achievement types and categories
+// Achievement from API (full metadata + progress)
 type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum';
-type AchievementCategory = 'scoring' | 'teamwork' | 'participation' | 'skill' | 'special';
 
 interface Achievement {
   id: string;
   name: string;
   description: string;
-  category: AchievementCategory;
+  category: BadgeCategory;
   tier: AchievementTier;
   icon: string;
   points: number;
-  requirement: string;
-  progress?: {
-    current: number;
-    target: number;
-  };
+  perkSummary: string;
+  progress?: { current: number; target: number };
   isUnlocked: boolean;
-  unlockedAt?: Date;
-  rarity: number; // 1-100, lower is rarer
+  rarity: number;
 }
-
-// Mock achievements data
-const mockAchievements: Achievement[] = [
-  // Scoring Achievements
-  {
-    id: 'first-basket',
-    name: 'First Bucket',
-    description: 'Score your first basket in a game',
-    category: 'scoring',
-    tier: 'bronze',
-    icon: '🏀',
-    points: 10,
-    requirement: 'Score 1 basket',
-    isUnlocked: true,
-    unlockedAt: new Date('2023-06-20'),
-    rarity: 95
-  },
-  {
-    id: 'sharpshooter',
-    name: 'Sharpshooter',
-    description: 'Make 10 three-pointers in a single game',
-    category: 'scoring',
-    tier: 'gold',
-    icon: '🎯',
-    points: 100,
-    requirement: 'Make 10 three-pointers in one game',
-    progress: { current: 7, target: 10 },
-    isUnlocked: false,
-    rarity: 15
-  },
-  {
-    id: 'century-club',
-    name: 'Century Club',
-    description: 'Score 100 total points across all games',
-    category: 'scoring',
-    tier: 'silver',
-    icon: '💯',
-    points: 50,
-    requirement: 'Score 100 total points',
-    isUnlocked: true,
-    unlockedAt: new Date('2023-08-15'),
-    rarity: 60
-  },
-
-  // Teamwork Achievements
-  {
-    id: 'assist-master',
-    name: 'Assist Master',
-    description: 'Record 15 assists in a single game',
-    category: 'teamwork',
-    tier: 'gold',
-    icon: '🤝',
-    points: 100,
-    requirement: 'Get 15 assists in one game',
-    progress: { current: 12, target: 15 },
-    isUnlocked: false,
-    rarity: 20
-  },
-  {
-    id: 'team-player',
-    name: 'Team Player',
-    description: 'Play 50 games with different teammates',
-    category: 'teamwork',
-    tier: 'silver',
-    icon: '👥',
-    points: 75,
-    requirement: 'Play with 50 different teammates',
-    isUnlocked: true,
-    unlockedAt: new Date('2023-12-01'),
-    rarity: 40
-  },
-
-  // Participation Achievements
-  {
-    id: 'court-explorer',
-    name: 'Court Explorer',
-    description: 'Play at 10 different courts',
-    category: 'participation',
-    tier: 'bronze',
-    icon: '🗺️',
-    points: 25,
-    requirement: 'Play at 10 different courts',
-    isUnlocked: true,
-    unlockedAt: new Date('2023-11-10'),
-    rarity: 70
-  },
-  {
-    id: 'marathon-player',
-    name: 'Marathon Player',
-    description: 'Play for 100 total hours',
-    category: 'participation',
-    tier: 'platinum',
-    icon: '⏰',
-    points: 200,
-    requirement: 'Play for 100 hours total',
-    progress: { current: 87, target: 100 },
-    isUnlocked: false,
-    rarity: 5
-  },
-
-  // Skill Achievements
-  {
-    id: 'triple-double',
-    name: 'Triple Double',
-    description: 'Achieve a triple-double in any game',
-    category: 'skill',
-    tier: 'gold',
-    icon: '⭐',
-    points: 150,
-    requirement: 'Get double digits in 3 stat categories',
-    isUnlocked: true,
-    unlockedAt: new Date('2024-01-15'),
-    rarity: 25
-  },
-  {
-    id: 'defensive-wall',
-    name: 'Defensive Wall',
-    description: 'Record 10 blocks in a single game',
-    category: 'skill',
-    tier: 'silver',
-    icon: '🛡️',
-    points: 75,
-    requirement: 'Get 10 blocks in one game',
-    progress: { current: 6, target: 10 },
-    isUnlocked: false,
-    rarity: 30
-  },
-
-  // Special Achievements
-  {
-    id: 'buzzer-beater',
-    name: 'Buzzer Beater',
-    description: 'Win a game with a shot in the final 3 seconds',
-    category: 'special',
-    tier: 'platinum',
-    icon: '🚨',
-    points: 250,
-    requirement: 'Win with a buzzer beater shot',
-    isUnlocked: false,
-    rarity: 3
-  },
-  {
-    id: 'perfect-game',
-    name: 'Perfect Game',
-    description: 'Shoot 100% from the field (min. 10 attempts)',
-    category: 'special',
-    tier: 'platinum',
-    icon: '💎',
-    points: 300,
-    requirement: 'Perfect shooting game (10+ attempts)',
-    isUnlocked: false,
-    rarity: 1
-  }
-];
-
-const categoryInfo = {
-  scoring: { name: 'Scoring', icon: Target, color: 'from-orange-400 to-orange-600', emoji: '🎯' },
-  teamwork: { name: 'Teamwork', icon: Users, color: 'from-blue-400 to-blue-600', emoji: '🤝' },
-  participation: { name: 'Participation', icon: Calendar, color: 'from-green-400 to-green-600', emoji: '📅' },
-  skill: { name: 'Skill', icon: Star, color: 'from-purple-400 to-purple-600', emoji: '⭐' },
-  special: { name: 'Special', icon: Crown, color: 'from-yellow-400 to-yellow-600', emoji: '👑' }
-};
 
 const tierInfo = {
   bronze: { name: 'Bronze', color: 'from-orange-600 to-orange-800', textColor: 'text-orange-400' },
@@ -237,16 +55,126 @@ const tierInfo = {
   platinum: { name: 'Platinum', color: 'from-cyan-400 to-cyan-600', textColor: 'text-cyan-400' }
 };
 
+const categoryInfo: Record<BadgeCategory, { name: string; icon: typeof Calendar; color: string; emoji: string }> = {
+  onboarding: { name: CATEGORY_LABELS.onboarding, icon: Target, color: 'from-emerald-400 to-emerald-600', emoji: '🆔' },
+  reliability_foundation: { name: CATEGORY_LABELS.reliability_foundation, icon: CheckCircle, color: 'from-blue-400 to-blue-600', emoji: '✅' },
+  punctuality: { name: CATEGORY_LABELS.punctuality, icon: Zap, color: 'from-amber-400 to-amber-600', emoji: '⏰' },
+  community_builder: { name: CATEGORY_LABELS.community_builder, icon: Users, color: 'from-purple-400 to-purple-600', emoji: '🏠' },
+  consistency_loyalty: { name: CATEGORY_LABELS.consistency_loyalty, icon: Calendar, color: 'from-green-400 to-green-600', emoji: '📅' },
+  social_culture: { name: CATEGORY_LABELS.social_culture, icon: Award, color: 'from-pink-400 to-pink-600', emoji: '🤝' },
+  rare_legendary: { name: CATEGORY_LABELS.rare_legendary, icon: Crown, color: 'from-cyan-400 to-cyan-600', emoji: '👑' }
+};
+
 function AchievementsPageContent() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<BadgeCategory | 'all'>('all');
   const [selectedTier, setSelectedTier] = useState<AchievementTier | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showUnlockedOnly, setShowUnlockedOnly] = useState(false);
 
+  const { data: currentUserResponse } = useCurrentUser();
+  const user = currentUserResponse?.data as UserType | undefined;
+
+  const { data: statsResponse } = useUserStats(
+    user?.id || '',
+    undefined,
+    'all'
+  );
+
+  const apiAchievements = (statsResponse?.data?.achievements || []) as Array<{
+    id: string;
+    name: string;
+    description: string;
+    tier: AchievementTier;
+    category: BadgeCategory;
+    icon: string;
+    points: number;
+    perkSummary: string;
+    isUnlocked: boolean;
+    progress?: { current: number; target: number };
+  }>;
+
+  const topBadges = (statsResponse?.data?.topBadges || []) as Array<{
+    id: string;
+    name: string;
+    description: string;
+    tier: AchievementTier;
+    category: BadgeCategory;
+    icon: string;
+    points: number;
+    isUnlocked: boolean;
+  }>;
+
+  // When API hasn't returned top badges, show first 3 Phase 1 badges as placeholders so players see what's there
+  const displayTopBadges = useMemo(() => {
+    if (topBadges.length > 0) return topBadges;
+    return BADGE_DEFINITIONS.filter((b) => PHASE_1_BADGE_IDS.has(b.id))
+      .slice(0, 3)
+      .map((b) => ({
+        id: b.id,
+        name: b.name,
+        description: b.description,
+        tier: b.tier as AchievementTier,
+        category: b.category,
+        icon: b.icon,
+        points: b.points,
+        isUnlocked: false
+      }));
+  }, [topBadges]);
+
+  const tierRarity: Record<AchievementTier, number> = {
+    platinum: 10,
+    gold: 25,
+    silver: 50,
+    bronze: 80
+  };
+
+  // Build full badge list: always show all Phase 1 badges (from config), merge API progress when available
+  const apiById = useMemo(() => {
+    const map = new Map<string, (typeof apiAchievements)[number]>();
+    apiAchievements.forEach((a) => map.set(a.id, a));
+    return map;
+  }, [apiAchievements]);
+
+  const mappedAchievements: Achievement[] = useMemo(() => {
+    const phase1Defs = BADGE_DEFINITIONS.filter((b) => PHASE_1_BADGE_IDS.has(b.id));
+    return phase1Defs.map((def) => {
+      const fromApi = apiById.get(def.id);
+      if (fromApi) {
+        return {
+          id: fromApi.id,
+          name: fromApi.name,
+          description: fromApi.description,
+          category: fromApi.category,
+          tier: fromApi.tier as AchievementTier,
+          icon: fromApi.icon,
+          points: fromApi.points,
+          perkSummary: fromApi.perkSummary,
+          progress: fromApi.progress,
+          isUnlocked: fromApi.isUnlocked,
+          rarity: tierRarity[fromApi.tier] ?? 50
+        };
+      }
+      // No API data: show badge as locked so player sees what's there
+      return {
+        id: def.id,
+        name: def.name,
+        description: def.description,
+        category: def.category,
+        tier: def.tier as AchievementTier,
+        icon: def.icon,
+        points: def.points,
+        perkSummary: def.perkSummary,
+        progress: undefined,
+        isUnlocked: false,
+        rarity: tierRarity[def.tier] ?? 50
+      };
+    });
+  }, [apiById, tierRarity]);
+
   // Filter achievements
-  const filteredAchievements = mockAchievements.filter(achievement => {
+  const filteredAchievements = mappedAchievements.filter(achievement => {
     const matchesCategory = selectedCategory === 'all' || achievement.category === selectedCategory;
     const matchesTier = selectedTier === 'all' || achievement.tier === selectedTier;
     const matchesSearch = achievement.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -256,15 +184,44 @@ function AchievementsPageContent() {
     return matchesCategory && matchesTier && matchesSearch && matchesUnlocked;
   });
 
-  // Calculate stats
-  const totalAchievements = mockAchievements.length;
-  const unlockedAchievements = mockAchievements.filter(a => a.isUnlocked).length;
-  const totalPoints = mockAchievements.filter(a => a.isUnlocked).reduce((sum, a) => sum + a.points, 0);
-  const completionPercentage = Math.round((unlockedAchievements / totalAchievements) * 100);
+  // Group by category for display (spec order)
+  const categoryOrder: BadgeCategory[] = [
+    'onboarding',
+    'reliability_foundation',
+    'punctuality',
+    'community_builder',
+    'consistency_loyalty',
+    'social_culture',
+    'rare_legendary'
+  ];
+  const byCategory = useMemo(() => {
+    const map = new Map<BadgeCategory, Achievement[]>();
+    categoryOrder.forEach((cat) => map.set(cat, []));
+    filteredAchievements.forEach((a) => {
+      const list = map.get(a.category);
+      if (list) list.push(a);
+    });
+    return map;
+  }, [filteredAchievements]);
+
+  // Calculate stats (unlocked achievements coming from API)
+  const totalAchievements = mappedAchievements.length;
+  const unlockedAchievements = mappedAchievements.filter(a => a.isUnlocked).length;
+  const totalPoints = mappedAchievements.filter(a => a.isUnlocked).reduce((sum, a) => sum + a.points, 0);
+  const completionPercentage = totalAchievements > 0
+    ? Math.round((unlockedAchievements / totalAchievements) * 100)
+    : 0;
+  const rarestUnlocked = mappedAchievements
+    .filter(a => a.isUnlocked)
+    .sort((a, b) => a.rarity - b.rarity)[0];
 
   const handleShare = (achievement: Achievement) => {
-    // In real app, this would share to social media or copy link
-    console.log('Sharing achievement:', achievement.name);
+    const text = `I just earned ${achievement.name} on CourtZone`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      navigator.share({ title: 'CourtZone Achievement', text }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(text);
+    }
   };
 
   return (
@@ -288,7 +245,7 @@ function AchievementsPageContent() {
         <div className="flex-1 min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
           {/* Header */}
           <AuthenticatedHeader
-            user={mockUser}
+            user={user || { username: 'Player', avatar: '', rating: 0 } as UserType}
             onMenuToggle={() => setMobileSidebarOpen(true)}
           />
 
@@ -306,11 +263,44 @@ function AchievementsPageContent() {
                   <Trophy className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-display font-bold text-white">Achievements</h1>
-                  <p className="text-primary-300">Track your basketball journey and unlock rewards</p>
+                  <h1 className="text-3xl font-display font-bold text-white">Trophy Room</h1>
+                  <p className="text-primary-300">
+                    Reliability and participation achievements. Show up, host, and build the scene.
+                  </p>
                 </div>
               </div>
             </motion.div>
+
+            {/* Top 3 profile badges */}
+            {displayTopBadges.length > 0 && (
+              <motion.div
+                className="mb-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <h2 className="text-lg font-display font-semibold text-white mb-3">Your top badges</h2>
+                <div className="flex flex-wrap gap-3">
+                  {displayTopBadges.map((badge, i) => (
+                    <div
+                      key={badge.id}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2 rounded-xl border',
+                        badge.isUnlocked
+                          ? 'bg-primary-500/20 border-primary-400/40'
+                          : 'bg-dark-300/50 border-dark-500'
+                      )}
+                    >
+                      <span className="text-xl">{badge.icon}</span>
+                      <span className={badge.isUnlocked ? 'text-white font-medium' : 'text-primary-400'}>
+                        {badge.name}
+                      </span>
+                      {!badge.isUnlocked && <Lock className="w-4 h-4 text-primary-500" />}
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* Stats Overview */}
             <motion.div
@@ -339,7 +329,7 @@ function AchievementsPageContent() {
               />
               <StatCard
                 title="Rarest Badge"
-                value="Perfect Game"
+                value={rarestUnlocked?.name ?? '—'}
                 icon={<Medal className="w-6 h-6" />}
                 glowColor="primary"
               />
@@ -370,7 +360,7 @@ function AchievementsPageContent() {
                   {/* Category Filter */}
                   <select
                     value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value as AchievementCategory | 'all')}
+                    onChange={(e) => setSelectedCategory(e.target.value as BadgeCategory | 'all')}
                     className="px-4 py-2 bg-dark-200/50 border border-primary-400/30 rounded-lg text-white focus:outline-none focus:border-primary-400"
                   >
                     <option value="all">All Categories</option>
@@ -405,23 +395,38 @@ function AchievementsPageContent() {
               </div>
             </motion.div>
 
-            {/* Achievements Grid */}
+            {/* Achievements Grid by Category */}
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="space-y-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <AnimatePresence>
-                {filteredAchievements.map((achievement, index) => (
-                  <AchievementCard
-                    key={achievement.id}
-                    achievement={achievement}
-                    index={index}
-                    onShare={handleShare}
-                  />
-                ))}
-              </AnimatePresence>
+              {categoryOrder.map((cat) => {
+                const list = byCategory.get(cat) || [];
+                if (list.length === 0) return null;
+                const info = categoryInfo[cat];
+                return (
+                  <div key={cat}>
+                    <h3 className="text-lg font-display font-semibold text-white mb-4 flex items-center gap-2">
+                      <span>{info.emoji}</span>
+                      {info.name}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      <AnimatePresence>
+                        {list.map((achievement, index) => (
+                          <AchievementCard
+                            key={achievement.id}
+                            achievement={achievement}
+                            index={index}
+                            onShare={handleShare}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                );
+              })}
             </motion.div>
 
             {/* No Results */}
@@ -508,8 +513,12 @@ function AchievementCard({ achievement, index, onShare }: AchievementCardProps) 
               ? `bg-gradient-to-br ${tier.color}`
               : 'bg-gray-600/50'
           )}>
-            {achievement.isUnlocked ? achievement.icon : <Lock className="w-6 h-6 text-gray-400" />}
-
+            <span className={achievement.isUnlocked ? '' : 'opacity-70'}>
+              {achievement.icon}
+            </span>
+            {!achievement.isUnlocked && (
+              <Lock className="absolute -bottom-0.5 -right-0.5 w-4 h-4 text-gray-500 bg-dark-400 rounded-full p-0.5" />
+            )}
             {/* Tier Badge */}
             <div className={cn(
               'absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-dark-400',
@@ -561,7 +570,7 @@ function AchievementCard({ achievement, index, onShare }: AchievementCardProps) 
         {achievement.description}
       </p>
 
-      {/* Progress Bar (for incomplete achievements) */}
+      {/* Progress Bar (for incomplete achievements with progress) */}
       {!achievement.isUnlocked && achievement.progress && (
         <div className="mb-4">
           <div className="flex items-center justify-between text-sm mb-2">
@@ -608,18 +617,16 @@ function AchievementCard({ achievement, index, onShare }: AchievementCardProps) 
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-primary-400">Requirement</span>
+                <span className="text-sm text-primary-400">Perk</span>
                 <span className="text-sm text-primary-300 text-right max-w-48">
-                  {achievement.requirement}
+                  {achievement.perkSummary}
                 </span>
               </div>
 
-              {achievement.isUnlocked && achievement.unlockedAt && (
+              {achievement.isUnlocked && (
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-primary-400">Unlocked</span>
-                  <span className="text-sm text-primary-300">
-                    {achievement.unlockedAt.toLocaleDateString()}
-                  </span>
+                  <span className="text-sm text-primary-400">Status</span>
+                  <span className="text-sm text-primary-300">Unlocked</span>
                 </div>
               )}
 
