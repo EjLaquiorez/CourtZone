@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Plus, MapPin, Calendar } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
-import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
+import { MobileBottomNav } from '@/components/layout/mobile-nav';
 import { GameButton, QuickMatchButton, FindCourtsButton, CreateTeamButton, JoinGameButton } from '@/components/ui/game-button';
 import { WinRateCard, GamesPlayedCard, RatingCard, StreakCard } from '@/components/ui/stat-card';
 import { DashboardSkeleton } from '@/components/ui/skeleton';
@@ -232,62 +232,6 @@ function DashboardPageContent() {
                 </a>
               </motion.div>
             )}
-
-            {/* Quick Action Cards */}
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              {/* Quick Match Card */}
-              <motion.div
-                className="bg-gradient-to-br from-primary-500/20 to-primary-600/20 rounded-xl p-6 border border-primary-400/30 relative overflow-hidden"
-                whileHover={{ y: -5, scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="absolute top-0 right-0 text-6xl opacity-10">⚡</div>
-                <div className="relative z-10">
-                  <h3 className="text-xl font-display font-bold text-white mb-2">Quick Match</h3>
-                  <p className="text-primary-200 mb-4 text-sm">
-                    Find a game near you in seconds
-                  </p>
-                  <QuickMatchButton size="md" className="w-full">Quick Match</QuickMatchButton>
-                </div>
-              </motion.div>
-
-              {/* Find Courts Card */}
-              <motion.div
-                className="bg-gradient-to-br from-court-500/20 to-court-600/20 rounded-xl p-6 border border-court-400/30 relative overflow-hidden"
-                whileHover={{ y: -5, scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="absolute top-0 right-0 text-6xl opacity-10">🗺️</div>
-                <div className="relative z-10">
-                  <h3 className="text-xl font-display font-bold text-white mb-2">Find Courts</h3>
-                  <p className="text-primary-200 mb-4 text-sm">
-                    Discover courts with real-time availability
-                  </p>
-                  <FindCourtsButton size="md" className="w-full">Find Courts</FindCourtsButton>
-                </div>
-              </motion.div>
-
-              {/* Create Team Card */}
-              <motion.div
-                className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 rounded-xl p-6 border border-blue-400/30 relative overflow-hidden"
-                whileHover={{ y: -5, scale: 1.02 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="absolute top-0 right-0 text-6xl opacity-10">👥</div>
-                <div className="relative z-10">
-                  <h3 className="text-xl font-display font-bold text-white mb-2">Create Team</h3>
-                  <p className="text-primary-200 mb-4 text-sm">
-                    Build your championship squad
-                  </p>
-                  <CreateTeamButton size="md" className="w-full">Create Team</CreateTeamButton>
-                </div>
-              </motion.div>
-            </motion.div>
 
             {/* Stats Overview (reliability-focused) */}
             <motion.div
@@ -535,9 +479,6 @@ function DashboardPageContent() {
           profile: { count: 1, type: 'urgent', label: 'Profile verification required' }
         }}
       />
-
-      {/* Mobile Quick Action Button */}
-      <MobileQuickAction />
     </div>
   );
 }

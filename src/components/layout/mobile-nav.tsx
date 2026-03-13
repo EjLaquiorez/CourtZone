@@ -209,39 +209,3 @@ export function MobileBottomNav({ notifications, className }: MobileBottomNavPro
     </motion.nav>
   );
 }
-
-// Quick action floating button for mobile
-export function MobileQuickAction() {
-  return (
-    <motion.div
-      className="fixed bottom-20 right-4 z-40 lg:hidden"
-      initial={{ scale: 0, rotate: -180 }}
-      animate={{ scale: 1, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.5 }}
-    >
-      <motion.button
-        className="w-14 h-14 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white shadow-lg basketball-glow focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-dark-900"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        animate={{
-          boxShadow: [
-            '0 0 20px rgba(255, 107, 53, 0.5)',
-            '0 0 40px rgba(255, 107, 53, 0.8)',
-            '0 0 20px rgba(255, 107, 53, 0.5)'
-          ]
-        }}
-        transition={{
-          boxShadow: {
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }
-        }}
-        aria-label="Quick action - Create new game"
-        title="Create new game"
-      >
-        <span className="text-xl">⚡</span>
-      </motion.button>
-    </motion.div>
-  );
-}

@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
-import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
+import { MobileBottomNav } from '@/components/layout/mobile-nav';
 import { PageErrorBoundary } from '@/components/error/error-boundary';
 import { GameButton } from '@/components/ui/game-button';
 import { StatCard } from '@/components/ui/stat-card';
@@ -541,9 +541,6 @@ function ProfilePageContent() {
           profile: 0
         }}
       />
-
-      {/* Mobile Quick Action Button */}
-      <MobileQuickAction />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
-import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
+import { MobileBottomNav } from '@/components/layout/mobile-nav';
 import { GameButton } from '@/components/ui/game-button';
 import { GameCreationForm } from '@/components/forms/game-form';
 import { GameForm, Court } from '@/types';
@@ -271,9 +271,6 @@ export default function CreateGamePage() {
           games: 3
         }}
       />
-
-      {/* Mobile Quick Action Button */}
-      <MobileQuickAction />
     </div>
   );
 }

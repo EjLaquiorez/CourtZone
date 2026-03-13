@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
-import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
+import { MobileBottomNav } from '@/components/layout/mobile-nav';
 import { GameButton } from '@/components/ui/game-button';
 import { CourtCard } from '@/components/game/court-card';
 import { cn } from '@/lib/utils';
@@ -459,9 +459,6 @@ export default function CourtsPage() {
           courts: 2
         }}
       />
-
-      {/* Mobile Quick Action Button */}
-      <MobileQuickAction />
     </div>
   );
 }

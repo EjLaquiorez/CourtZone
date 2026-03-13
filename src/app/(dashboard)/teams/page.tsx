@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Plus, Search, Filter, Users, Trophy, Star, MapPin } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
-import { MobileBottomNav, MobileQuickAction } from '@/components/layout/mobile-nav';
+import { MobileBottomNav } from '@/components/layout/mobile-nav';
 import { GameButton, CreateTeamButton } from '@/components/ui/game-button';
 import { TeamCard } from '@/components/game/team-card';
 import { cn } from '@/lib/utils';
@@ -502,9 +502,6 @@ export default function TeamsPage() {
           teams: 1
         }}
       />
-
-      {/* Mobile Quick Action Button */}
-      <MobileQuickAction />
     </div>
   );
 }
