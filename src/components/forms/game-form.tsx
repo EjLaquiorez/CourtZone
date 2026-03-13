@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GameButton } from '@/components/ui/game-button';
-import { InteractiveSkillSelector } from '@/components/ui/skill-rating';
+import { SkillRating } from '@/components/ui/skill-rating';
 import { LoadingOverlay } from '@/components/ui/loading';
 import { useToastHelpers } from '@/components/ui/toast';
 import { schemas, validateForm } from '@/lib/validation';
@@ -204,19 +204,16 @@ export function GameCreationForm({
       >
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           {/* Header */}
-          <div className="flex flex-col gap-1 px-4 pt-4 sm:px-6 sm:pt-5">
+          <div className="px-4 pt-4 sm:px-6 sm:pt-5">
             <h2 className="text-[20px] font-display font-semibold text-white">
               Create a game
             </h2>
-            <p className="text-xs text-primary-300">
-              Fast setup. Minimal scrolling on desktop.
-            </p>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-4 sm:px-6 sm:pb-4">
             <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
               {/* LEFT: Primary form */}
-              <section className="space-y-4 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
+              <section className="space-y-3 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
                 {/* Game title */}
                 <div>
                   <label htmlFor="title" className="mb-1 block text-xs font-medium text-primary-200">
@@ -398,7 +395,7 @@ export function GameCreationForm({
               </section>
 
               {/* RIGHT: Game configuration */}
-              <section className="space-y-4 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
+              <section className="space-y-3 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                   <div>
                     <label htmlFor="scheduledAt" className="mb-1 block text-xs font-medium text-primary-200">
@@ -497,22 +494,41 @@ export function GameCreationForm({
                   </div>
 
                   <div>
-                    <label className="mb-1 block text-xs font-medium text-primary-200">
-                      Skill level (1–10)
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <InteractiveSkillSelector
-                        level={formData.skillLevel.min}
-                        onChange={(level) => handleSkillLevelChange('min', level)}
-                        label="Min"
-                        size="sm"
-                      />
-                      <InteractiveSkillSelector
-                        level={formData.skillLevel.max}
-                        onChange={(level) => handleSkillLevelChange('max', level)}
-                        label="Max"
-                        size="sm"
-                      />
+                    <div className="mb-1 flex items-center justify-between">
+                      <label className="block text-xs font-medium text-primary-200">
+                        Skill level
+                      </label>
+                      <span className="text-[11px] text-primary-300">
+                        Min {formData.skillLevel.min}/10 — Max {formData.skillLevel.max}/10
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg border border-primary-400/20 bg-dark-200/30 px-3 py-2">
+                        <div className="mb-1 flex items-center justify-between">
+                          <span className="text-[11px] font-medium text-primary-200">Min</span>
+                          <span className="text-[11px] text-primary-300">{formData.skillLevel.min}/10</span>
+                        </div>
+                        <SkillRating
+                          level={formData.skillLevel.min}
+                          interactive
+                          onChange={(level) => handleSkillLevelChange('min', level)}
+                          size="sm"
+                          variant="stars"
+                        />
+                      </div>
+                      <div className="rounded-lg border border-primary-400/20 bg-dark-200/30 px-3 py-2">
+                        <div className="mb-1 flex items-center justify-between">
+                          <span className="text-[11px] font-medium text-primary-200">Max</span>
+                          <span className="text-[11px] text-primary-300">{formData.skillLevel.max}/10</span>
+                        </div>
+                        <SkillRating
+                          level={formData.skillLevel.max}
+                          interactive
+                          onChange={(level) => handleSkillLevelChange('max', level)}
+                          size="sm"
+                          variant="stars"
+                        />
+                      </div>
                     </div>
                     {errors.skillLevel && (
                       <motion.p
