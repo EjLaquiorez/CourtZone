@@ -34,6 +34,7 @@
     "@types/mapbox-gl": "^3.4.1",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
+    "critters": "^0.0.23",
     "dotenv": "^16.5.0",
     "framer-motion": "^12.12.2",
     "jsonwebtoken": "^9.0.2",

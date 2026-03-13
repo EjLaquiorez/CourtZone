@@ -52,10 +52,24 @@ export default {
         },
 
         // Status Colors
-        success: '#32CD32',  // Court green success
-        warning: '#FFA500',  // Orange warning
-        danger: '#DC2626',   // Red danger
-        info: '#3B82F6',     // Blue info
+        // Dashboard semantic status colors (WCAG-friendly)
+        success: '#22C55E',  // Open / success
+        warning: '#EAB308',  // Filling fast / warning
+        danger: '#EF4444',   // Full / error
+        info: '#2563EB',     // Your active game / info
+
+        status: {
+          open: '#22C55E',
+          filling: '#EAB308',
+          full: '#EF4444',
+          yours: '#2563EB',
+        },
+
+        // Layout backgrounds
+        surface: {
+          light: '#F3F4F6',
+          dark: '#0F172A',
+        },
 
         // Legacy support
         background: "var(--background)",
@@ -68,6 +82,15 @@ export default {
         'primary': ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
         'display': ['Orbitron', 'monospace'],
         'accent': ['Rajdhani', 'sans-serif']
+      },
+
+      // Typography scale inspired by golden ratio for dashboard headings
+      fontSize: {
+        'display-1': ['2.75rem', { lineHeight: '1.1', letterSpacing: '-0.04em' }],
+        'display-2': ['2.125rem', { lineHeight: '1.15', letterSpacing: '-0.03em' }],
+        'heading-1': ['1.75rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'heading-2': ['1.375rem', { lineHeight: '1.25', letterSpacing: '-0.01em' }],
+        'heading-3': ['1.125rem', { lineHeight: '1.35' }],
       },
 
       animation: {

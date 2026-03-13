@@ -202,7 +202,7 @@ export default function CreateGamePage() {
 
               {/* Game Creation Form */}
               <motion.div
-                className="max-w-4xl mx-auto relative z-10"
+                className="relative z-10 mx-auto w-full max-w-[1100px]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -216,51 +216,6 @@ export default function CreateGamePage() {
               </motion.div>
             </div>
 
-            {/* Tips Section */}
-            <motion.div
-              className="max-w-4xl mx-auto mt-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              <div className="bg-gradient-to-r from-primary-500/10 to-court-500/10 rounded-xl p-6 border border-primary-400/20">
-                <h3 className="text-lg font-display font-bold text-white mb-4 text-center">
-                  💡 Tips for Organizing Great Games
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">⏰</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Perfect Timing</h4>
-                    <p className="text-sm text-primary-300">
-                      Schedule games during peak hours (evenings and weekends) for maximum participation.
-                    </p>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-court-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">🎯</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Skill Balance</h4>
-                    <p className="text-sm text-primary-300">
-                      Set appropriate skill level ranges to ensure competitive and fun games for everyone.
-                    </p>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">📍</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Great Locations</h4>
-                    <p className="text-sm text-primary-300">
-                      Choose courts with good lighting, parking, and amenities for the best experience.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </main>
         </div>
       </div>

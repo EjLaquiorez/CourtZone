@@ -193,347 +193,352 @@ export function GameCreationForm({
       className={className}
     >
       <motion.div
-        className="bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-8 border border-primary-400/20"
+        className={cn(
+          "relative mx-auto flex h-[100vh] w-full flex-col overflow-hidden border border-primary-400/30 bg-gradient-to-br from-dark-400/90 to-dark-500/90 shadow-basketball",
+          "sm:h-auto sm:max-h-[90vh] sm:rounded-2xl",
+          "lg:w-[min(1100px,calc(100vw-2rem))] lg:max-w-none"
+        )}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2 }}
       >
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-display font-bold text-white mb-2">
-            Create a Game 🏀
-          </h2>
-          <p className="text-primary-200">
-            Organize a basketball game and invite players to join
-          </p>
-        </div>
-
-        {/* Game Title */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-primary-200 mb-2">
-            Game Title *
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleInputChange}
-            className={cn(
-              "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300",
-              "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-              "transition-all duration-200",
-              errors.title ? "border-red-500/50" : "border-primary-400/30"
-            )}
-            placeholder="e.g., Friday Night Pickup Game"
-            maxLength={100}
-          />
-          {errors.title && (
-            <motion.p
-              className="mt-1 text-sm text-red-400"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {errors.title}
-            </motion.p>
-          )}
-        </div>
-
-        {/* Game Type and Privacy */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="gameType" className="block text-sm font-medium text-primary-200 mb-2">
-              Game Type
-            </label>
-            <select
-              id="gameType"
-              name="gameType"
-              value={formData.gameType}
-              onChange={handleInputChange}
-              className="block w-full px-4 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="pickup">Pickup Game</option>
-              <option value="scrimmage">Scrimmage</option>
-              <option value="tournament">Tournament</option>
-              <option value="practice">Practice</option>
-            </select>
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          {/* Header */}
+          <div className="flex flex-col gap-1 px-4 pt-4 sm:px-6 sm:pt-5">
+            <h2 className="text-[20px] font-display font-semibold text-white">
+              Create a game
+            </h2>
+            <p className="text-xs text-primary-300">
+              Fast setup. Minimal scrolling on desktop.
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-primary-200 mb-3">
-              Game Privacy
-            </label>
-            <div className="space-y-3">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="isPrivate"
-                  checked={!formData.isPrivate}
-                  onChange={() => setFormData(prev => ({ ...prev, isPrivate: false }))}
-                  className="sr-only"
-                />
-                <div className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all",
-                  !formData.isPrivate
-                    ? "border-primary-500 bg-primary-500/10"
-                    : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
-                )}>
-                  <Globe className="w-5 h-5 text-primary-400" />
-                  <div>
-                    <p className="text-sm font-medium text-primary-100">Public</p>
-                    <p className="text-xs text-primary-300">Anyone can find and join</p>
-                  </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-3 pt-4 sm:px-6 sm:pb-4">
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
+              {/* LEFT: Primary form */}
+              <section className="space-y-4 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
+                {/* Game title */}
+                <div>
+                  <label htmlFor="title" className="mb-1 block text-xs font-medium text-primary-200">
+                    Game title *
+                  </label>
+                  <input
+                    id="title"
+                    name="title"
+                    type="text"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className={cn(
+                      "block w-full rounded-lg border border-primary-400/30 bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100 placeholder-primary-300",
+                      "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
+                      errors.title && "border-red-500/50"
+                    )}
+                    placeholder="e.g., Friday night pickup"
+                    maxLength={100}
+                  />
+                  {errors.title && (
+                    <motion.p
+                      className="mt-1 text-xs text-red-400"
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {errors.title}
+                    </motion.p>
+                  )}
                 </div>
-              </label>
 
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="isPrivate"
-                  checked={formData.isPrivate}
-                  onChange={() => setFormData(prev => ({ ...prev, isPrivate: true }))}
-                  className="sr-only"
-                />
-                <div className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all",
-                  formData.isPrivate
-                    ? "border-primary-500 bg-primary-500/10"
-                    : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
-                )}>
-                  <Lock className="w-5 h-5 text-primary-400" />
-                  <div>
-                    <p className="text-sm font-medium text-primary-100">Private</p>
-                    <p className="text-xs text-primary-300">Invite only</p>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-
-        {/* Court Selection */}
-        <div>
-          <label className="block text-sm font-medium text-primary-200 mb-2">
-            Court Location *
-          </label>
-
-          {/* Court Search */}
-          <div className="relative mb-3">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-primary-400" />
-            </div>
-            <input
-              type="text"
-              value={courtSearch}
-              onChange={(e) => setCourtSearch(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
-              placeholder="Search courts..."
-            />
-          </div>
-
-          {/* Court List */}
-          <div className="max-h-48 overflow-y-auto space-y-2 border border-primary-400/30 rounded-lg p-2 bg-dark-200/30">
-            {filteredCourts.map((court) => (
-              <label key={court.id} className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="courtId"
-                  value={court.id}
-                  checked={formData.courtId === court.id}
-                  onChange={handleInputChange}
-                  className="sr-only"
-                />
-                <div className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all w-full",
-                  formData.courtId === court.id
-                    ? "border-primary-500 bg-primary-500/10"
-                    : "border-transparent hover:border-primary-400/50 hover:bg-primary-400/5"
-                )}>
-                  <div className="w-10 h-10 bg-gradient-to-br from-court-500 to-court-600 rounded-full flex items-center justify-center">
-                    <span className="text-sm">{court.courtType === 'indoor' ? '🏢' : '🌳'}</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-primary-100 truncate">{court.name}</p>
-                    <p className="text-sm text-primary-300 truncate">{court.address}</p>
-                  </div>
-                </div>
-              </label>
-            ))}
-          </div>
-
-          {errors.courtId && (
-            <motion.p
-              className="mt-1 text-sm text-red-400"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {errors.courtId}
-            </motion.p>
-          )}
-        </div>
-
-        {/* Date and Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="scheduledAt" className="block text-sm font-medium text-primary-200 mb-2">
-              Date & Time *
-            </label>
-            <input
-              id="scheduledAt"
-              name="scheduledAt"
-              type="datetime-local"
-              value={formData.scheduledAt}
-              onChange={handleInputChange}
-              min={new Date().toISOString().slice(0, 16)}
-              className={cn(
-                "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100",
-                "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-                "transition-all duration-200",
-                errors.scheduledAt ? "border-red-500/50" : "border-primary-400/30"
-              )}
-            />
-            {errors.scheduledAt && (
-              <motion.p
-                className="mt-1 text-sm text-red-400"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {errors.scheduledAt}
-              </motion.p>
-            )}
-
-            {/* Quick Time Suggestions */}
-            <div className="mt-2">
-              <p className="text-xs text-primary-300 mb-2">Quick suggestions:</p>
-              <div className="flex flex-wrap gap-2">
-                {getSuggestedTimes().map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, scheduledAt: suggestion.value }))}
-                    className="px-2 py-1 text-xs bg-primary-500/20 text-primary-300 rounded hover:bg-primary-500/30 transition-colors"
+                {/* Game type */}
+                <div>
+                  <label htmlFor="gameType" className="mb-1 block text-xs font-medium text-primary-200">
+                    Game type
+                  </label>
+                  <select
+                    id="gameType"
+                    name="gameType"
+                    value={formData.gameType}
+                    onChange={handleInputChange}
+                    className="block w-full rounded-lg border border-primary-400/30 bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
-                    {suggestion.label}
-                  </button>
-                ))}
-              </div>
+                    <option value="pickup">Pickup Game</option>
+                    <option value="scrimmage">Scrimmage</option>
+                    <option value="tournament">Tournament</option>
+                    <option value="practice">Practice</option>
+                  </select>
+                </div>
+
+                {/* Privacy */}
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-primary-200">
+                    Game privacy
+                  </label>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="isPrivate"
+                        checked={!formData.isPrivate}
+                        onChange={() => setFormData(prev => ({ ...prev, isPrivate: false }))}
+                        className="sr-only"
+                      />
+                      <div className={cn(
+                        "flex w-full items-center space-x-3 rounded-lg border px-3 py-2.5 text-xs transition-all",
+                        !formData.isPrivate
+                          ? "border-primary-500 bg-primary-500/10"
+                          : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
+                      )}>
+                        <Globe className="w-5 h-5 text-primary-400" />
+                        <div>
+                          <p className="text-[13px] font-medium text-primary-100">Public</p>
+                          <p className="text-[11px] text-primary-300">Anyone can join</p>
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="isPrivate"
+                        checked={formData.isPrivate}
+                        onChange={() => setFormData(prev => ({ ...prev, isPrivate: true }))}
+                        className="sr-only"
+                      />
+                      <div className={cn(
+                        "flex w-full items-center space-x-3 rounded-lg border px-3 py-2.5 text-xs transition-all",
+                        formData.isPrivate
+                          ? "border-primary-500 bg-primary-500/10"
+                          : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
+                      )}>
+                        <Lock className="w-5 h-5 text-primary-400" />
+                        <div>
+                          <p className="text-[13px] font-medium text-primary-100">Private</p>
+                          <p className="text-[11px] text-primary-300">Invite only</p>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Court selection */}
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-primary-200">
+                    Court location *
+                  </label>
+                  <div className="relative mb-2">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                      <Search className="h-5 w-5 text-primary-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={courtSearch}
+                      onChange={(e) => setCourtSearch(e.target.value)}
+                      className="block w-full rounded-lg border border-primary-400/30 bg-dark-200/60 py-2 pl-10 pr-3 text-sm text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="Search courts..."
+                    />
+                  </div>
+
+                  <div className="max-h-40 space-y-2 overflow-y-auto rounded-lg border border-primary-400/30 bg-dark-200/30 p-2">
+                    {filteredCourts.map((court) => (
+                      <label key={court.id} className="flex items-center cursor-pointer">
+                        <input
+                          type="radio"
+                          name="courtId"
+                          value={court.id}
+                          checked={formData.courtId === court.id}
+                          onChange={handleInputChange}
+                          className="sr-only"
+                        />
+                        <div className={cn(
+                          "flex w-full items-center space-x-3 rounded-lg border p-3 transition-all",
+                          formData.courtId === court.id
+                            ? "border-primary-500 bg-primary-500/10"
+                            : "border-transparent hover:border-primary-400/50 hover:bg-primary-400/5"
+                        )}>
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-court-500 to-court-600">
+                            <span className="text-sm">{court.courtType === 'indoor' ? '🏢' : '🌳'}</span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium text-primary-100">{court.name}</p>
+                            <p className="truncate text-sm text-primary-300">{court.address}</p>
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+
+                  {errors.courtId && (
+                    <motion.p
+                      className="mt-1 text-xs text-red-400"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      {errors.courtId}
+                    </motion.p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label htmlFor="description" className="mb-1 block text-xs font-medium text-primary-200">
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="block w-full resize-none rounded-lg border border-primary-400/30 bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Extra details, rules, or requirements..."
+                    maxLength={500}
+                  />
+                  <p className="mt-1 text-[11px] text-primary-300">
+                    {formData.description?.length || 0}/500
+                  </p>
+                </div>
+              </section>
+
+              {/* RIGHT: Game configuration */}
+              <section className="space-y-4 rounded-xl border border-primary-400/15 bg-dark-200/20 p-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                  <div>
+                    <label htmlFor="scheduledAt" className="mb-1 block text-xs font-medium text-primary-200">
+                      Date & time *
+                    </label>
+                    <input
+                      id="scheduledAt"
+                      name="scheduledAt"
+                      type="datetime-local"
+                      value={formData.scheduledAt}
+                      onChange={handleInputChange}
+                      min={new Date().toISOString().slice(0, 16)}
+                      className={cn(
+                        "block w-full rounded-lg border bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100",
+                        "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
+                        errors.scheduledAt ? "border-red-500/50" : "border-primary-400/30"
+                      )}
+                    />
+                    {errors.scheduledAt && (
+                      <motion.p
+                        className="mt-1 text-xs text-red-400"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {errors.scheduledAt}
+                      </motion.p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="duration" className="mb-1 block text-xs font-medium text-primary-200">
+                      Duration
+                    </label>
+                    <select
+                      id="duration"
+                      name="duration"
+                      value={formData.duration}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-lg border border-primary-400/30 bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value={60}>1 hour</option>
+                      <option value={90}>1.5 hours</option>
+                      <option value={120}>2 hours</option>
+                      <option value={150}>2.5 hours</option>
+                      <option value={180}>3 hours</option>
+                      <option value={240}>4 hours</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Quick suggestions */}
+                <div>
+                  <p className="mb-1 text-[11px] text-primary-300">Quick suggestions</p>
+                  <div className="flex flex-wrap gap-2">
+                    {getSuggestedTimes().map((suggestion, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, scheduledAt: suggestion.value }))}
+                        className="rounded px-2 py-1 text-xs bg-primary-500/20 text-primary-300 hover:bg-primary-500/30 transition-colors"
+                      >
+                        {suggestion.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                  <div>
+                    <label htmlFor="maxPlayers" className="mb-1 block text-xs font-medium text-primary-200">
+                      Maximum players
+                    </label>
+                    <input
+                      id="maxPlayers"
+                      name="maxPlayers"
+                      type="number"
+                      min="2"
+                      max="20"
+                      value={formData.maxPlayers}
+                      onChange={handleInputChange}
+                      className={cn(
+                        "block w-full rounded-lg border bg-dark-200/60 px-3 py-2.5 text-sm text-primary-100",
+                        "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
+                        errors.maxPlayers ? "border-red-500/50" : "border-primary-400/30"
+                      )}
+                    />
+                    {errors.maxPlayers && (
+                      <motion.p
+                        className="mt-1 text-xs text-red-400"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {errors.maxPlayers}
+                      </motion.p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-xs font-medium text-primary-200">
+                      Skill level (1–10)
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <InteractiveSkillSelector
+                        level={formData.skillLevel.min}
+                        onChange={(level) => handleSkillLevelChange('min', level)}
+                        label="Min"
+                        size="sm"
+                      />
+                      <InteractiveSkillSelector
+                        level={formData.skillLevel.max}
+                        onChange={(level) => handleSkillLevelChange('max', level)}
+                        label="Max"
+                        size="sm"
+                      />
+                    </div>
+                    {errors.skillLevel && (
+                      <motion.p
+                        className="mt-1 text-xs text-red-400"
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {errors.skillLevel}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
 
-          <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-primary-200 mb-2">
-              Duration (minutes)
-            </label>
-            <select
-              id="duration"
-              name="duration"
-              value={formData.duration}
-              onChange={handleInputChange}
-              className="block w-full px-4 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value={60}>1 hour</option>
-              <option value={90}>1.5 hours</option>
-              <option value={120}>2 hours</option>
-              <option value={150}>2.5 hours</option>
-              <option value={180}>3 hours</option>
-              <option value={240}>4 hours</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Players and Skill Level */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="maxPlayers" className="block text-sm font-medium text-primary-200 mb-2">
-              Maximum Players
-            </label>
-            <input
-              id="maxPlayers"
-              name="maxPlayers"
-              type="number"
-              min="2"
-              max="20"
-              value={formData.maxPlayers}
-              onChange={handleInputChange}
-              className={cn(
-                "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100",
-                "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-                "transition-all duration-200",
-                errors.maxPlayers ? "border-red-500/50" : "border-primary-400/30"
-              )}
-            />
-            {errors.maxPlayers && (
-              <motion.p
-                className="mt-1 text-sm text-red-400"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {errors.maxPlayers}
-              </motion.p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-primary-200 mb-2">
-              Skill Level Range
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <InteractiveSkillSelector
-                level={formData.skillLevel.min}
-                onChange={(level) => handleSkillLevelChange('min', level)}
-                label="Min"
-                size="sm"
-              />
-              <InteractiveSkillSelector
-                level={formData.skillLevel.max}
-                onChange={(level) => handleSkillLevelChange('max', level)}
-                label="Max"
-                size="sm"
-              />
-            </div>
-            {errors.skillLevel && (
-              <motion.p
-                className="mt-1 text-sm text-red-400"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {errors.skillLevel}
-              </motion.p>
-            )}
-          </div>
-        </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-primary-200 mb-2">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows={4}
-            className="block w-full px-4 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none"
-            placeholder="Add any additional details about the game, rules, or requirements..."
-            maxLength={500}
-          />
-          <p className="text-xs text-primary-300 mt-1">
-            {formData.description?.length || 0}/500
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-primary-400/20">
+        {/* Sticky footer buttons */}
+        <div className="sticky bottom-0 flex items-center justify-end gap-3 border-t border-primary-400/20 bg-gradient-to-t from-dark-900 via-dark-900/95 to-dark-900/80 px-4 py-3 sm:px-6">
           {onCancel && (
             <GameButton
               type="button"
               variant="secondary"
-              size="lg"
+              size="md"
               onClick={onCancel}
-              className="sm:flex-1"
-              icon={<X className="w-5 h-5" />}
+              className="h-10 w-[140px]"
+              icon={<X className="w-4 h-4" />}
             >
               Cancel
             </GameButton>
@@ -542,17 +547,17 @@ export function GameCreationForm({
           <GameButton
             type="submit"
             variant="primary"
-            size="lg"
+            size="md"
             loading={isSubmitting || isLoading}
             glow
-            className="sm:flex-1"
-            icon={<Save className="w-5 h-5" />}
+            className="h-10 w-[170px]"
+            icon={<Save className="w-4 h-4" />}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Creating Game...' : 'Create Game'}
+            {isSubmitting ? 'Creating…' : 'Create game'}
           </GameButton>
         </div>
-      </form>
+        </form>
       </motion.div>
     </LoadingOverlay>
   );
