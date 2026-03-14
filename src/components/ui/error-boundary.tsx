@@ -75,7 +75,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 }
 
 function DefaultErrorFallback({ error, resetError, goHome }: ErrorFallbackProps) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center p-4">

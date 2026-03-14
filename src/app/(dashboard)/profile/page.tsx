@@ -17,7 +17,8 @@ import {
   Settings,
   Save,
   X,
-  UserPlus
+  UserPlus,
+  Clock
 } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
@@ -275,155 +276,134 @@ function ProfilePageContent() {
                 </motion.div>
               </motion.div>
             )}
-            {/* Profile Header */}
-            <motion.div
-              className="bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-center space-x-6 mb-6 lg:mb-0">
+            {/* New profile header + two-column layout */}
+            <div className="mx-auto flex max-w-6xl flex-col gap-6">
+              {/* Header */}
+              <motion.section
+                className="rounded-2xl border border-primary-400/20 bg-gradient-to-r from-dark-800/90 to-dark-700/90 p-6 shadow-basketball sm:p-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="flex flex-col gap-6 md:flex-row md:items-center">
                   {/* Avatar */}
-                  <div className="relative">
-                    <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white text-3xl font-bold basketball-glow">
+                  <div className="relative flex-shrink-0">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-4xl text-white shadow-lg md:h-28 md:w-28">
                       {safeUser.avatar ? (
-                        <img src={safeUser.avatar} alt={safeUser.username} className="w-full h-full rounded-full object-cover" />
+                        <img
+                          src={safeUser.avatar}
+                          alt={safeUser.username || 'Player'}
+                          className="h-full w-full rounded-full object-cover"
+                        />
                       ) : (
-                        (safeUser.username || 'U').charAt(0).toUpperCase()
+                        <span>{(safeUser.username || 'P').charAt(0).toUpperCase()}</span>
                       )}
                     </div>
-                    {isEditing && (
-                      <button className="absolute bottom-0 right-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white hover:bg-primary-600 transition-colors">
-                        <Camera className="w-4 h-4" />
-                      </button>
-                    )}
+                    <span className="absolute -bottom-1 -right-1 inline-flex h-7 items-center justify-center rounded-full bg-court-500 px-2 text-[11px] font-semibold text-white shadow-md">
+                      {getPositionName(safeUser.position as Position)}
+                    </span>
                   </div>
 
-                  {/* User Info */}
-                  <div>
-                    {isEditing ? (
-                      <div className="space-y-3">
-                        <input
-                          type="text"
-                          value={editedUser.username}
-                          onChange={(e) => setEditedUser({...editedUser, username: e.target.value})}
-                          className="text-2xl font-display font-bold bg-dark-200/50 text-white border border-primary-400/30 rounded-lg px-3 py-2"
-                        />
-                        <input
-                          type="email"
-                          value={editedUser.email}
-                          onChange={(e) => setEditedUser({...editedUser, email: e.target.value})}
-                          className="text-primary-300 bg-dark-200/50 border border-primary-400/30 rounded-lg px-3 py-2"
-                        />
-                      </div>
-                    ) : (
-                      <>
-                        <h1 className="text-3xl font-display font-bold text-white flex items-center">
-                          {safeUser.username}
+                  {/* Identity & quick stats */}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <h1 className="flex items-center gap-2 text-2xl font-display font-bold text-white sm:text-3xl">
+                          {safeUser.username || 'Player Name'}
                           {safeUser.isVerified && (
-                            <span className="ml-3 text-blue-400">✓</span>
+                            <span className="inline-flex items-center rounded-full border border-primary-400/40 bg-primary-500/20 px-2 py-0.5 text-[11px] font-semibold text-primary-200">
+                              <Star className="mr-1 h-3 w-3 fill-current" />
+                              Verified
+                            </span>
                           )}
                         </h1>
-                        <p className="text-primary-300 text-lg">{safeUser.email}</p>
-                      </>
-                    )}
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-primary-300">
+                          <span className="inline-flex items-center gap-1">
+                            <MapPin className="h-4 w-4 text-primary-400" />
+                            {safeUser.city || 'Add your city'}
+                          </span>
+                          <span className="text-primary-500/60">•</span>
+                          <span>Max {safeUser.maxDistance || 10} km</span>
+                          <span className="text-primary-500/60">•</span>
+                          <span className="inline-flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-court-400" />
+                            Evenings · Weekends
+                          </span>
+                        </div>
+                      </div>
 
-                    <div className="flex items-center space-x-4 text-primary-200 mt-2">
-                      <span className="flex items-center">
-                        <User className="w-4 h-4 mr-1" />
-                        {safeUser.position ? getPositionName(safeUser.position) : 'Position not set'}
-                      </span>
-                      <span className="flex items-center">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        {safeUser.city || 'Location not set'}
-                      </span>
-                      <span className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        Joined {(() => {
-                          try {
-                            return formatDate(safeUser.createdAt);
-                          } catch (error) {
-                            console.warn('Error formatting join date:', error);
-                            return 'Recently';
-                          }
-                        })()}
-                      </span>
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-2">
+                        <GameButton
+                          variant="primary"
+                          size="sm"
+                          glow
+                          icon={<UserPlus className="h-4 w-4" />}
+                        >
+                          Invite to game
+                        </GameButton>
+                        <GameButton
+                          variant="secondary"
+                          size="sm"
+                          icon={<User className="h-4 w-4" />}
+                        >
+                          Add friend
+                        </GameButton>
+                        <GameButton
+                          variant="ghost"
+                          size="sm"
+                          icon={<Edit3 className="h-4 w-4" />}
+                          onClick={() => setShowBasketballForm(true)}
+                        >
+                          Edit profile
+                        </GameButton>
+                      </div>
+                    </div>
+
+                    {/* Compact metrics strip */}
+                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs text-primary-300 sm:grid-cols-4">
+                      <div>
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                          Rating
+                        </p>
+                        <p className="text-lg font-display font-semibold text-white">
+                          {safeUser.rating || 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                          Games
+                        </p>
+                        <p className="text-lg font-display font-semibold text-white">
+                          {safeUser.gamesPlayed ?? 0}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                          Win rate
+                        </p>
+                        <p className="text-lg font-display font-semibold text-white">
+                          {safeUser.gamesPlayed
+                            ? Math.round(((safeUser.gamesCompleted ?? 0) / (safeUser.gamesPlayed || 1)) * 100)
+                            : 0}
+                          %
+                        </p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                          Active
+                        </p>
+                        <p className="text-lg font-display font-semibold text-white">
+                          {formatDate(safeUser.updatedAt, 'Recently')}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </motion.section>
 
-                {/* Action Buttons */}
-                <div className="flex items-center space-x-3 flex-wrap">
-                  {isEditing ? (
-                    <>
-                      <GameButton variant="success" size="md" onClick={handleSaveProfile} icon={<Save className="w-5 h-5" />}>
-                        Save Changes
-                      </GameButton>
-                      <GameButton variant="secondary" size="md" onClick={handleCancelEdit} icon={<X className="w-5 h-5" />}>
-                        Cancel
-                      </GameButton>
-                    </>
-                  ) : (
-                    <>
-                      <GameButton variant="primary" size="md" onClick={() => setIsEditing(true)} icon={<Edit3 className="w-5 h-5" />}>
-                        Edit Profile
-                      </GameButton>
-                      <GameButton
-                        variant="success"
-                        size="md"
-                        onClick={() => setShowBasketballForm(true)}
-                        icon={<UserPlus className="w-5 h-5" />}
-                      >
-                        Basketball Profile
-                      </GameButton>
-                      <GameButton variant="secondary" size="md" icon={<Settings className="w-5 h-5" />}>
-                        Settings
-                      </GameButton>
-                    </>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Stats Overview */}
-            <motion.div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <StatCard
-                title="Rating"
-                value={safeUser.rating || 0}
-                icon={<Star className="w-6 h-6" />}
-                trend={{ direction: 'up', value: 23, label: 'this month' }}
-                glowColor="primary"
-              />
-              <StatCard
-                title="Skill Level"
-                value={`${safeUser.skillLevel || 0}/10`}
-                icon={<Target className="w-6 h-6" />}
-                glowColor="success"
-              />
-              <StatCard
-                title="Games Played"
-                value={127}
-                icon={<Trophy className="w-6 h-6" />}
-                trend={{ direction: 'up', value: 12, label: 'this month' }}
-                glowColor="info"
-              />
-              <StatCard
-                title="Win Rate"
-                value="74%"
-                icon={<TrendingUp className="w-6 h-6" />}
-                trend={{ direction: 'up', value: 5, label: 'this week' }}
-                glowColor="warning"
-              />
-            </motion.div>
-
-            {/* Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Two-column content */}
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)]">
               {/* Recent Games */}
               <motion.div
                 className="bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20"
@@ -531,6 +511,7 @@ function ProfilePageContent() {
                 </div>
               </motion.div>
             </div>
+          </div>
           </main>
         </div>
       </div>
