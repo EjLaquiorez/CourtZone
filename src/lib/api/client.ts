@@ -188,7 +188,16 @@ export class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+
+        const message =
+          errorData.message ||
+          `Request to ${endpoint} failed with HTTP ${response.status}: ${response.statusText}`;
+
+        const error: any = new Error(message);
+        error.status = response.status;
+        error.endpoint = endpoint;
+        error.details = errorData;
+        throw error;
       }
 
       const data = await response.json();

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { useCurrentUser } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -69,7 +70,10 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
   const pathname = usePathname();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  // We only need the current clearAuth function; no subscription required.
+  const clearAuth = useAuthStore.getState().clearAuth;
+  const { data: currentUserResponse } = useCurrentUser();
+  const user = currentUserResponse?.data;
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -284,11 +288,24 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
           >
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                JD
+                {user?.username
+                  ? user.username
+                      .split(' ')
+                      .map((part) => part[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : 'JD'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">John Doe</p>
-                <p className="text-xs text-white truncate">Rating: 1,847</p>
+                <p className="text-sm font-medium text-white truncate">
+                  {user?.username || 'John Doe'}
+                </p>
+                <p className="text-xs text-white truncate">
+                  {user?.rating !== undefined && user?.rating !== null
+                    ? `Rating: ${user.rating.toLocaleString()}`
+                    : 'Rating: 1,847'}
+                </p>
               </div>
             </div>
           </motion.div>
