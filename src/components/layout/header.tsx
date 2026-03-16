@@ -23,8 +23,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
   return (
     <motion.header
       className={cn(
-        'bg-gradient-to-r from-dark-400 to-dark-300 border-b border-primary-400/20',
-        'backdrop-blur-sm sticky top-0 z-50',
+        'bg-slate-950/95 border-b border-slate-800 backdrop-blur-sm sticky top-0 z-50',
         className
       )}
       initial={{ y: -100 }}
@@ -45,32 +44,16 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
             </button>
 
             {/* Logo */}
-            <motion.div
-              className="flex items-center space-x-2"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-            >
-              <div className="relative">
-                {/* Basketball logo with orange glow */}
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
-                  <span className="text-white font-bold text-lg">🏀</span>
-                </div>
-                {/* Animated ring */}
-                <motion.div
-                  className="absolute inset-0 border-2 border-primary-400 rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                />
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
+                <span className="text-sm font-semibold text-primary-400">CZ</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
+                <h1 className="text-sm font-semibold text-slate-100">
                   Court Zone
                 </h1>
-                <p className="text-xs text-primary-200 font-accent -mt-1">
-                  Find Your Game
-                </p>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Center section - Search (hidden on mobile) */}
@@ -189,8 +172,7 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
   return (
     <motion.header
       className={cn(
-        'bg-gradient-to-r from-dark-400 to-dark-300 border-b border-primary-400/20',
-        'backdrop-blur-sm sticky top-0 z-50',
+        'bg-slate-950/95 border-b border-slate-800 backdrop-blur-sm sticky top-0 z-50',
         className
       )}
       initial={{ y: -100 }}
@@ -208,16 +190,16 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
               <Menu className="w-6 h-6" />
             </button>
 
-            <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
-                <span className="text-white font-bold text-lg" role="img" aria-label="Basketball">🏀</span>
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
+                <span className="text-sm font-semibold text-primary-400">CZ</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent">
+                <h1 className="text-sm font-semibold text-slate-100">
                   Court Zone
                 </h1>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Right section - User info */}

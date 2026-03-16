@@ -213,7 +213,7 @@ function ProfilePageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
@@ -280,7 +280,7 @@ function ProfilePageContent() {
             <div className="mx-auto flex max-w-6xl flex-col gap-6">
               {/* Header */}
               <motion.section
-                className="rounded-2xl border border-primary-400/20 bg-gradient-to-r from-dark-800/90 to-dark-700/90 p-6 shadow-basketball sm:p-8"
+                className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
@@ -288,7 +288,7 @@ function ProfilePageContent() {
                 <div className="flex flex-col gap-6 md:flex-row md:items-center">
                   {/* Avatar */}
                   <div className="relative flex-shrink-0">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-4xl text-white shadow-lg md:h-28 md:w-28">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-slate-800 text-3xl text-slate-100 shadow-sm md:h-28 md:w-28">
                       {safeUser.avatar ? (
                         <img
                           src={safeUser.avatar}
@@ -299,7 +299,7 @@ function ProfilePageContent() {
                         <span>{(safeUser.username || 'P').charAt(0).toUpperCase()}</span>
                       )}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 inline-flex h-7 items-center justify-center rounded-full bg-court-500 px-2 text-[11px] font-semibold text-white shadow-md">
+                    <span className="absolute -bottom-1 -right-1 inline-flex h-7 items-center justify-center rounded-full bg-primary-500/20 px-2 text-[11px] font-semibold text-primary-200 border border-primary-500/40">
                       {getPositionName(safeUser.position as Position)}
                     </span>
                   </div>
@@ -308,25 +308,24 @@ function ProfilePageContent() {
                   <div className="flex-1 space-y-3">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-display font-bold text-white sm:text-3xl">
+                        <h1 className="flex items-center gap-2 text-2xl font-semibold text-slate-100 sm:text-3xl">
                           {safeUser.username || 'Player Name'}
                           {safeUser.isVerified && (
-                            <span className="inline-flex items-center rounded-full border border-primary-400/40 bg-primary-500/20 px-2 py-0.5 text-[11px] font-semibold text-primary-200">
-                              <Star className="mr-1 h-3 w-3 fill-current" />
+                            <span className="inline-flex items-center rounded-full border border-slate-700 bg-slate-900 px-2 py-0.5 text-[11px] font-semibold text-slate-300">
                               Verified
                             </span>
                           )}
                         </h1>
                         <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-primary-300">
                           <span className="inline-flex items-center gap-1">
-                            <MapPin className="h-4 w-4 text-primary-400" />
+                            <MapPin className="h-4 w-4 text-slate-500" />
                             {safeUser.city || 'Add your city'}
                           </span>
-                          <span className="text-primary-500/60">•</span>
+                          <span className="text-slate-600">•</span>
                           <span>Max {safeUser.maxDistance || 10} km</span>
                           <span className="text-primary-500/60">•</span>
                           <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-court-400" />
+                            <Clock className="h-3 w-3 text-slate-500" />
                             Evenings · Weekends
                           </span>
                         </div>
@@ -337,17 +336,9 @@ function ProfilePageContent() {
                         <GameButton
                           variant="primary"
                           size="sm"
-                          glow
                           icon={<UserPlus className="h-4 w-4" />}
                         >
                           Invite to game
-                        </GameButton>
-                        <GameButton
-                          variant="secondary"
-                          size="sm"
-                          icon={<User className="h-4 w-4" />}
-                        >
-                          Add friend
                         </GameButton>
                         <GameButton
                           variant="ghost"
@@ -361,28 +352,28 @@ function ProfilePageContent() {
                     </div>
 
                     {/* Compact metrics strip */}
-                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs text-primary-300 sm:grid-cols-4">
+                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs text-slate-500 sm:grid-cols-4">
                       <div>
-                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">
                           Rating
                         </p>
-                        <p className="text-lg font-display font-semibold text-white">
+                        <p className="text-lg font-semibold text-slate-100">
                           {safeUser.rating || 0}
                         </p>
                       </div>
                       <div>
-                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">
                           Games
                         </p>
-                        <p className="text-lg font-display font-semibold text-white">
+                        <p className="text-lg font-semibold text-slate-100">
                           {safeUser.gamesPlayed ?? 0}
                         </p>
                       </div>
                       <div>
-                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">
                           Win rate
                         </p>
-                        <p className="text-lg font-display font-semibold text-white">
+                        <p className="text-lg font-semibold text-slate-100">
                           {safeUser.gamesPlayed
                             ? Math.round(((safeUser.gamesCompleted ?? 0) / (safeUser.gamesPlayed || 1)) * 100)
                             : 0}
@@ -390,10 +381,10 @@ function ProfilePageContent() {
                         </p>
                       </div>
                       <div>
-                        <p className="mb-1 text-[11px] uppercase tracking-wide text-primary-400">
+                        <p className="mb-1 text-[11px] uppercase tracking-wide text-slate-500">
                           Active
                         </p>
-                        <p className="text-lg font-display font-semibold text-white">
+                        <p className="text-lg font-semibold text-slate-100">
                           {formatDate(safeUser.updatedAt, 'Recently')}
                         </p>
                       </div>

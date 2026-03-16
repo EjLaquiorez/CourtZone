@@ -23,7 +23,7 @@ import { Game, GameStatus } from '@/types';
 
 interface GameCardProps {
   game: Game;
-  variant?: 'compact' | 'detailed' | 'dashboard';
+  variant?: 'compact' | 'detailed' | 'dashboard' | 'dashboardMinimal';
   userRole?: 'organizer' | 'participant' | 'invited' | 'none';
   showActions?: boolean;
   onJoin?: () => void;
@@ -236,6 +236,77 @@ export function GameCard({
             </GameButton>
           </div>
         )}
+      </motion.div>
+    );
+  }
+
+  if (variant === 'dashboardMinimal') {
+    return (
+      <motion.div
+        className={cn(
+          'rounded-xl border border-slate-800 bg-slate-900/80 p-4',
+          'transition-all duration-200 hover:border-slate-700 hover:bg-slate-900',
+          className
+        )}
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -2 }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-1">
+            <h3 className="text-sm font-medium text-slate-100 truncate">
+              {game.title}
+            </h3>
+            <p className="text-xs text-slate-400 truncate">
+              {getGameTypeLabel(game.gameType)} • {formatTime(game.scheduledAt)}
+            </p>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mt-1">
+              {game.court?.name && (
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-slate-500" />
+                  <span className="truncate max-w-[140px]">
+                    {game.court.name}
+                  </span>
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1">
+                <Users className="w-3 h-3 text-slate-500" />
+                <span>
+                  {game.currentPlayers}/{game.maxPlayers} players
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-2">
+            <div
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium',
+                'bg-slate-800 text-slate-300'
+              )}
+            >
+              {getStatusIcon(game.status)}
+              <span className="capitalize">
+                {game.status.replace('_', ' ')}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-[11px] text-slate-500">
+              <span className="inline-flex items-center gap-0.5 rounded-full bg-slate-800/80 px-2 py-0.5">
+                <Star className="w-3 h-3 text-primary-400" />
+                <span>
+                  {game.skillLevel.min}-{game.skillLevel.max}
+                </span>
+              </span>
+              {isGameFull ? (
+                <span className="text-red-400">Full</span>
+              ) : (
+                <span className="text-amber-400">
+                  {spotsRemaining} left
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       </motion.div>
     );
   }

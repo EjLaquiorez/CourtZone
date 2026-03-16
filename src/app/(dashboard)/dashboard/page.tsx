@@ -44,26 +44,12 @@ function LiveMapHero({ courts, userLocation }: LiveMapHeroProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg lg:text-xl font-display font-bold text-white">
+          <h2 className="text-base sm:text-lg font-semibold text-slate-100">
             Games near you
           </h2>
-          <p className="text-xs lg:text-sm text-primary-200">
-            Tap a court pin to see runs happening right now.
+          <p className="text-xs sm:text-sm text-slate-400">
+            Explore nearby courts and open runs on the map.
           </p>
-        </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full bg-dark-300/80 px-3 py-1 text-xs text-primary-200 border border-primary-400/20">
-            <span className="mr-1 h-2 w-2 rounded-full bg-primary-500" />
-            Open
-          </span>
-          <span className="inline-flex items-center rounded-full bg-dark-300/80 px-3 py-1 text-xs text-yellow-400/90 border border-yellow-500/30">
-            <span className="mr-1 h-2 w-2 rounded-full bg-yellow-400" />
-            Filling fast
-          </span>
-          <span className="inline-flex items-center rounded-full bg-dark-300/80 px-3 py-1 text-xs text-red-400 border border-red-500/40">
-            <span className="mr-1 h-2 w-2 rounded-full bg-red-500" />
-            Full
-          </span>
         </div>
       </div>
 
@@ -73,7 +59,7 @@ function LiveMapHero({ courts, userLocation }: LiveMapHeroProps) {
             <LazyCourtMap
               courts={courts}
               userLocation={userLocation}
-              className="h-[260px] sm:h-[320px] lg:h-[360px]"
+              className="h-[260px] sm:h-[320px] lg:h-[420px] rounded-xl bg-slate-900 border border-slate-800"
             />
           </LazyWrapper>
         </LazyComponentErrorBoundary>
@@ -93,10 +79,10 @@ function GameListSection({ games, joiningGameId, joinedGameId, onJoinGame }: Gam
   return (
     <section className="mt-4 space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-base lg:text-lg font-display font-bold text-white">
-          Nearby pick-up games
+        <h2 className="text-sm sm:text-base font-medium text-slate-100">
+          Nearby games
         </h2>
-        <span className="text-xs text-primary-300">
+        <span className="text-xs text-slate-400">
           {games.length > 0 ? `${games.length} games today` : 'No games yet – create one'}
         </span>
       </div>
@@ -122,7 +108,7 @@ function GameListSection({ games, joiningGameId, joinedGameId, onJoinGame }: Gam
               <div key={game.id} className="space-y-3">
                 <GameCard
                   game={normalizedGame}
-                  variant="dashboard"
+                  variant="dashboardMinimal"
                   showActions={false}
                 />
                 <GameButton
@@ -141,12 +127,12 @@ function GameListSection({ games, joiningGameId, joinedGameId, onJoinGame }: Gam
                       : 'Join game'}
                 </GameButton>
                 {spotsRemaining > 0 && spotsRemaining <= 2 && (
-                  <p className="text-xs text-warning">
+                  <p className="text-xs text-amber-400">
                     Only {spotsRemaining} spot{spotsRemaining === 1 ? '' : 's'} left!
                   </p>
                 )}
                 {normalizedGame.court && (
-                  <div className="flex items-center justify-between text-xs text-primary-300">
+                  <div className="flex items-center justify-between text-xs text-slate-400">
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
                       {normalizedGame.court.name}
@@ -157,7 +143,7 @@ function GameListSection({ games, joiningGameId, joinedGameId, onJoinGame }: Gam
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-info hover:underline"
+                      className="text-primary-400 hover:underline"
                     >
                       Get directions
                     </a>
@@ -192,34 +178,16 @@ function PersonalPanel({
   userStats,
 }: PersonalPanelProps) {
   return (
-    <aside className="space-y-4 lg:space-y-5">
-      {showRookieCardBanner && (
-        <motion.div
-          className="rounded-xl border border-primary-400/40 bg-gradient-to-r from-primary-500/25 to-primary-600/15 p-4 sm:p-5"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-500/30 text-xl">
-              🆔
-            </div>
-            <div className="space-y-1">
-              <p className="font-display text-sm font-bold text-white">
-                Complete your profile to earn <span className="text-primary-300">Rookie Card</span>
-              </p>
-              <p className="text-xs text-primary-200">
-                Add position, skill, and city so we can match you with better pick-up runs.
-              </p>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      <section className="rounded-xl border border-primary-400/20 bg-dark-300/80 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-display font-semibold text-white">My upcoming games</h3>
-          <span className="text-xs text-primary-300">Today &amp; tomorrow</span>
+    <aside className="space-y-4 lg:space-y-5 rounded-xl border border-slate-800 bg-slate-950/40 p-4 lg:p-5">
+      {/* Upcoming Games */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-medium text-slate-400">
+            Upcoming Games
+          </h3>
+          <span className="text-[11px] text-slate-500">
+            Today &amp; tomorrow
+          </span>
         </div>
         <div className="space-y-3">
           {upcomingGames.length > 0 ? (
@@ -227,123 +195,125 @@ function PersonalPanel({
               <GameCard
                 key={game.id}
                 game={game}
-                variant="compact"
-                showActions
+                variant="dashboardMinimal"
+                showActions={false}
               />
             ))
           ) : (
-            <p className="text-xs text-primary-300">
-              You have no scheduled games. Join an open run from the list or create your own.
+            <p className="text-xs text-slate-500">
+              No scheduled games yet. Join an open run from the list or create
+              your own.
             </p>
           )}
         </div>
       </section>
 
-      <section className="rounded-xl border border-primary-400/20 bg-dark-300/80 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-display font-semibold text-white">Invitations</h3>
-          <span className="text-xs text-primary-300">Quick actions</span>
+      {/* Invitations */}
+      <section className="space-y-2 border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-medium text-slate-400">
+            Invitations
+          </h3>
+          <span className="text-[11px] text-slate-500">
+            0 pending
+          </span>
         </div>
-        <div className="space-y-2 text-xs text-primary-300">
-          <p>No pending invitations right now.</p>
-          <p className="text-primary-200">
-            When teammates invite you to a run, it will show up here for one-tap join.
-          </p>
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-primary-400/20 bg-dark-300/80 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-display font-semibold text-white">Friends online</h3>
-          <span className="text-xs text-primary-300">Social presence</span>
-        </div>
-        <p className="text-xs text-primary-300">
-          Real-time friend presence will appear here so you can quickly invite them to a nearby game.
+        <p className="text-xs text-slate-500">
+          When teammates invite you to a run, it will appear here for a quick
+          decision.
         </p>
       </section>
 
-      <section className="rounded-xl border border-primary-400/20 bg-dark-300/80 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-display font-semibold text-white">Activity</h3>
-          <span className="text-xs text-primary-300">Recent</span>
+      {/* Friends Online */}
+      <section className="space-y-2 border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-medium text-slate-400">
+            Friends Online
+          </h3>
         </div>
-        <div className="space-y-2 text-xs text-primary-300">
+        <p className="text-xs text-slate-500">
+          Real-time friend presence will appear here so you can quickly invite
+          them into nearby games.
+        </p>
+      </section>
+
+      {/* Recent Activity */}
+      <section className="space-y-3 border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs font-medium text-slate-400">
+            Recent Activity
+          </h3>
+        </div>
+        <div className="space-y-2">
           {recentGames.length > 0 ? (
             recentGames.slice(0, 3).map((game) => (
-              <div key={game.id} className="flex items-center justify-between rounded-lg bg-dark-200/60 px-3 py-2">
+              <div
+                key={game.id}
+                className="flex items-center justify-between rounded-lg bg-slate-900 px-3 py-2"
+              >
                 <div className="space-y-0.5">
-                  <p className="font-medium text-primary-100 text-xs">
+                  <p className="text-xs font-medium text-slate-100">
                     vs {game.opponentTeam?.name || 'Open run'}
                   </p>
-                  <p className="text-[11px] text-primary-300">
-                    {new Date(game.scheduledTime || game.scheduledAt || game.createdAt).toLocaleDateString()}
+                  <p className="text-[11px] text-slate-500">
+                    {new Date(
+                      game.scheduledTime ||
+                        game.scheduledAt ||
+                        game.createdAt
+                    ).toLocaleDateString()}
                   </p>
                 </div>
-                <span className="text-[11px] font-semibold text-court-400">
+                <span
+                  className={cn(
+                    'text-[11px] font-semibold',
+                    game.winnerTeamId ? 'text-emerald-400' : 'text-slate-400'
+                  )}
+                >
                   {game.winnerTeamId ? 'W' : 'L'}
                 </span>
               </div>
             ))
           ) : (
-            <p className="text-xs text-primary-300">
-              Your recent games and achievements will appear here after you play a few runs.
+            <p className="text-xs text-slate-500">
+              Your recent games and results will appear here after you play a
+              few runs.
             </p>
           )}
         </div>
       </section>
 
-      {recentGames.length > 0 && (
-        <section className="rounded-xl border border-primary-400/20 bg-dark-300/80 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-display font-semibold text-white">Quick re-invite</h3>
-            <span className="text-xs text-primary-300">1-tap rematch</span>
-          </div>
-          <p className="mb-3 text-xs text-primary-300">
-            Spin up a new game with the same opponent and court as your last match.
-          </p>
-          <GameButton
-            variant="primary"
-            size="sm"
-            fullWidth
-            onClick={() => {
-              const last = recentGames[0];
-              if (last?.court?.id) {
-                router.push(`/games/create?courtId=${last.court.id}`);
-              } else {
-                router.push('/games/create');
-              }
-            }}
-          >
-            Play again with last team
-          </GameButton>
-        </section>
-      )}
-
+      {/* My Stats (collapsible) */}
       {userStats && (
-        <section className="rounded-xl bg-dark-300/70 p-4">
+        <section className="border-t border-slate-800 pt-4">
           <details className="space-y-2">
-            <summary className="flex cursor-pointer items-center justify-between text-sm text-primary-100">
-              <span className="font-display font-semibold">My stats</span>
-              <span className="text-xs text-primary-300">
+            <summary className="flex cursor-pointer items-center justify-between text-xs text-slate-300">
+              <span className="font-medium">
+                My Stats
+              </span>
+              <span className="text-[11px] text-slate-500">
                 {userStats.gamesPlayed} games • {userStats.currentStreak} streak
               </span>
             </summary>
-            <div className="grid grid-cols-2 gap-2 text-xs text-primary-300 pt-1">
+            <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] text-slate-400">
               <div>
-                <p className="text-primary-200">Record</p>
-                <p>{userStats.wins} W • {userStats.losses} L</p>
+                <p className="text-slate-500">Record</p>
+                <p className="text-slate-200">
+                  {userStats.wins} W • {userStats.losses} L
+                </p>
               </div>
               <div>
-                <p className="text-primary-200">Best streak</p>
-                <p>{userStats.bestStreak}</p>
+                <p className="text-slate-500">Best streak</p>
+                <p className="text-slate-200">{userStats.bestStreak}</p>
               </div>
               <div>
-                <p className="text-primary-200">Points</p>
-                <p>{userStats.totalPoints}</p>
+                <p className="text-slate-500">Points</p>
+                <p className="text-slate-200">{userStats.totalPoints}</p>
               </div>
               <div>
-                <p className="text-primary-200">Rebounds / Assists</p>
-                <p>{userStats.totalRebounds} REB • {userStats.totalAssists} AST</p>
+                <p className="text-slate-500">Rebounds / Assists</p>
+                <p className="text-slate-200">
+                  {userStats.totalRebounds} REB • {userStats.totalAssists} AST
+                </p>
               </div>
             </div>
           </details>

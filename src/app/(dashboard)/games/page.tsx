@@ -131,7 +131,7 @@ export default function GamesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
@@ -159,16 +159,16 @@ export default function GamesPage() {
           <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8"
+              className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div>
-                <h1 className="text-3xl lg:text-4xl font-display font-bold text-white mb-2">
-                  Games 🏀
+                <h1 className="mb-1 text-xl lg:text-2xl font-semibold text-slate-100">
+                  Games
                 </h1>
-                <p className="text-primary-200 text-lg">
+                <p className="text-sm text-slate-400">
                   Find games to join or create your own basketball events
                 </p>
               </div>
@@ -176,10 +176,9 @@ export default function GamesPage() {
               <div className="flex items-center space-x-3 mt-4 lg:mt-0">
                 <GameButton
                   variant="primary"
-                  size="md"
+                  size="sm"
                   onClick={handleCreateGame}
                   icon={<Plus className="w-5 h-5" />}
-                  glow
                 >
                   Create Game
                 </GameButton>
@@ -188,22 +187,22 @@ export default function GamesPage() {
 
             {/* Search and Filters */}
             <motion.div
-              className="bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 mb-8"
+              className="mb-6 rounded-xl border border-slate-800 bg-slate-900/80 p-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
                 {/* Search */}
-                <div className="flex-1 relative">
+                <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-primary-400" />
+                    <Search className="h-4 w-4 text-slate-500" />
                   </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="block w-full rounded-lg border border-slate-700 bg-slate-900 pl-9 pr-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                     placeholder="Search games by title, description, or court..."
                   />
                 </div>
@@ -211,7 +210,7 @@ export default function GamesPage() {
                 {/* Filter Toggle */}
                 <GameButton
                   variant="secondary"
-                  size="md"
+                  size="sm"
                   onClick={() => setShowFilters(!showFilters)}
                   icon={<Filter className="w-5 h-5" />}
                 >
@@ -222,7 +221,7 @@ export default function GamesPage() {
 
             {/* Navigation Tabs */}
             <motion.div
-              className="flex space-x-1 bg-dark-300/50 rounded-lg p-1 mb-8"
+              className="mb-6 flex space-x-1 rounded-lg border border-slate-800 bg-slate-900 p-1"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -239,10 +238,10 @@ export default function GamesPage() {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
                     className={cn(
-                      'flex items-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-200',
+                      'flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150',
                       activeTab === tab.id
-                        ? 'bg-primary-500 text-white'
-                        : 'text-primary-300 hover:text-primary-100 hover:bg-primary-400/10'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
                     )}
                   >
                     <Icon className="w-5 h-5" />
@@ -254,19 +253,19 @@ export default function GamesPage() {
 
             {/* Results Summary */}
             <motion.div
-              className="flex items-center justify-between mb-6"
+              className="mb-4 flex items-center justify-between"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
             >
-              <p className="text-primary-300">
+              <p className="text-sm text-slate-400">
                 Found {filteredGames.length} games
                 {searchQuery && ` matching "${searchQuery}"`}
               </p>
 
-              <div className="flex items-center space-x-2 text-sm text-primary-300">
+              <div className="flex items-center space-x-2 text-xs text-slate-500">
                 <span>Sort by:</span>
-                <select className="bg-dark-200/50 border border-primary-400/30 rounded px-2 py-1 text-primary-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                <select className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
                   <option value="date">Date</option>
                   <option value="players">Players</option>
                   <option value="skill">Skill Level</option>
@@ -277,7 +276,7 @@ export default function GamesPage() {
 
             {/* Games Grid */}
             <motion.div
-              className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+              className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
@@ -289,9 +288,9 @@ export default function GamesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                 >
-                  <GameCard
+                    <GameCard
                     game={game}
-                    variant="detailed"
+                    variant="dashboardMinimal"
                     userRole="none" // In real app, determine based on user participation
                     onJoin={() => handleJoinGame(game.id)}
                     onViewDetails={() => handleViewGame(game.id)}
@@ -303,16 +302,15 @@ export default function GamesPage() {
             {/* Empty State */}
             {filteredGames.length === 0 && (
               <motion.div
-                className="text-center py-16"
+                className="py-16 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                <Trophy className="w-16 h-16 text-primary-400 mx-auto mb-4" />
-                <h3 className="text-xl font-display font-bold text-white mb-2">
+                <h3 className="mb-2 text-sm font-semibold text-slate-100">
                   No games found
                 </h3>
-                <p className="text-primary-300 mb-6">
+                <p className="mb-4 text-sm text-slate-500">
                   {searchQuery
                     ? `No games match your search for "${searchQuery}"`
                     : 'No games match your current filters'

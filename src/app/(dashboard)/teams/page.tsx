@@ -187,7 +187,7 @@ export default function TeamsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
@@ -215,16 +215,16 @@ export default function TeamsPage() {
           <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8"
+              className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div>
-                <h1 className="text-3xl lg:text-4xl font-display font-bold text-white mb-2">
-                  Teams 👥
+                <h1 className="text-xl lg:text-2xl font-semibold text-slate-100 mb-1">
+                  Teams
                 </h1>
-                <p className="text-primary-200 text-lg">
+                <p className="text-sm text-slate-400">
                   Find your squad or build your own championship team
                 </p>
               </div>
@@ -240,7 +240,7 @@ export default function TeamsPage() {
 
             {/* Search and Filters */}
             <motion.div
-              className="bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 mb-8"
+              className="rounded-xl border border-slate-800 bg-slate-900/80 p-4 mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -249,13 +249,13 @@ export default function TeamsPage() {
                 {/* Search */}
                 <div className="flex-1 relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-primary-400" />
+                    <Search className="h-4 w-4 text-slate-500" />
                   </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="block w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-700 bg-slate-900 text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                     placeholder="Search teams by name..."
                   />
                 </div>
@@ -263,7 +263,7 @@ export default function TeamsPage() {
                 {/* Filter Toggle */}
                 <GameButton
                   variant="secondary"
-                  size="md"
+                  size="sm"
                   onClick={() => setShowFilters(!showFilters)}
                   icon={<Filter className="w-5 h-5" />}
                 >
@@ -271,14 +271,14 @@ export default function TeamsPage() {
                 </GameButton>
 
                 {/* View Mode Toggle */}
-                <div className="flex items-center bg-dark-200/50 rounded-lg p-1">
+                <div className="flex items-center rounded-lg border border-slate-800 bg-slate-900 p-1">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={cn(
-                      'px-3 py-2 rounded-md text-sm font-medium transition-all',
+                      'px-3 py-1.5 rounded-md text-xs font-medium transition-all',
                       viewMode === 'grid'
-                        ? 'bg-primary-500 text-white'
-                        : 'text-primary-300 hover:text-primary-100'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-100'
                     )}
                   >
                     Grid
@@ -288,8 +288,8 @@ export default function TeamsPage() {
                     className={cn(
                       'px-3 py-2 rounded-md text-sm font-medium transition-all',
                       viewMode === 'list'
-                        ? 'bg-primary-500 text-white'
-                        : 'text-primary-300 hover:text-primary-100'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-100'
                     )}
                   >
                     List
@@ -300,7 +300,7 @@ export default function TeamsPage() {
               {/* Expanded Filters */}
               {showFilters && (
                 <motion.div
-                  className="mt-6 pt-6 border-t border-primary-400/20"
+                  className="mt-4 pt-4 border-t border-slate-800"
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
@@ -308,7 +308,7 @@ export default function TeamsPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Team Type */}
                     <div>
-                      <label className="block text-sm font-medium text-primary-200 mb-2">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
                         Team Type
                       </label>
                       <select
@@ -317,7 +317,7 @@ export default function TeamsPage() {
                           ...prev,
                           isPublic: e.target.value === 'all' ? undefined : e.target.value === 'public'
                         }))}
-                        className="w-full px-3 py-2 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500"
                       >
                         <option value="all">All Teams</option>
                         <option value="public">Public Teams</option>
@@ -327,7 +327,7 @@ export default function TeamsPage() {
 
                     {/* Availability */}
                     <div>
-                      <label className="block text-sm font-medium text-primary-200 mb-2">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
                         Availability
                       </label>
                       <select
@@ -336,7 +336,7 @@ export default function TeamsPage() {
                           ...prev,
                           hasOpenings: e.target.value === 'all' ? undefined : e.target.value === 'open'
                         }))}
-                        className="w-full px-3 py-2 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500"
                       >
                         <option value="all">All Teams</option>
                         <option value="open">Has Openings</option>
@@ -346,10 +346,10 @@ export default function TeamsPage() {
 
                     {/* Skill Range */}
                     <div>
-                      <label className="block text-sm font-medium text-primary-200 mb-2">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
                         Skill Level
                       </label>
-                      <select className="w-full px-3 py-2 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                      <select className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
                         <option value="all">All Levels</option>
                         <option value="beginner">Beginner (1-3)</option>
                         <option value="intermediate">Intermediate (4-6)</option>
@@ -360,10 +360,10 @@ export default function TeamsPage() {
 
                     {/* Distance */}
                     <div>
-                      <label className="block text-sm font-medium text-primary-200 mb-2">
+                      <label className="block text-xs font-medium text-slate-400 mb-1.5">
                         Distance
                       </label>
-                      <select className="w-full px-3 py-2 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                      <select className="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
                         <option value="all">Any Distance</option>
                         <option value="5">Within 5 miles</option>
                         <option value="10">Within 10 miles</option>
@@ -382,14 +382,14 @@ export default function TeamsPage() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <p className="text-primary-300">
+              <p className="text-sm text-slate-400">
                 Found {filteredTeams.length} teams
                 {searchQuery && ` matching "${searchQuery}"`}
               </p>
 
-              <div className="flex items-center space-x-2 text-sm text-primary-300">
+              <div className="flex items-center space-x-2 text-xs text-slate-500">
                 <span>Sort by:</span>
-                <select className="bg-dark-200/50 border border-primary-400/30 rounded px-2 py-1 text-primary-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                <select className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
                   <option value="rating">Rating</option>
                   <option value="members">Members</option>
                   <option value="winRate">Win Rate</option>
@@ -401,29 +401,26 @@ export default function TeamsPage() {
             {/* Loading State */}
             {loading && (
               <motion.div
-                className="text-center py-16"
+                className="py-16 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-primary-300">Loading teams...</p>
+                <div className="mx-auto mb-4 h-10 w-10 rounded-full border-2 border-slate-600 border-t-transparent animate-spin" />
+                <p className="text-sm text-slate-400">Loading teams…</p>
               </motion.div>
             )}
 
             {/* Error State */}
             {error && !loading && (
               <motion.div
-                className="text-center py-16"
+                className="py-16 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-red-400 text-2xl">⚠️</span>
-                </div>
-                <h3 className="text-xl font-display font-bold text-white mb-2">
-                  Error Loading Teams
+                <h3 className="mb-2 text-sm font-semibold text-slate-100">
+                  Unable to load teams
                 </h3>
-                <p className="text-primary-300 mb-6">{error}</p>
+                <p className="mb-4 text-sm text-slate-500">{error}</p>
                 <GameButton
                   variant="primary"
                   size="md"
@@ -468,16 +465,15 @@ export default function TeamsPage() {
             {/* Empty State */}
             {filteredTeams.length === 0 && (
               <motion.div
-                className="text-center py-16"
+                className="py-16 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                <Users className="w-16 h-16 text-primary-400 mx-auto mb-4" />
-                <h3 className="text-xl font-display font-bold text-white mb-2">
+                <h3 className="mb-2 text-sm font-semibold text-slate-100">
                   No teams found
                 </h3>
-                <p className="text-primary-300 mb-6">
+                <p className="mb-4 text-sm text-slate-500">
                   {searchQuery
                     ? `No teams match your search for "${searchQuery}"`
                     : 'No teams match your current filters'

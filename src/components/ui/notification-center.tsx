@@ -175,7 +175,7 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
           {/* Notification Panel */}
           <motion.div
             className={cn(
-              'fixed top-0 right-0 h-full w-full max-w-sm sm:max-w-md lg:max-w-lg bg-gradient-to-br from-dark-200 to-dark-300 backdrop-blur-md border-l border-primary-400 shadow-2xl z-50',
+              'fixed top-0 right-0 h-full w-full max-w-sm sm:max-w-md lg:max-w-lg bg-slate-950/95 backdrop-blur-md border-l border-slate-800 shadow-2xl z-50',
               className
             )}
             initial={{ x: '100%' }}
@@ -184,11 +184,11 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-primary-400 bg-dark-300">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-800 bg-slate-950/95">
               <div className="flex-1 min-w-0">
-                <h2 className="text-xl sm:text-2xl font-display font-bold text-white mb-1 truncate">Notifications</h2>
+                <h2 className="mb-1 truncate text-xl sm:text-2xl font-semibold text-slate-100">Notifications</h2>
                 {unreadCount > 0 && (
-                  <p className="text-sm text-white font-medium">{unreadCount} unread messages</p>
+                  <p className="text-xs text-slate-400">{unreadCount} unread</p>
                 )}
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 ml-2">
@@ -226,34 +226,33 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
             </div>
 
             {/* Filter Tabs */}
-            <div className="flex space-x-1 p-3 bg-dark-200 border-b border-primary-400">
-              {[
-                { id: 'all', label: 'All', count: notifications.length, emoji: '📋' },
-                { id: 'unread', label: 'Unread', count: unreadCount, emoji: '🔔' },
-                { id: 'games', label: 'Games', count: notifications.filter(n => ['game_reminder', 'game_update', 'game_starting', 'game_cancelled', 'player_joined', 'player_left'].includes(n.type)).length, emoji: '🏀' },
-                { id: 'messages', label: 'Messages', count: notifications.filter(n => n.type === 'message').length, emoji: '💬' }
+            <div className="flex space-x-1 border-b border-slate-800 bg-slate-950 p-3">
+                {[
+                  { id: 'all', label: 'All', count: notifications.length },
+                  { id: 'unread', label: 'Unread', count: unreadCount },
+                  { id: 'games', label: 'Games', count: notifications.filter(n => ['game_reminder', 'game_update', 'game_starting', 'game_cancelled', 'player_joined', 'player_left'].includes(n.type)).length },
+                  { id: 'messages', label: 'Messages', count: notifications.filter(n => n.type === 'message').length }
               ].map((tab) => (
                 <motion.button
                   key={tab.id}
                   onClick={() => setFilter(tab.id as any)}
                   className={cn(
-                    'flex items-center justify-center space-x-1 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200 flex-1 min-w-0',
+                    'flex min-w-0 flex-1 items-center justify-center space-x-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all duration-150',
                     filter === tab.id
-                      ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg'
-                      : 'text-white hover:text-white hover:bg-primary-600 border border-primary-400'
+                      ? 'bg-slate-800 text-slate-100'
+                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900'
                   )}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <span className="text-sm flex-shrink-0">{tab.emoji}</span>
-                  <span className="font-semibold truncate text-xs">{tab.label}</span>
+                  <span className="truncate text-xs font-semibold">{tab.label}</span>
                   {tab.count > 0 && (
                     <motion.span
                       className={cn(
-                        'px-1 py-0.5 rounded-full text-xs font-bold min-w-[16px] text-center flex-shrink-0',
+                        'min-w-[16px] flex-shrink-0 rounded-full px-1 py-0.5 text-center text-xs font-bold',
                         filter === tab.id
-                          ? 'bg-white text-dark-400'
-                          : 'bg-primary-500 text-white'
+                          ? 'bg-primary-500 text-slate-950'
+                          : 'bg-slate-700 text-slate-100'
                       )}
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
@@ -269,11 +268,10 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
             {/* Notifications List */}
             <div className="flex-1 overflow-y-auto">
               {filteredNotifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-center px-6">
-                  <Bell className="w-16 h-16 text-primary-400 mb-4" />
-                  <h3 className="text-lg font-medium text-white mb-2">No notifications</h3>
-                  <p className="text-sm text-white">
-                    {filter === 'unread' ? 'All caught up!' : 'You\'ll see notifications here when they arrive.'}
+                <div className="flex h-64 flex-col items-center justify-center px-6 text-center">
+                  <h3 className="mb-2 text-sm font-medium text-slate-100">No notifications</h3>
+                  <p className="text-xs text-slate-500">
+                    {filter === 'unread' ? 'You are all caught up.' : 'New updates will appear here.'}
                   </p>
                 </div>
               ) : (
@@ -282,11 +280,11 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
                     <motion.div
                       key={notification.id}
                       className={cn(
-                        'relative p-4 mx-1 rounded-xl border-l-4 transition-all duration-200 cursor-pointer shadow-sm',
+                        'relative mx-1 cursor-pointer rounded-xl border-l-4 p-4 shadow-sm transition-all duration-200',
                         'sm:p-6 sm:mx-2',
                         notification.isRead
-                          ? 'bg-dark-300 hover:bg-dark-200 border-primary-400'
-                          : 'bg-dark-200 hover:bg-dark-100 border-primary-400',
+                          ? 'bg-slate-900 hover:bg-slate-800 border-slate-700'
+                          : 'bg-slate-900 hover:bg-slate-800 border-primary-500',
                         getPriorityColor(notification.priority)
                       )}
                       onClick={() => {
@@ -300,23 +298,23 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <div className="flex items-start space-x-2 sm:space-x-3">
+                          <div className="flex items-start space-x-2 sm:space-x-3">
                         {/* Icon */}
                         <div className="flex-shrink-0 mt-0.5 sm:mt-1">
                           {getNotificationIcon(notification.type)}
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0">
+                            <div className="min-w-0 flex-1">
                           {/* Title and Actions Row */}
                           <div className="flex items-start justify-between mb-2 sm:mb-3">
-                            <h4 className="text-base sm:text-lg font-bold font-display leading-tight text-white flex-1 pr-2">
+                            <h4 className="flex-1 pr-2 text-base font-semibold leading-tight text-slate-100 sm:text-sm">
                               {notification.title}
                             </h4>
                             <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-1">
                               {!notification.isRead && (
                                 <motion.div
-                                  className="w-2 h-2 sm:w-3 sm:h-3 bg-gradient-to-r from-primary-400 to-primary-500 rounded-full shadow-lg"
+                                  className="h-2 w-2 rounded-full bg-primary-500 shadow-glow"
                                   animate={{
                                     scale: [1, 1.2, 1]
                                   }}
@@ -343,12 +341,12 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
 
                           {/* Timestamp Row */}
                           <div className="mb-2 sm:mb-3">
-                            <span className="text-xs text-white font-medium bg-dark-400 px-2 py-1 rounded-full">
+                            <span className="rounded-full bg-slate-900 px-2 py-1 text-[11px] font-medium text-slate-400">
                               {getTimeAgo(notification.timestamp)}
                             </span>
                           </div>
 
-                          <p className="text-sm leading-relaxed mb-3 sm:mb-4 text-white">
+                          <p className="mb-3 text-xs leading-relaxed text-slate-300 sm:mb-4">
                             {notification.message}
                           </p>
 
@@ -357,11 +355,11 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
                             {notification.priority === 'high' && !notification.isRead && (
                               <div className="flex items-center space-x-2">
                                 <motion.div
-                                  className="w-2 h-2 bg-red-500 rounded-full"
+                                  className="h-2 w-2 rounded-full bg-red-500"
                                   animate={{ scale: [1, 1.3, 1] }}
                                   transition={{ duration: 1, repeat: Infinity }}
                                 />
-                                <span className="text-xs text-red-300 font-bold">🚨 High Priority</span>
+                                <span className="text-[11px] font-medium text-red-300">High priority</span>
                               </div>
                             )}
 
@@ -389,17 +387,16 @@ export function NotificationCenter({ isOpen, onClose, className }: NotificationC
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-primary-400 bg-dark-300">
+            <div className="border-t border-slate-800 bg-slate-950/95 p-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-white font-medium">
-                  🏀 {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? 's' : ''}
+                <span className="text-xs font-medium text-slate-400">
+                  {filteredNotifications.length} notification{filteredNotifications.length !== 1 ? 's' : ''}
                 </span>
                 <motion.button
-                  className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium text-white hover:text-white hover:bg-primary-600 transition-all duration-200"
+                  className="flex items-center space-x-2 rounded-lg px-3 py-2 text-xs font-medium text-slate-300 hover:bg-slate-900 hover:text-slate-100 transition-all duration-150"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span>⚙️</span>
                   <span>Settings</span>
                 </motion.button>
               </div>

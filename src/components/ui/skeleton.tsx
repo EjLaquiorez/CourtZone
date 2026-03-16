@@ -185,39 +185,31 @@ export function DashboardSkeleton() {
   return (
     <div className="p-4 lg:p-8 space-y-8">
       {/* Header skeleton */}
-      <div className="mb-8">
-        <Skeleton className="h-8 w-64 mb-2" />
-        <Skeleton className="h-5 w-48" />
+      <div className="space-y-2">
+        <Skeleton className="h-7 w-64" />
+        <Skeleton className="h-4 w-48" />
       </div>
-      
-      {/* Quick action cards skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="bg-gradient-to-br from-primary-500/20 to-primary-600/20 rounded-xl p-6 border border-primary-400/30">
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48 mb-4" />
-            <Skeleton className="h-10 w-full rounded-lg" />
-          </div>
-        ))}
-      </div>
-      
-      {/* Stats skeleton */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+
+      {/* Map skeleton */}
+      <Skeleton className="mt-6 h-[260px] sm:h-[320px] lg:h-[420px] rounded-xl border border-slate-800" />
+
+      {/* Stats row skeleton */}
+      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <StatCardSkeleton key={i} />
+          <Skeleton key={i} className="h-20 rounded-xl border border-slate-800" />
         ))}
       </div>
-      
+
       {/* Content sections skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-32 mb-4" />
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-6">
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-32" />
           {Array.from({ length: 3 }).map((_, i) => (
             <GameCardSkeleton key={i} />
           ))}
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-6 w-32 mb-4" />
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-40" />
           {Array.from({ length: 3 }).map((_, i) => (
             <GameCardSkeleton key={i} />
           ))}

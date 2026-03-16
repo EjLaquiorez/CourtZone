@@ -110,7 +110,7 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
   return (
     <motion.aside
       className={cn(
-        'bg-gradient-to-b from-dark-400 to-dark-500 border-r border-primary-400/20',
+        'bg-slate-950 border-r border-slate-800',
         'flex shrink-0 flex-col h-screen overflow-y-auto sticky top-0 z-40',
         'transition-all duration-300 ease-in-out',
         isOpen ? 'w-64' : 'w-16',
@@ -121,7 +121,7 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-primary-400/20">
+      <div className="p-4 border-b border-slate-800">
         <div className="flex items-center justify-between">
           {isOpen && (
             <motion.div
@@ -130,16 +130,16 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
-                <span className="text-white font-bold text-sm">🏀</span>
+              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
+                <span className="text-sm font-semibold text-primary-400">CZ</span>
               </div>
-              <span className="text-lg font-display font-bold text-white">Court Zone</span>
+              <span className="text-sm font-semibold text-slate-100">Court Zone</span>
             </motion.div>
           )}
 
           <motion.button
             onClick={onToggle}
-            className="p-2 rounded-lg text-primary-400 hover:text-primary-300 hover:bg-primary-400/10 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -168,54 +168,33 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
               <Link
                 href={item.href}
                 className={cn(
-                  'flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative',
+                  'flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-150 group relative',
                   isActive
-                    ? 'bg-primary-500/20 text-white border border-primary-400/30'
-                    : 'text-white hover:text-white hover:bg-primary-400/10'
+                    ? 'bg-slate-900 text-slate-50 border border-primary-500/60'
+                    : 'text-slate-300 hover:text-slate-50 hover:bg-slate-900'
                 )}
                 onMouseEnter={() => setHoveredItem(item.name)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                {/* Active indicator */}
-                {isActive && (
-                  <motion.div
-                    className="absolute left-0 top-0 bottom-0 w-1 bg-primary-500 rounded-r"
-                    layoutId="activeIndicator"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-
-                {/* Icon with basketball theme */}
+                {/* Icon */}
                 <div className="relative">
                   <motion.div
                     className={cn(
-                      'w-6 h-6 flex items-center justify-center',
+                      'w-5 h-5 flex items-center justify-center text-slate-400',
                       isActive && 'text-primary-400'
                     )}
                     whileHover={{ scale: 1.1 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {isOpen ? (
-                      <span className="text-lg">{item.emoji}</span>
-                    ) : (
-                      <Icon className="w-5 h-5" />
-                    )}
+                    <Icon className="w-5 h-5" />
                   </motion.div>
 
-                  {/* Glow effect for active item */}
-                  {isActive && (
-                    <motion.div
-                      className="absolute inset-0 bg-primary-400/20 rounded-full blur-sm"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  )}
                 </div>
 
                 {/* Label */}
                 {isOpen && (
                   <motion.span
-                    className="font-medium font-primary text-white"
+                    className="text-sm font-medium text-slate-100"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1 }}
@@ -244,14 +223,14 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-primary-400/20">
+      <div className="p-4 border-t border-slate-800">
         <div className="space-y-2">
           {/* Settings */}
           <Link
             href="/settings"
             className={cn(
-              'flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200',
-              'text-white hover:text-white hover:bg-primary-400/10'
+              'flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-150',
+              'text-slate-300 hover:text-slate-50 hover:bg-slate-900'
             )}
           >
             <Settings className="w-5 h-5" />
@@ -264,8 +243,8 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
             onClick={handleLogout}
             disabled={isLoggingOut}
             className={cn(
-              'w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200',
-              'text-red-300 hover:text-red-200 hover:bg-red-400/10',
+              'w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-150',
+              'text-red-300 hover:text-red-200 hover:bg-red-500/10',
               isLoggingOut && 'cursor-not-allowed opacity-60'
             )}
           >
@@ -281,13 +260,14 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
         {/* User Profile (when expanded) */}
         {isOpen && (
           <motion.div
-            className="mt-4 p-3 bg-dark-300/50 rounded-lg border border-primary-400/20"
+            className="mt-4 p-3 rounded-lg border border-slate-800 bg-slate-900"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {/* fall back to initials if username is present */}
                 {user?.username
                   ? user.username
                       .split(' ')

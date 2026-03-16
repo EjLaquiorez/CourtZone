@@ -58,19 +58,15 @@ export function CourtCard({
   };
 
   const getCourtTypeColor = (type: string) => {
-    return type === 'indoor' ? 'text-blue-400' : 'text-court-500';
-  };
-
-  const getCourtTypeIcon = (type: string) => {
-    return type === 'indoor' ? '🏢' : '🌳';
+    return type === 'indoor' ? 'text-slate-300' : 'text-slate-300';
   };
 
   if (variant === 'compact') {
     return (
       <motion.div
         className={cn(
-          'bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-lg p-4 border border-primary-400/20',
-          'hover:border-primary-400/40 transition-all duration-300',
+          'rounded-lg border border-slate-800 bg-slate-900/80 p-4',
+          'transition-all duration-200 hover:border-slate-700 hover:bg-slate-900',
           className
         )}
         whileHover={{ y: -2 }}
@@ -79,15 +75,10 @@ export function CourtCard({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {/* Court Type Icon */}
-            <div className="w-12 h-12 bg-gradient-to-br from-court-500 to-court-600 rounded-full flex items-center justify-center">
-              <span className="text-xl">{getCourtTypeIcon(court.courtType)}</span>
-            </div>
-
             {/* Court Info */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-primary-100 truncate">{court.name}</h3>
-              <div className="flex items-center space-x-2 text-sm text-primary-300">
+              <h3 className="truncate text-sm font-medium text-slate-100">{court.name}</h3>
+              <div className="mt-0.5 flex items-center space-x-2 text-xs text-slate-500">
                 <span className={getCourtTypeColor(court.courtType)}>
                   {court.courtType === 'indoor' ? 'Indoor' : 'Outdoor'}
                 </span>
@@ -106,7 +97,7 @@ export function CourtCard({
             </div>
           </div>
 
-          {/* Quick Actions */}
+        {/* Quick Actions */}
           {showActions && (
             <div className="flex items-center space-x-2">
               <GameButton variant="secondary" size="sm" onClick={onGetDirections}>
@@ -125,16 +116,16 @@ export function CourtCard({
   if (variant === 'map-popup') {
     return (
       <div className={cn(
-        'bg-dark-300 rounded-lg p-4 border border-primary-400/20 min-w-[280px]',
+        'min-w-[280px] rounded-lg border border-slate-800 bg-slate-900/90 p-4',
         className
       )}>
         <div className="space-y-3">
           {/* Header */}
           <div>
-            <h3 className="font-bold text-primary-100 text-lg">{court.name}</h3>
-            <div className="flex items-center space-x-2 text-sm text-primary-300">
+            <h3 className="text-sm font-medium text-slate-100">{court.name}</h3>
+            <div className="mt-0.5 flex items-center space-x-2 text-xs text-slate-500">
               <span className={getCourtTypeColor(court.courtType)}>
-                {getCourtTypeIcon(court.courtType)} {court.courtType === 'indoor' ? 'Indoor' : 'Outdoor'}
+                {court.courtType === 'indoor' ? 'Indoor' : 'Outdoor'}
               </span>
               <span>•</span>
               <div className="flex items-center">
@@ -146,12 +137,12 @@ export function CourtCard({
 
           {/* Address */}
           <div className="flex items-start space-x-2">
-            <MapPin className="w-4 h-4 text-primary-400 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-primary-200">{court.address}</p>
+            <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-slate-500" />
+            <p className="text-xs text-slate-300">{court.address}</p>
           </div>
 
           {/* Amenities */}
-          <div className="flex items-center space-x-4 text-xs text-primary-300">
+          <div className="flex items-center space-x-4 text-[11px] text-slate-500">
             {court.hasLighting && (
               <div className="flex items-center space-x-1">
                 <Lightbulb className="w-3 h-3" />
@@ -184,8 +175,8 @@ export function CourtCard({
   return (
     <motion.div
       className={cn(
-        'bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20',
-        'hover:border-primary-400/40 transition-all duration-300 relative overflow-hidden',
+        'relative overflow-hidden rounded-xl border border-slate-800 bg-slate-900/80 p-6',
+        'transition-all duration-200 hover:border-slate-700 hover:bg-slate-900',
         className
       )}
       initial={{ opacity: 0, y: 20 }}
@@ -193,31 +184,15 @@ export function CourtCard({
       whileHover={{ y: -5, scale: 1.02 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 text-6xl opacity-5">🏀</div>
-
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-4">
-          {/* Court Type Icon */}
-          <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-br from-court-500 to-court-600 rounded-full flex items-center justify-center court-shadow">
-              <span className="text-2xl">{getCourtTypeIcon(court.courtType)}</span>
-            </div>
-            {/* Verified badge */}
-            {court.isVerified && (
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                <Shield className="w-3 h-3 text-white" />
-              </div>
-            )}
-          </div>
-
           {/* Court Info */}
           <div>
-            <h3 className="text-xl font-display font-bold text-white mb-1">{court.name}</h3>
-            <div className="flex items-center space-x-3 text-sm text-primary-300">
+            <h3 className="mb-1 text-sm font-medium text-slate-100">{court.name}</h3>
+            <div className="flex items-center space-x-3 text-xs text-slate-500">
               <span className={cn('font-medium', getCourtTypeColor(court.courtType))}>
-                {court.courtType === 'indoor' ? 'Indoor Court' : 'Outdoor Court'}
+                {court.courtType === 'indoor' ? 'Indoor court' : 'Outdoor court'}
               </span>
               <span>•</span>
               <div className="flex items-center">
@@ -230,7 +205,7 @@ export function CourtCard({
 
         {/* Distance badge */}
         {distance && (
-          <div className="px-3 py-1 bg-primary-500/20 text-primary-400 text-sm font-medium rounded-full border border-primary-500/30">
+          <div className="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-300">
             {formatDistance(distance)}
           </div>
         )}
@@ -238,34 +213,34 @@ export function CourtCard({
 
       {/* Address */}
       <div className="flex items-start space-x-2 mb-4">
-        <MapPin className="w-5 h-5 text-primary-400 mt-0.5 flex-shrink-0" />
-        <p className="text-primary-200">{court.address}</p>
+        <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-500" />
+        <p className="text-sm text-slate-300">{court.address}</p>
       </div>
 
       {/* Amenities Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className={cn(
-          'flex items-center space-x-2 p-3 rounded-lg',
-          court.hasLighting ? 'bg-court-500/20 text-court-400' : 'bg-dark-200/50 text-gray-400'
+          'flex items-center space-x-2 rounded-lg p-3 text-xs',
+          court.hasLighting ? 'bg-slate-900 text-slate-200 border border-slate-700' : 'bg-slate-900 text-slate-500 border border-slate-800'
         )}>
           <Lightbulb className="w-5 h-5" />
           <span className="text-sm font-medium">Lighting</span>
         </div>
         
         <div className={cn(
-          'flex items-center space-x-2 p-3 rounded-lg',
-          court.hasParking ? 'bg-blue-500/20 text-blue-400' : 'bg-dark-200/50 text-gray-400'
+          'flex items-center space-x-2 rounded-lg p-3 text-xs',
+          court.hasParking ? 'bg-slate-900 text-slate-200 border border-slate-700' : 'bg-slate-900 text-slate-500 border border-slate-800'
         )}>
           <Car className="w-5 h-5" />
           <span className="text-sm font-medium">Parking</span>
         </div>
 
-        <div className="flex items-center space-x-2 p-3 rounded-lg bg-primary-500/20 text-primary-400">
+        <div className="flex items-center space-x-2 rounded-lg border border-slate-800 bg-slate-900 p-3 text-xs text-slate-300">
           <Users className="w-5 h-5" />
           <span className="text-sm font-medium">Available</span>
         </div>
 
-        <div className="flex items-center space-x-2 p-3 rounded-lg bg-yellow-500/20 text-yellow-400">
+        <div className="flex items-center space-x-2 rounded-lg border border-slate-800 bg-slate-900 p-3 text-xs text-slate-300">
           <Clock className="w-5 h-5" />
           <span className="text-sm font-medium">24/7</span>
         </div>
@@ -274,12 +249,12 @@ export function CourtCard({
       {/* Additional Amenities */}
       {court.amenities && court.amenities.length > 0 && (
         <div className="mb-6">
-          <h4 className="text-sm font-medium text-primary-200 mb-2">Additional Amenities</h4>
+          <h4 className="mb-2 text-xs font-medium text-slate-400">Additional amenities</h4>
           <div className="flex flex-wrap gap-2">
             {court.amenities.map((amenity, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-dark-200/50 text-primary-300 text-xs rounded-full"
+                className="rounded-full bg-slate-900 px-2 py-1 text-[11px] text-slate-400 border border-slate-800"
               >
                 {amenity}
               </span>
@@ -291,15 +266,15 @@ export function CourtCard({
       {/* Photos Preview */}
       {court.photos && court.photos.length > 0 && (
         <div className="mb-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Camera className="w-4 h-4 text-primary-400" />
-            <span className="text-sm font-medium text-primary-200">Photos ({court.photos.length})</span>
+          <div className="mb-2 flex items-center space-x-2">
+            <Camera className="h-4 w-4 text-slate-500" />
+            <span className="text-xs font-medium text-slate-400">Photos ({court.photos.length})</span>
           </div>
           <div className="flex space-x-2 overflow-x-auto">
             {court.photos.slice(0, 4).map((photo, index) => (
               <div
                 key={index}
-                className="w-20 h-20 bg-dark-200 rounded-lg flex-shrink-0 overflow-hidden"
+                className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg bg-slate-800"
               >
                 <img
                   src={photo}
@@ -309,7 +284,7 @@ export function CourtCard({
               </div>
             ))}
             {court.photos.length > 4 && (
-              <div className="w-20 h-20 bg-dark-200 rounded-lg flex-shrink-0 flex items-center justify-center text-primary-300 text-xs">
+              <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-lg bg-slate-900 text-xs text-slate-400">
                 +{court.photos.length - 4}
               </div>
             )}
@@ -319,7 +294,7 @@ export function CourtCard({
 
       {/* Actions */}
       {showActions && (
-        <div className="flex items-center justify-between pt-4 border-t border-primary-400/20">
+        <div className="flex items-center justify-between border-t border-slate-800 pt-4">
           <div className="flex items-center space-x-2">
             <GameButton
               variant="secondary"

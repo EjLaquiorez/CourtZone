@@ -110,7 +110,7 @@ export function TeamCreationForm({
   return (
     <motion.div
       className={cn(
-        'bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-8 border border-primary-400/20',
+        'rounded-xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8',
         className
       )}
       initial={{ opacity: 0, scale: 0.95 }}
@@ -119,248 +119,262 @@ export function TeamCreationForm({
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-display font-bold text-white mb-2">
-            Create Your Team 👥
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-slate-100">
+            Create team
           </h2>
-          <p className="text-primary-200">
-            Build your championship squad and dominate the court
+          <p className="mt-1 text-sm text-slate-400">
+            Set up your team profile, size, privacy, and preferred skill level.
           </p>
         </div>
 
-        {/* Team Logo Upload */}
-        <div className="text-center">
-          <div className="relative inline-block">
-            <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4 basketball-glow">
-              {logoPreview ? (
-                <img src={logoPreview} alt="Team logo" className="w-full h-full rounded-full object-cover" />
-              ) : (
-                <Users className="w-12 h-12 text-white" />
-              )}
+        {/* Two-column layout */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* Left column: branding + basic info */}
+          <div className="space-y-5">
+            {/* Team Logo Upload */}
+            <div className="flex items-start gap-4">
+              <div className="relative">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-800 text-slate-200">
+                  {logoPreview ? (
+                    <img
+                      src={logoPreview}
+                      alt="Team logo"
+                      className="h-full w-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-8 w-8" />
+                  )}
+                </div>
+                <label className="absolute bottom-0 right-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-primary-500 text-white transition-colors hover:bg-primary-400">
+                  <Upload className="h-3.5 w-3.5" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-slate-200">
+                  Team logo
+                </p>
+                <p className="text-xs text-slate-500">
+                  Optional. Square images work best (at least 256×256).
+                </p>
+              </div>
             </div>
-            <label className="absolute bottom-0 right-0 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition-colors">
-              <Upload className="w-4 h-4 text-white" />
+
+            {/* Team Name */}
+            <div>
+              <label htmlFor="name" className="mb-1.5 block text-xs font-medium text-slate-300">
+                Team name *
+              </label>
               <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoUpload}
-                className="hidden"
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={cn(
+                  'block w-full rounded-lg border bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary-500',
+                  errors.name ? 'border-red-500/70' : 'border-slate-700'
+                )}
+                placeholder="Enter your team name"
+                maxLength={50}
               />
-            </label>
-          </div>
-          <p className="text-xs text-primary-300">Upload team logo (optional)</p>
-        </div>
-
-        {/* Team Name */}
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-primary-200 mb-2">
-            Team Name *
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleInputChange}
-            className={cn(
-              "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300",
-              "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-              "transition-all duration-200",
-              errors.name ? "border-red-500/50" : "border-primary-400/30"
-            )}
-            placeholder="Enter your team name"
-            maxLength={50}
-          />
-          {errors.name && (
-            <motion.p
-              className="mt-1 text-sm text-red-400"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {errors.name}
-            </motion.p>
-          )}
-        </div>
-
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-primary-200 mb-2">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows={4}
-            className={cn(
-              "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300",
-              "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-              "transition-all duration-200 resize-none",
-              errors.description ? "border-red-500/50" : "border-primary-400/30"
-            )}
-            placeholder="Tell others about your team, playing style, and goals..."
-            maxLength={500}
-          />
-          <div className="flex justify-between mt-1">
-            {errors.description && (
-              <motion.p
-                className="text-sm text-red-400"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {errors.description}
-              </motion.p>
-            )}
-            <p className="text-xs text-primary-300 ml-auto">
-              {formData.description?.length || 0}/500
-            </p>
-          </div>
-        </div>
-
-        {/* Team Settings Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Max Team Size */}
-          <div>
-            <label htmlFor="maxSize" className="block text-sm font-medium text-primary-200 mb-2">
-              Maximum Team Size
-            </label>
-            <select
-              id="maxSize"
-              name="maxSize"
-              value={formData.maxSize}
-              onChange={handleInputChange}
-              className={cn(
-                "block w-full px-4 py-3 border rounded-lg bg-dark-200/50 text-primary-100",
-                "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent",
-                "transition-all duration-200",
-                errors.maxSize ? "border-red-500/50" : "border-primary-400/30"
+              {errors.name && (
+                <motion.p
+                  className="mt-1 text-xs text-red-400"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {errors.name}
+                </motion.p>
               )}
-            >
-              {Array.from({ length: 16 }, (_, i) => i + 5).map(size => (
-                <option key={size} value={size}>{size} players</option>
-              ))}
-            </select>
-            {errors.maxSize && (
-              <motion.p
-                className="mt-1 text-sm text-red-400"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                {errors.maxSize}
-              </motion.p>
-            )}
-          </div>
+            </div>
 
-          {/* Team Privacy */}
-          <div>
-            <label className="block text-sm font-medium text-primary-200 mb-3">
-              Team Privacy
-            </label>
-            <div className="space-y-3">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="isPublic"
-                  checked={formData.isPublic}
-                  onChange={() => setFormData(prev => ({ ...prev, isPublic: true }))}
-                  className="sr-only"
-                />
-                <div className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all",
-                  formData.isPublic 
-                    ? "border-primary-500 bg-primary-500/10" 
-                    : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
-                )}>
-                  <Globe className="w-5 h-5 text-primary-400" />
-                  <div>
-                    <p className="text-sm font-medium text-primary-100">Public</p>
-                    <p className="text-xs text-primary-300">Anyone can find and join</p>
-                  </div>
-                </div>
+            {/* Description */}
+            <div>
+              <label htmlFor="description" className="mb-1.5 block text-xs font-medium text-slate-300">
+                Description
               </label>
-
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="isPublic"
-                  checked={!formData.isPublic}
-                  onChange={() => setFormData(prev => ({ ...prev, isPublic: false }))}
-                  className="sr-only"
-                />
-                <div className={cn(
-                  "flex items-center space-x-3 p-3 rounded-lg border transition-all",
-                  !formData.isPublic 
-                    ? "border-primary-500 bg-primary-500/10" 
-                    : "border-primary-400/30 bg-dark-200/30 hover:border-primary-400/50"
-                )}>
-                  <Lock className="w-5 h-5 text-primary-400" />
-                  <div>
-                    <p className="text-sm font-medium text-primary-100">Private</p>
-                    <p className="text-xs text-primary-300">Invite only</p>
-                  </div>
-                </div>
-              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows={5}
+                className={cn(
+                  'block w-full resize-none rounded-lg border bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary-500',
+                  errors.description ? 'border-red-500/70' : 'border-slate-700'
+                )}
+                placeholder="Tell others about your team, playing style, and goals…"
+                maxLength={500}
+              />
+              <div className="mt-1 flex justify-between">
+                {errors.description && (
+                  <motion.p
+                    className="text-xs text-red-400"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    {errors.description}
+                  </motion.p>
+                )}
+                <p className="ml-auto text-xs text-slate-500">
+                  {formData.description?.length || 0}/500
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Skill Level Range */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-display font-bold text-white">
-            Skill Level Requirements
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InteractiveSkillSelector
-              level={formData.minSkillLevel}
-              onChange={(level) => handleSkillLevelChange('min', level)}
-              label="Minimum Skill Level"
-            />
-            
-            <InteractiveSkillSelector
-              level={formData.maxSkillLevel}
-              onChange={(level) => handleSkillLevelChange('max', level)}
-              label="Maximum Skill Level"
-            />
+          {/* Right column: settings */}
+          <div className="space-y-6">
+            {/* Max Team Size */}
+            <div>
+              <label htmlFor="maxSize" className="mb-1.5 block text-xs font-medium text-slate-300">
+                Maximum team size
+              </label>
+              <select
+                id="maxSize"
+                name="maxSize"
+                value={formData.maxSize}
+                onChange={handleInputChange}
+                className={cn(
+                  'block w-full rounded-lg border bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500',
+                  errors.maxSize ? 'border-red-500/70' : 'border-slate-700'
+                )}
+              >
+                {Array.from({ length: 16 }, (_, i) => i + 5).map((size) => (
+                  <option key={size} value={size}>
+                    {size} players
+                  </option>
+                ))}
+              </select>
+              {errors.maxSize && (
+                <motion.p
+                  className="mt-1 text-xs text-red-400"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {errors.maxSize}
+                </motion.p>
+              )}
+            </div>
+
+            {/* Team Privacy */}
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-slate-300">
+                Team privacy
+              </label>
+              <div className="space-y-2">
+                <label className="flex cursor-pointer items-center">
+                  <input
+                    type="radio"
+                    name="isPublic"
+                    checked={formData.isPublic}
+                    onChange={() => setFormData((prev) => ({ ...prev, isPublic: true }))}
+                    className="sr-only"
+                  />
+                  <div
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-xs transition-colors',
+                      formData.isPublic
+                        ? 'border-primary-500 bg-slate-900'
+                        : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                    )}
+                  >
+                    <Globe className="h-4 w-4 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-medium text-slate-100">Public</p>
+                      <p className="text-[11px] text-slate-500">Anyone can find and request to join.</p>
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex cursor-pointer items-center">
+                  <input
+                    type="radio"
+                    name="isPublic"
+                    checked={!formData.isPublic}
+                    onChange={() => setFormData((prev) => ({ ...prev, isPublic: false }))}
+                    className="sr-only"
+                  />
+                  <div
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-xs transition-colors',
+                      !formData.isPublic
+                        ? 'border-primary-500 bg-slate-900'
+                        : 'border-slate-700 bg-slate-900 hover:border-slate-600'
+                    )}
+                  >
+                    <Lock className="h-4 w-4 text-slate-400" />
+                    <div>
+                      <p className="text-xs font-medium text-slate-100">Private</p>
+                      <p className="text-[11px] text-slate-500">Invite-only. Hidden from search.</p>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Skill Level Range */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-medium text-slate-300">
+                Skill level requirements
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <InteractiveSkillSelector
+                  level={formData.minSkillLevel}
+                  onChange={(level) => handleSkillLevelChange('min', level)}
+                  label="Minimum level"
+                />
+
+                <InteractiveSkillSelector
+                  level={formData.maxSkillLevel}
+                  onChange={(level) => handleSkillLevelChange('max', level)}
+                  label="Maximum level"
+                />
+              </div>
+              {errors.skillRange && (
+                <motion.p
+                  className="text-xs text-red-400"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {errors.skillRange}
+                </motion.p>
+              )}
+            </div>
           </div>
-
-          {errors.skillRange && (
-            <motion.p
-              className="text-sm text-red-400"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              {errors.skillRange}
-            </motion.p>
-          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-primary-400/20">
+        <div className="mt-2 flex flex-col gap-3 border-t border-slate-800 pt-4 sm:flex-row sm:justify-end">
           {onCancel && (
             <GameButton
               type="button"
               variant="secondary"
-              size="lg"
+              size="md"
               onClick={onCancel}
-              className="sm:flex-1"
-              icon={<X className="w-5 h-5" />}
+              className="sm:w-auto"
+              icon={<X className="w-4 h-4" />}
             >
               Cancel
             </GameButton>
           )}
-          
+
           <GameButton
             type="submit"
             variant="primary"
-            size="lg"
+            size="md"
             loading={isLoading}
-            glow
-            className="sm:flex-1"
-            icon={<Save className="w-5 h-5" />}
+            className="sm:w-auto"
+            icon={<Save className="w-4 h-4" />}
           >
-            {isLoading ? 'Creating Team...' : 'Create Team'}
+            {isLoading ? 'Creating team…' : 'Create Team'}
           </GameButton>
         </div>
       </form>

@@ -158,7 +158,7 @@ export default function CourtsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
@@ -186,16 +186,16 @@ export default function CourtsPage() {
           <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8"
+              className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div>
-                <h1 className="text-3xl lg:text-4xl font-display font-bold text-white mb-2">
-                  Courts 🗺️
+                <h1 className="mb-1 text-xl lg:text-2xl font-semibold text-slate-100">
+                  Courts
                 </h1>
-                <p className="text-primary-200 text-lg">
+                <p className="text-sm text-slate-400">
                   Discover basketball courts near you
                 </p>
               </div>
@@ -213,38 +213,38 @@ export default function CourtsPage() {
 
             {/* Search and Controls */}
             <motion.div
-              className="bg-gradient-to-r from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20 mb-8"
+              className="mb-6 rounded-xl border border-slate-800 bg-slate-900/80 p-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
                 {/* Search */}
-                <div className="flex-1 relative">
+                <div className="relative flex-1">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-primary-400" />
+                    <Search className="h-4 w-4 text-slate-500" />
                   </div>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-primary-400/30 rounded-lg bg-dark-200/50 text-primary-100 placeholder-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="block w-full rounded-lg border border-slate-700 bg-slate-900 pl-9 pr-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
                     placeholder="Search courts by name or location..."
                   />
                 </div>
 
                 {/* View Mode Toggle */}
-                <div className="flex items-center bg-dark-200/50 rounded-lg p-1">
+                <div className="flex items-center rounded-lg border border-slate-800 bg-slate-900 p-1">
                   <button
                     onClick={() => {
                       setViewMode('map');
                       setMapLoaded(true);
                     }}
                     className={cn(
-                      'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
+                      'flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
                       viewMode === 'map'
-                        ? 'bg-primary-500 text-white'
-                        : 'text-primary-300 hover:text-primary-100'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-100'
                     )}
                     {...mapPreload}
                   >
@@ -254,10 +254,10 @@ export default function CourtsPage() {
                   <button
                     onClick={() => setViewMode('list')}
                     className={cn(
-                      'flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all',
+                      'flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all',
                       viewMode === 'list'
-                        ? 'bg-primary-500 text-white'
-                        : 'text-primary-300 hover:text-primary-100'
+                        ? 'bg-slate-800 text-slate-100'
+                        : 'text-slate-400 hover:text-slate-100'
                     )}
                   >
                     <List className="w-4 h-4" />
@@ -290,20 +290,20 @@ export default function CourtsPage() {
 
             {/* Results Summary */}
             <motion.div
-              className="flex items-center justify-between mb-6"
+              className="mb-4 flex items-center justify-between"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <p className="text-primary-300">
+              <p className="text-sm text-slate-400">
                 Found {filteredCourts.length} courts
                 {searchQuery && ` matching "${searchQuery}"`}
                 {userLocation && ' near you'}
               </p>
 
-              <div className="flex items-center space-x-2 text-sm text-primary-300">
+              <div className="flex items-center space-x-2 text-xs text-slate-500">
                 <span>Sort by:</span>
-                <select className="bg-dark-200/50 border border-primary-400/30 rounded px-2 py-1 text-primary-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
+                <select className="rounded border border-slate-700 bg-slate-900 px-2 py-1 text-slate-100 focus:outline-none focus:ring-1 focus:ring-primary-500">
                   <option value="distance">Distance</option>
                   <option value="rating">Rating</option>
                   <option value="name">Name</option>
@@ -319,9 +319,9 @@ export default function CourtsPage() {
               transition={{ delay: 0.6 }}
             >
               {courtsLoading ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-48 bg-primary-400/20 rounded-lg animate-pulse"></div>
+                    <div key={i} className="h-40 rounded-lg border border-slate-800 bg-slate-900/80 animate-pulse" />
                   ))}
                 </div>
               ) : viewMode === 'map' ? (
@@ -389,11 +389,11 @@ export default function CourtsPage() {
               ) : (
                 /* List View */
                 <div className="space-y-8">
-                  {/* Frequent players banner placeholder to reinforce community at each court */}
-                  <div className="bg-gradient-to-r from-primary-500/10 to-primary-600/10 border border-primary-500/30 rounded-xl p-4 flex items-center justify-between">
+                  {/* Frequent players banner placeholder */}
+                  <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-4">
                     <div>
-                      <p className="text-primary-100 font-medium">Frequent Players (coming soon)</p>
-                      <p className="text-sm text-primary-300">
+                      <p className="text-sm font-medium text-slate-100">Frequent players (coming soon)</p>
+                      <p className="text-xs text-slate-500">
                         Courts will highlight regulars and their reliability so you know who really shows up.
                       </p>
                     </div>
@@ -425,16 +425,15 @@ export default function CourtsPage() {
             {/* Empty State */}
             {!courtsLoading && filteredCourts.length === 0 && (
               <motion.div
-                className="text-center py-16"
+                className="py-16 text-center"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                <MapPin className="w-16 h-16 text-primary-400 mx-auto mb-4" />
-                <h3 className="text-xl font-display font-bold text-white mb-2">
+                <h3 className="mb-2 text-sm font-semibold text-slate-100">
                   No courts found
                 </h3>
-                <p className="text-primary-300 mb-6">
+                <p className="mb-4 text-sm text-slate-500">
                   {searchQuery
                     ? `No courts match your search for "${searchQuery}"`
                     : 'No courts match your current filters'

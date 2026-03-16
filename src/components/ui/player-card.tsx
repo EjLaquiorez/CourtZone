@@ -27,11 +27,9 @@ export function PlayerCard({
     return (
       <motion.div
         className={cn(
-          'flex items-center space-x-3 p-3 rounded-lg border transition-all duration-200',
-          interactive ? 'cursor-pointer hover:scale-102' : '',
-          selected
-            ? 'border-primary-500 bg-primary-500/10'
-            : 'border-primary-400/20 bg-dark-300/50',
+          'flex items-center space-x-3 rounded-lg border border-slate-800 bg-slate-900/70 p-3 text-xs transition-all duration-200',
+          interactive ? 'cursor-pointer hover:border-slate-700 hover:bg-slate-900' : '',
+          selected && 'ring-1 ring-primary-500 border-primary-500',
           className
         )}
         onClick={handleClick}
@@ -40,7 +38,7 @@ export function PlayerCard({
       >
         {/* Avatar */}
         <div className="relative">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-slate-100">
             {player.avatar ? (
               <img
                 src={player.avatar}
@@ -51,14 +49,13 @@ export function PlayerCard({
               (player.username || 'U').charAt(0).toUpperCase()
             )}
           </div>
-          {/* Online indicator */}
-          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-court-500 border-2 border-dark-300 rounded-full" />
+          <div className="absolute -bottom-1 -right-1 h-2.5 w-2.5 rounded-full border border-slate-900 bg-emerald-500" />
         </div>
 
         {/* Player info */}
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-primary-100 truncate">{player.username}</p>
-          <div className="flex items-center space-x-2 text-sm text-primary-300">
+          <p className="truncate text-xs font-medium text-slate-100">{player.username}</p>
+          <div className="flex items-center space-x-2 text-[11px] text-slate-500">
             {player.position && (
               <span>{player.position}</span>
             )}
@@ -97,7 +94,7 @@ export function PlayerCard({
 
         <div className="text-center">
           {/* Avatar */}
-          <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-2">
+          <div className="mx-auto mb-2 flex h-16 w-16 items-center justify-center rounded-full bg-slate-800 text-lg font-semibold text-slate-100">
             {player.avatar ? (
               <img
                 src={player.avatar}
@@ -110,7 +107,7 @@ export function PlayerCard({
           </div>
 
           {/* Name */}
-          <p className="font-medium text-primary-100 text-sm truncate">{player.username || 'User'}</p>
+          <p className="truncate text-xs font-medium text-slate-100">{player.username || 'User'}</p>
 
           {/* Skill stars */}
           <div className="flex justify-center mt-1">
@@ -123,14 +120,13 @@ export function PlayerCard({
 
   // Default: detailed variant
   return (
-    <motion.div
-      className={cn(
-        'bg-gradient-to-br from-dark-300/80 to-dark-400/80 backdrop-blur-sm rounded-xl p-6 border border-primary-400/20',
-        'hover:border-primary-400/40 transition-all duration-300',
-        interactive ? 'cursor-pointer' : '',
-        selected && 'ring-2 ring-primary-500 border-primary-500',
-        className
-      )}
+      <motion.div
+        className={cn(
+          'rounded-xl border border-slate-800 bg-slate-900/80 p-5 text-sm transition-all duration-200 hover:border-slate-700 hover:bg-slate-900',
+          interactive ? 'cursor-pointer' : '',
+          selected && 'ring-1 ring-primary-500 border-primary-500',
+          className
+        )}
       onClick={handleClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -138,11 +134,11 @@ export function PlayerCard({
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="mb-4 flex items-start justify-between">
         <div className="flex items-center space-x-3">
           {/* Avatar */}
           <div className="relative">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-lg basketball-glow">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-base font-semibold text-slate-100">
               {player.avatar ? (
                 <img
                   src={player.avatar}
@@ -153,14 +149,13 @@ export function PlayerCard({
                 (player.username || 'U').charAt(0).toUpperCase()
               )}
             </div>
-            {/* Online indicator */}
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-court-500 border-2 border-dark-300 rounded-full" />
+            <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border border-slate-900 bg-emerald-500" />
           </div>
 
           {/* Basic info */}
           <div>
-            <h3 className="font-bold text-primary-100 text-lg">{player.username || 'User'}</h3>
-            <div className="flex items-center space-x-2 text-sm text-primary-300">
+            <h3 className="text-sm font-medium text-slate-100">{player.username || 'User'}</h3>
+            <div className="mt-0.5 flex items-center space-x-2 text-xs text-slate-500">
               {player.position && (
                 <>
                   <span className="font-medium">{getPositionName(player.position)}</span>
@@ -185,43 +180,38 @@ export function PlayerCard({
 
       {/* Skill level */}
       <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-primary-200">Skill Level</span>
-          <span className="text-sm font-bold text-primary-400">{player.skillLevel}/10</span>
+        <div className="mb-1 flex items-center justify-between">
+          <span className="text-xs font-medium text-slate-400">Skill level</span>
+          <span className="text-xs font-semibold text-slate-100">{player.skillLevel}/10</span>
         </div>
         <PlayerSkillRating level={player.skillLevel} />
       </div>
 
       {/* Location */}
       {player.city && (
-        <div className="flex items-center space-x-2 text-sm text-primary-300 mb-4">
-          <MapPin className="w-4 h-4" />
+        <div className="mb-4 flex items-center space-x-2 text-xs text-slate-500">
+          <MapPin className="h-4 w-4" />
           <span>{player.city}</span>
         </div>
       )}
 
       {/* Stats (if enabled) */}
       {showStats && (
-        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-primary-400/20">
+        <div className="grid grid-cols-3 gap-4 border-t border-slate-800 pt-4 text-xs">
           <div className="text-center">
-            <p className="text-lg font-bold text-primary-100 font-accent">127</p>
-            <p className="text-xs text-primary-300">Games</p>
+            <p className="text-sm font-semibold text-slate-100">127</p>
+            <p className="text-[11px] text-slate-500">Games</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-court-500 font-accent">74%</p>
-            <p className="text-xs text-primary-300">Win Rate</p>
+            <p className="text-sm font-semibold text-emerald-400">74%</p>
+            <p className="text-[11px] text-slate-500">Win rate</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-bold text-yellow-400 font-accent">23</p>
-            <p className="text-xs text-primary-300">MVPs</p>
+            <p className="text-sm font-semibold text-amber-400">23</p>
+            <p className="text-[11px] text-slate-500">MVPs</p>
           </div>
         </div>
       )}
-
-      {/* Basketball decoration */}
-      <div className="absolute top-2 right-2 text-primary-400/20 text-2xl">
-        🏀
-      </div>
     </motion.div>
   );
 }
@@ -246,25 +236,15 @@ export function TeamMemberCard({
     }
   };
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'captain': return '👑';
-      case 'co_captain': return '⭐';
-      default: return '👤';
-    }
-  };
-
   return (
     <div className={cn('relative', className)}>
       <PlayerCard player={player} variant="compact" showStats />
 
       {/* Role badge */}
       <div className={cn(
-        'absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-bold flex items-center space-x-1',
-        'bg-dark-200 border border-primary-400/30',
+        'absolute -top-2 -right-2 flex items-center space-x-1 rounded-full border border-slate-700 bg-slate-900 px-2 py-1 text-[11px] font-medium',
         getRoleColor(role)
       )}>
-        <span>{getRoleIcon(role)}</span>
         <span className="capitalize">{role.replace('_', ' ')}</span>
       </div>
 

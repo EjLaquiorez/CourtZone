@@ -77,18 +77,18 @@ export function CourtMap({
   const getMapStyleClasses = () => {
     switch (mapStyle) {
       case 'satellite':
-        return 'bg-gradient-to-br from-green-900 via-green-800 to-green-700';
+        return 'bg-slate-900';
       case 'basketball':
-        return 'bg-gradient-to-br from-court-600 via-court-500 to-court-400';
+        return 'bg-slate-900';
       default:
-        return 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-50';
+        return 'bg-slate-900';
     }
   };
 
   return (
     <motion.div
       className={cn(
-        'relative bg-dark-300 rounded-xl border border-primary-400/20 overflow-hidden',
+        'relative rounded-xl border border-slate-800 bg-slate-900 overflow-hidden',
         isFullscreen ? 'fixed inset-4 z-50' : 'h-96 lg:h-[500px]',
         className
       )}
@@ -104,11 +104,6 @@ export function CourtMap({
           getMapStyleClasses()
         )}
       >
-        {/* Basketball court pattern overlay */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="court-lines w-full h-full" />
-        </div>
-
         {/* Map Controls */}
         <div className="absolute top-4 right-4 z-10 space-y-2">
           {/* Fullscreen Toggle */}
@@ -117,7 +112,7 @@ export function CourtMap({
             size="sm"
             onClick={toggleFullscreen}
             icon={isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            className="bg-dark-300/90 backdrop-blur-sm"
+            className="bg-slate-900/90 backdrop-blur-sm"
           />
 
           {/* Map Style Toggle */}
@@ -126,7 +121,7 @@ export function CourtMap({
             size="sm"
             onClick={() => setMapStyle(mapStyle === 'basketball' ? 'streets' : mapStyle === 'streets' ? 'satellite' : 'basketball')}
             icon={<Layers className="w-4 h-4" />}
-            className="bg-dark-300/90 backdrop-blur-sm"
+            className="bg-slate-900/90 backdrop-blur-sm"
           />
 
           {/* Current Location */}
@@ -135,7 +130,7 @@ export function CourtMap({
             size="sm"
             onClick={getCurrentLocation}
             icon={<Crosshair className="w-4 h-4" />}
-            className="bg-dark-300/90 backdrop-blur-sm"
+            className="bg-slate-900/90 backdrop-blur-sm"
           />
 
           {/* Filters Toggle */}
@@ -144,14 +139,14 @@ export function CourtMap({
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
             icon={<Filter className="w-4 h-4" />}
-            className="bg-dark-300/90 backdrop-blur-sm"
+            className="bg-slate-900/90 backdrop-blur-sm"
           />
         </div>
 
         {/* User Location Marker */}
         {userLocation && (
           <motion.div
-            className="absolute w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg z-20"
+            className="absolute w-4 h-4 bg-primary-500 rounded-full border-2 border-slate-950 shadow-lg z-20"
             style={{
               left: '50%',
               top: '50%',
@@ -200,21 +195,14 @@ export function CourtMap({
               transition={{ delay: index * 0.1 }}
             >
               {/* Court Marker */}
-              <div className={cn(
-                'w-8 h-8 rounded-full border-2 border-white shadow-lg flex items-center justify-center transition-all',
-                court.courtType === 'indoor' 
-                  ? 'bg-blue-500 hover:bg-blue-600' 
-                  : 'bg-court-500 hover:bg-court-600',
-                isSelected && 'ring-4 ring-primary-400 ring-opacity-50'
-              )}>
-                <span className="text-white text-xs font-bold">
-                  {court.courtType === 'indoor' ? '🏢' : '🌳'}
-                </span>
-              </div>
-
-              {/* Court Rating Badge */}
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
-                {court.rating.toFixed(1)}
+              <div
+                className={cn(
+                  'w-7 h-7 rounded-full border-2 border-slate-950 shadow-sm flex items-center justify-center transition-all',
+                  'bg-slate-900',
+                  isSelected ? 'ring-2 ring-primary-500' : 'border-slate-700'
+                )}
+              >
+                <span className="block h-2 w-2 rounded-full bg-primary-500" />
               </div>
 
               {/* Court Popup */}

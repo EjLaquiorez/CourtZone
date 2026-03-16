@@ -55,52 +55,29 @@ export default function CreateTeamPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 flex items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
         <motion.div
-          className="text-center"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          className="rounded-xl border border-slate-800 bg-slate-900 px-8 py-10 text-center shadow-card-soft"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          <motion.div
-            className="w-24 h-24 bg-court-500 rounded-full flex items-center justify-center mx-auto mb-6"
-            animate={{
-              scale: [1, 1.1, 1],
-              boxShadow: [
-                '0 0 20px rgba(34, 139, 34, 0.5)',
-                '0 0 40px rgba(34, 139, 34, 0.8)',
-                '0 0 20px rgba(34, 139, 34, 0.5)'
-              ]
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          >
-            <CheckCircle className="w-12 h-12 text-white" />
-          </motion.div>
-
-          <h1 className="text-3xl font-display font-bold text-white mb-4">
-            Team Created Successfully! 🏀
-          </h1>
-
-          <p className="text-primary-200 text-lg mb-6">
-            Your team is ready to dominate the court. Redirecting to your team page...
-          </p>
-
-          <div className="flex items-center justify-center space-x-2 text-primary-300">
-            <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" />
-            <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-            <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/10 text-primary-400">
+            <CheckCircle className="h-7 w-7" />
           </div>
+          <h1 className="mb-2 text-lg font-semibold text-slate-100">
+            Team created
+          </h1>
+          <p className="mb-4 text-sm text-slate-400">
+            Your new team is ready. We&apos;ll take you to the team page in a moment.
+          </p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 lg:h-screen lg:overflow-hidden">
+    <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
       <MobileSidebar
         isOpen={mobileSidebarOpen}
@@ -145,56 +122,23 @@ export default function CreateTeamPage() {
 
             {/* Page Header */}
             <motion.div
-              className="text-center mb-8"
+              className="mb-8 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-                Create Your <span className="text-primary-500">Dream Team</span> 🏀
+              <h1 className="mb-2 text-2xl lg:text-3xl font-semibold text-slate-100">
+                Create your team
               </h1>
-              <p className="text-xl text-primary-200 max-w-2xl mx-auto">
+              <p className="mx-auto max-w-2xl text-sm text-slate-400">
                 Build a championship squad and lead them to victory on the basketball court
               </p>
             </motion.div>
 
-            {/* Basketball Court Background */}
+            {/* Team Creation Form */}
             <div className="relative">
-              {/* Animated basketballs */}
               <motion.div
-                className="absolute top-10 left-10 text-4xl opacity-20"
-                animate={{
-                  y: [0, -20, 0],
-                  rotate: [0, 180, 360]
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                🏀
-              </motion.div>
-
-              <motion.div
-                className="absolute top-20 right-20 text-3xl opacity-20"
-                animate={{
-                  y: [0, -15, 0],
-                  rotate: [0, -180, -360]
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1
-                }}
-              >
-                🏀
-              </motion.div>
-
-              {/* Team Creation Form */}
-              <motion.div
-                className="max-w-2xl mx-auto relative z-10"
+                className="relative z-10 mx-auto w-full max-w-[860px]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -209,43 +153,34 @@ export default function CreateTeamPage() {
 
             {/* Tips Section */}
             <motion.div
-              className="max-w-4xl mx-auto mt-12"
+              className="mx-auto mt-10 max-w-4xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
-              <div className="bg-gradient-to-r from-primary-500/10 to-court-500/10 rounded-xl p-6 border border-primary-400/20">
-                <h3 className="text-lg font-display font-bold text-white mb-4 text-center">
-                  💡 Tips for Building a Great Team
+              <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-5">
+                <h3 className="mb-4 text-center text-sm font-semibold text-slate-100">
+                  Tips for building a great team
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">🎯</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Clear Goals</h4>
-                    <p className="text-sm text-primary-300">
+                    <div>
+                      <h4 className="mb-1 text-xs font-medium text-slate-200">Clear goals</h4>
+                      <p className="text-xs text-slate-500">
                       Define your team's objectives - casual fun, competitive play, or tournament participation.
                     </p>
                   </div>
 
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-court-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">⚖️</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Balanced Roster</h4>
-                    <p className="text-sm text-primary-300">
+                    <div>
+                      <h4 className="mb-1 text-xs font-medium text-slate-200">Balanced roster</h4>
+                      <p className="text-xs text-slate-500">
                       Mix different skill levels and positions to create a well-rounded team chemistry.
                     </p>
                   </div>
 
-                  <div className="text-center">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <span className="text-2xl">🤝</span>
-                    </div>
-                    <h4 className="font-bold text-primary-100 mb-2">Team Culture</h4>
-                    <p className="text-sm text-primary-300">
+                    <div>
+                      <h4 className="mb-1 text-xs font-medium text-slate-200">Team culture</h4>
+                      <p className="text-xs text-slate-500">
                       Foster a positive environment where players support each other and grow together.
                     </p>
                   </div>

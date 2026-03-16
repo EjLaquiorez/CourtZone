@@ -65,8 +65,7 @@ export function MobileBottomNav({ notifications, className }: MobileBottomNavPro
     <motion.nav
       className={cn(
         'fixed bottom-0 left-0 right-0 z-50 lg:hidden',
-        'bg-gradient-to-t from-dark-400 to-dark-300 border-t border-primary-400/20',
-        'backdrop-blur-sm',
+        'bg-slate-950/95 border-t border-slate-800 backdrop-blur-sm',
         className
       )}
       initial={{ y: 100 }}
@@ -96,11 +95,11 @@ export function MobileBottomNav({ notifications, className }: MobileBottomNavPro
               <Link
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 relative',
-                  'min-w-[60px] min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-400',
+                  'flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-150 relative',
+                  'min-w-[60px] min-h-[56px] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-slate-950',
                   isActive
-                    ? 'bg-primary-500/20 text-primary-100'
-                    : 'text-primary-300 hover:text-primary-100 hover:bg-primary-400/10'
+                    ? 'bg-slate-900 text-slate-50'
+                    : 'text-slate-400 hover:text-slate-50 hover:bg-slate-900'
                 )}
                 aria-label={`Navigate to ${item.name}`}
                 aria-current={isActive ? 'page' : undefined}
@@ -118,12 +117,12 @@ export function MobileBottomNav({ notifications, className }: MobileBottomNavPro
 
                 {/* Icon */}
                 <motion.div
-                  className="relative z-10 mb-1"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
+                  className="relative z-10 mb-1 text-slate-400"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  <span className="text-lg">{item.emoji}</span>
+                  <item.icon className="w-5 h-5" />
 
                   {/* Enhanced Notification badge */}
                   {notificationCount && notificationCount > 0 && (
@@ -136,7 +135,7 @@ export function MobileBottomNav({ notifications, className }: MobileBottomNavPro
                     >
                       <motion.span
                         className={cn(
-                          'flex items-center justify-center text-white text-xs font-bold font-accent rounded-full border-2 border-dark-400 shadow-lg',
+                          'flex items-center justify-center text-white text-xs font-medium rounded-full border border-slate-950 shadow-lg',
                           'min-w-[24px] h-6 px-1.5',
                           // Basketball-themed colors based on notification type - solid backgrounds for better text contrast
                           notificationType === 'urgent' && 'bg-red-600',

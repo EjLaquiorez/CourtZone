@@ -21,14 +21,20 @@ export function GameButton({
   type = 'button',
   ...rest
 }: GameButtonProps) {
-  const baseClasses = 'font-accent font-semibold transition-all duration-200 relative overflow-hidden inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses =
+    'font-primary font-semibold transition-all duration-150 relative inline-flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-400 hover:to-primary-500 shadow-basketball',
-    secondary: 'bg-dark-300 text-primary-100 border border-primary-400/50 hover:bg-dark-200 hover:border-primary-400',
-    danger: 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-500 hover:to-red-600',
-    success: 'bg-gradient-to-r from-court-500 to-court-600 text-white hover:from-court-400 hover:to-court-500',
-    ghost: 'text-primary-400 hover:text-primary-300 hover:bg-primary-400/10'
+    primary:
+      'bg-primary-500 text-white hover:bg-primary-400 active:bg-primary-600 shadow-sm',
+    secondary:
+      'bg-slate-900 text-slate-100 border border-slate-700 hover:bg-slate-800',
+    danger:
+      'bg-red-600 text-white hover:bg-red-500 active:bg-red-700',
+    success:
+      'bg-emerald-600 text-white hover:bg-emerald-500 active:bg-emerald-700',
+    ghost:
+      'text-slate-300 hover:text-slate-100 hover:bg-slate-800/60',
   };
   
   const sizeClasses = {
@@ -40,8 +46,8 @@ export function GameButton({
 
   const shapeClasses = {
     rounded: 'rounded-lg',
-    hexagonal: 'rounded-none relative before:absolute before:inset-0 before:bg-inherit before:transform before:rotate-45 before:-z-10',
-    sharp: 'rounded-none'
+    hexagonal: 'rounded-lg',
+    sharp: 'rounded-md',
   };
 
   const isDisabled = disabled || loading;
@@ -53,7 +59,6 @@ export function GameButton({
         variantClasses[variant],
         sizeClasses[size],
         shapeClasses[shape],
-        glow && !isDisabled && 'basketball-glow hover:basketball-glow-lg',
         fullWidth && 'w-full',
         className
       )}
@@ -80,7 +85,7 @@ export function GameButton({
       )}
       
       {/* Button content */}
-      <span className="relative z-10">
+      <span className="relative z-10 inline-flex items-center gap-2">
         {children}
       </span>
       
@@ -92,24 +97,7 @@ export function GameButton({
       )}
       
       {/* Glow effect overlay */}
-      {glow && !isDisabled && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-primary-400/20 to-primary-600/20 rounded-lg"
-          animate={{
-            opacity: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      )}
-      
-      {/* Basketball texture overlay for primary variant */}
-      {variant === 'primary' && (
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.1)_70%)] rounded-lg" />
-      )}
+      {/* Minimal buttons do not use glow/texture overlays */}
     </motion.button>
   );
 }

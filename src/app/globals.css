@@ -1,27 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #0F1419;
-  --foreground: #FFE6D5;
+  --background: #020617; /* near black slate / #0B1220 range */
+  --foreground: #E5E7EB; /* slate-200 equivalent */
 
-  /* Basketball theme colors */
-  --primary-orange: #FF6B35;
-  --primary-orange-dark: #E55A2B;
-  --navy-dark: #1A1D29;
-  --navy-darker: #0F1419;
-  --court-green: #228B22;
-  --court-green-bright: #32CD32;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #0F1419;
-    --foreground: #FFE6D5;
-  }
+  /* Single primary accent */
+  --primary-orange: #F97316;
+  --primary-orange-dark: #EA580C;
+  --navy-dark: #020617;
+  --navy-darker: #020617;
+  --court-green: #22C55E;
+  --court-green-bright: #16A34A;
 }
 
 * {
@@ -46,112 +39,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Basketball-themed scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--navy-dark);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--primary-orange);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-orange-dark);
-}
-
-/* Custom basketball animations */
-@keyframes basketball-bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-20px);
-  }
-  60% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes court-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(255, 107, 53, 0.6);
-  }
-}
-
-@keyframes scoreboard-flicker {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-/* Basketball court lines effect */
-.court-lines::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(90deg, rgba(34, 139, 34, 0.1) 1px, transparent 1px),
-    linear-gradient(rgba(34, 139, 34, 0.1) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-
-  .basketball-glow {
-    box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
-  }
-
-  .basketball-glow-lg {
-    box-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
-  }
-
-  .court-shadow {
-    box-shadow: 0 4px 6px -1px rgba(34, 139, 34, 0.1);
-  }
-
-  .navy-gradient {
-    background: linear-gradient(135deg, #1A1D29 0%, #0F1419 100%);
-  }
-
-  .orange-gradient {
-    background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
-  }
-
-  .court-gradient {
-    background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
-  }
-
-  /* Performance optimizations for animations */
-  .will-change-transform {
-    will-change: transform;
-  }
-
-  .will-change-opacity {
-    will-change: opacity;
-  }
-
-  .gpu-accelerated {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000px;
   }
 
   /* Reduce motion for accessibility */
