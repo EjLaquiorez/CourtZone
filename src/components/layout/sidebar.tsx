@@ -14,7 +14,8 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  UserCircle2,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -32,37 +33,36 @@ const navigationItems = [
     name: 'Dashboard',
     href: '/dashboard',
     icon: Home,
-    emoji: '🏀'
+  },
+  {
+    name: 'My Team',
+    href: '/my-team',
+    icon: UserCircle2,
   },
   {
     name: 'Teams',
     href: '/teams',
     icon: Users,
-    emoji: '👥'
   },
   {
     name: 'Courts',
     href: '/courts',
     icon: MapPin,
-    emoji: '🗺️'
   },
   {
     name: 'Games',
     href: '/games',
     icon: Calendar,
-    emoji: '⚡'
   },
   {
     name: 'Profile',
     href: '/profile',
     icon: User,
-    emoji: '👤'
   },
   {
     name: 'Achievements',
     href: '/achievements',
     icon: Trophy,
-    emoji: '🏆'
   }
 ];
 

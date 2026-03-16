@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Plus, Search, Filter, Users, Trophy, Star, MapPin } from 'lucide-react';
+import { Search, Filter, Users, Trophy, Star, MapPin } from 'lucide-react';
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
 import { MobileBottomNav } from '@/components/layout/mobile-nav';
-import { GameButton, CreateTeamButton } from '@/components/ui/game-button';
+import { GameButton } from '@/components/ui/game-button';
 import { TeamCard } from '@/components/game/team-card';
 import { cn } from '@/lib/utils';
 import { TeamWithMembers, TeamFilters } from '@/types';
@@ -182,10 +182,6 @@ export default function TeamsPage() {
     }
   };
 
-  const handleCreateTeam = () => {
-    window.location.href = '/teams/create';
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 lg:h-screen lg:overflow-hidden">
       {/* Mobile Sidebar */}
@@ -215,26 +211,18 @@ export default function TeamsPage() {
           <main className="p-4 lg:flex-1 lg:overflow-y-auto lg:p-8">
             {/* Page Header */}
             <motion.div
-              className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6"
+              className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div>
-                <h1 className="text-xl lg:text-2xl font-semibold text-slate-100 mb-1">
+                <h1 className="mb-1 text-xl lg:text-2xl font-semibold text-slate-100">
                   Teams
                 </h1>
                 <p className="text-sm text-slate-400">
-                  Find your squad or build your own championship team
+                  Browse and discover teams across the community.
                 </p>
-              </div>
-
-              <div className="flex items-center space-x-3 mt-4 lg:mt-0">
-                <CreateTeamButton
-                  size="md"
-                  onClick={handleCreateTeam}
-                  icon={<Plus className="w-5 h-5" />}
-                />
               </div>
             </motion.div>
 
@@ -476,16 +464,24 @@ export default function TeamsPage() {
                 <p className="mb-4 text-sm text-slate-500">
                   {searchQuery
                     ? `No teams match your search for "${searchQuery}"`
-                    : 'No teams match your current filters'
+                    : 'Try adjusting your filters or search to find more teams.'
                   }
                 </p>
-                <CreateTeamButton
-                  size="lg"
-                  onClick={handleCreateTeam}
-                  icon={<Plus className="w-5 h-5" />}
+                <GameButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilters({
+                      isPublic: undefined,
+                      skillRange: undefined,
+                      hasOpenings: undefined,
+                      maxDistance: undefined,
+                    });
+                  }}
                 >
-                  Create Your Team
-                </CreateTeamButton>
+                  Clear filters
+                </GameButton>
               </motion.div>
             )}
           </main>

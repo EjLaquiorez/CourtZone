@@ -141,6 +141,21 @@ export const useGames = (
   });
 };
 
+export const useTeamGames = (
+  teamId: string,
+  status?: string,
+  page: number = 1,
+  limit: number = 10,
+  options?: UseQueryOptions<ApiResponse<PaginatedResponse<GameWithDetails>>, ApiError>
+) => {
+  return useQuery({
+    queryKey: queryKeys.games.teamGames(teamId, status, page, limit),
+    queryFn: () => gamesService.getTeamGames(teamId, status, page, limit),
+    enabled: !!teamId,
+    ...options,
+  });
+};
+
 export const useGame = (
   gameId: string,
   options?: UseQueryOptions<ApiResponse<GameWithDetails>, ApiError>
@@ -207,6 +222,20 @@ export const useTeams = (
   });
 };
 
+export const useUserTeams = (
+  userId: string,
+  page: number = 1,
+  limit: number = 10,
+  options?: UseQueryOptions<ApiResponse<PaginatedResponse<TeamWithMembers>>, ApiError>
+) => {
+  return useQuery({
+    queryKey: queryKeys.teams.userTeams(userId, page, limit),
+    queryFn: () => teamsService.getUserTeams(userId, page, limit),
+    enabled: !!userId,
+    ...options,
+  });
+};
+
 export const useTeam = (
   teamId: string,
   options?: UseQueryOptions<ApiResponse<TeamWithMembers>, ApiError>
@@ -215,6 +244,20 @@ export const useTeam = (
     queryKey: queryKeys.teams.detail(teamId),
     queryFn: () => teamsService.getTeamById(teamId),
     enabled: !!teamId,
+    ...options,
+  });
+};
+
+export const useLeaveTeam = (options?: UseMutationOptions<ApiResponse<void>, ApiError, string>) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (teamId: string) => teamsService.leaveTeam(teamId),
+    onSuccess: (_, teamId) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+      queryClient.invalidateQueries({ queryKey: ['teams', 'user'] });
+    },
     ...options,
   });
 };
