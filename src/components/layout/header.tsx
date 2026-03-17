@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { GameButton } from '@/components/ui/game-button';
 import { NotificationCenter } from '@/components/ui/notification-center';
+import { useNotificationStore } from '@/lib/stores/notification-store';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -166,8 +167,9 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
   className?: string;
   socketConnected?: boolean;
 }) {
-  const [notificationCount] = useState(5);
   const [showNotifications, setShowNotifications] = useState(false);
+  const router = useRouter();
+  const notificationCount = useNotificationStore((s) => s.unreadCount);
 
   return (
     <motion.header
@@ -223,7 +225,15 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
             <motion.button
               className="relative p-2 rounded-lg text-primary-400 hover:text-primary-300 hover:bg-primary-400/10 transition-colors"
               whileHover={{ scale: 1.05 }}
-              onClick={() => setShowNotifications(true)}
+              onClick={() => {
+                // Mobile-first: open full screen notifications; desktop: open right-side panel.
+                if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+                  router.push('/notifications');
+                  return;
+                }
+                setShowNotifications(true);
+              }}
+              aria-label="Open notifications"
             >
               <Bell className="w-5 h-5" />
               {notificationCount > 0 && (

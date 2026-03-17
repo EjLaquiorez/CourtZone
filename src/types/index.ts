@@ -343,7 +343,56 @@ export interface TeamFilters {
 export interface Notification {
   id: string;
   userId: string;
-  type: 'game_invite' | 'team_invite' | 'game_result' | 'achievement' | 'system';
+  /**
+   * Backward-compatible notification event type.
+   * Keep existing values to avoid breaking server payloads, but allow richer app events.
+   */
+  type:
+    | 'game_invite'
+    | 'team_invite'
+    | 'game_result'
+    | 'achievement'
+    | 'system'
+    | 'game_alert'
+    | 'game_starting'
+    | 'game_schedule_change'
+    | 'game_cancelled'
+    | 'team_activity'
+    | 'team_roster_update'
+    | 'message'
+    | 'court_activity'
+    | 'court_availability'
+    | 'milestone';
+  /**
+   * High-level category used for filters and grouping in UI.
+   * If omitted, UI derives it from `type`.
+   */
+  category?: 'games' | 'team' | 'messages' | 'courts' | 'achievements' | 'system';
+  /**
+   * Importance level used for subtle accent cues (not loud styling).
+   * If omitted, UI derives from `type` and/or `data`.
+   */
+  priority?: 'high' | 'medium' | 'low';
+  /**
+   * Optional deep link (route) for navigation.
+   * Prefer absolute app paths like `/games/123` or `/teams/abc`.
+   */
+  deepLink?: string;
+  /**
+   * Optional source metadata (avatar/icon rendering).
+   */
+  source?: {
+    type: 'team' | 'user' | 'court' | 'system';
+    id?: string;
+    name?: string;
+    avatarUrl?: string;
+  };
+  /**
+   * Optional grouping key (e.g., "team:123:member_joined") and count.
+   * UI can also compute grouping without server support.
+   */
+  groupKey?: string;
+  groupCount?: number;
   title: string;
   message: string;
   data?: Record<string, any>;

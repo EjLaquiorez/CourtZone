@@ -44,6 +44,14 @@ body {
     text-wrap: balance;
   }
 
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Reduce motion for accessibility */
   @media (prefers-reduced-motion: reduce) {
     * {

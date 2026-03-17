@@ -47,6 +47,8 @@ interface NotificationState {
   // Actions
   addNotification: (notification: AppNotification) => void;
   markAsRead: (notificationId: string) => void;
+  markAsUnread: (notificationId: string) => void;
+  toggleRead: (notificationId: string) => void;
   markAllAsRead: () => void;
   removeNotification: (notificationId: string) => void;
   clearAllNotifications: () => void;
@@ -126,6 +128,36 @@ export const useNotificationStore = create<NotificationState>()(
         const updatedNotifications = state.notifications.map(notification =>
           notification.id === notificationId && !notification.isRead
             ? { ...notification, isRead: true }
+            : notification
+        );
+
+        const unreadCount = updatedNotifications.filter(n => !n.isRead).length;
+
+        return {
+          notifications: updatedNotifications,
+          unreadCount,
+        };
+      }),
+
+      markAsUnread: (notificationId) => set((state) => {
+        const updatedNotifications = state.notifications.map(notification =>
+          notification.id === notificationId && notification.isRead
+            ? { ...notification, isRead: false }
+            : notification
+        );
+
+        const unreadCount = updatedNotifications.filter(n => !n.isRead).length;
+
+        return {
+          notifications: updatedNotifications,
+          unreadCount,
+        };
+      }),
+
+      toggleRead: (notificationId) => set((state) => {
+        const updatedNotifications = state.notifications.map(notification =>
+          notification.id === notificationId
+            ? { ...notification, isRead: !notification.isRead }
             : notification
         );
 
