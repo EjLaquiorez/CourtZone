@@ -10,6 +10,7 @@ import {
   ApiResponse 
 } from '@/types';
 import { CreateTeamFormData } from '@/lib/validation';
+import type { TeamActivity, TeamHubData, TeamInvite } from '@/types';
 
 export interface TeamInvitation {
   id: string;
@@ -57,6 +58,11 @@ export const teamsService = {
       () => apiClient.get<TeamWithMembers>(`/teams/${teamId}`),
       2 * 60 * 1000 // 2 minutes cache
     );
+  },
+
+  // Get team hub (dashboard payload)
+  async getTeamHub(teamId: string): Promise<ApiResponse<TeamHubData>> {
+    return apiClient.get<TeamHubData>(`/teams/${teamId}/hub`);
   },
 
   // Create new team
@@ -167,6 +173,53 @@ export const teamsService = {
   ): Promise<ApiResponse<PaginatedResponse<TeamInvitation>>> {
     const params = { status, page, limit };
     return apiClient.get<PaginatedResponse<TeamInvitation>>('/teams/invitations', params);
+  },
+
+  async getTeamInvites(
+    teamId: string,
+    status?: 'pending' | 'accepted' | 'expired' | 'declined' | 'cancelled'
+  ): Promise<ApiResponse<TeamInvite[]>> {
+    const params = status ? { status } : undefined;
+    return apiClient.get<TeamInvite[]>(`/teams/${teamId}/invites`, params);
+  },
+
+  async sendTeamInviteByUsername(
+    teamId: string,
+    username: string
+  ): Promise<ApiResponse<TeamInvite>> {
+    return apiClient.post<TeamInvite>(`/teams/${teamId}/invites`, { username });
+  },
+
+  async updateTeamInviteStatus(
+    teamId: string,
+    inviteId: string,
+    status: 'accepted' | 'declined' | 'cancelled' | 'expired'
+  ): Promise<ApiResponse<TeamInvite>> {
+    return apiClient.patch<TeamInvite>(`/teams/${teamId}/invites/${inviteId}`, { status });
+  },
+
+  async getTeamActivity(
+    teamId: string,
+    page: number = 1,
+    limit: number = 20
+  ): Promise<ApiResponse<PaginatedResponse<TeamActivity>>> {
+    return apiClient.get<PaginatedResponse<TeamActivity>>(`/teams/${teamId}/activity`, { page, limit });
+  },
+
+  async updateMemberRole(
+    teamId: string,
+    memberId: string,
+    role: 'co_captain' | 'member'
+  ): Promise<ApiResponse<TeamMember>> {
+    return apiClient.patch<TeamMember>(`/teams/${teamId}/members/${memberId}`, { role });
+  },
+
+  async removeMember(teamId: string, memberId: string): Promise<ApiResponse<void>> {
+    return apiClient.delete<void>(`/teams/${teamId}/members/${memberId}`);
+  },
+
+  async transferCaptain(teamId: string, newCaptainUserId: string): Promise<ApiResponse<{ teamId: string; captainId: string }>> {
+    return apiClient.post<{ teamId: string; captainId: string }>(`/teams/${teamId}/transfer-captain`, { newCaptainUserId });
   },
 
   // Send team invitation

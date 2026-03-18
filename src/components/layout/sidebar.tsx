@@ -74,7 +74,6 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
   const clearAuth = useAuthStore.getState().clearAuth;
   const { data: currentUserResponse } = useCurrentUser();
   const user = currentUserResponse?.data;
-
   const handleLogout = async () => {
     if (isLoggingOut) return;
 
@@ -155,7 +154,8 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2">
         {navigationItems.map((item, index) => {
-          const isActive = pathname === item.href;
+          const href = item.href;
+          const isActive = pathname === href;
           const Icon = item.icon;
 
           return (
@@ -166,7 +166,7 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
               transition={{ delay: index * 0.1 }}
             >
               <Link
-                href={item.href}
+                href={href}
                 className={cn(
                   'flex items-center space-x-3 px-3 py-2.5 rounded-lg transition-all duration-150 group relative',
                   isActive

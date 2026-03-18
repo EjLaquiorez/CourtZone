@@ -11,20 +11,31 @@ import { usersService } from '@/lib/api/services/users';
 import type {
   LoginFormData,
   RegisterFormData,
+  CreateGameFormData,
+  CreateTeamFormData,
+} from '@/lib/validation';
+import type {
   User,
   Game,
   Team,
   Court,
   GameWithDetails,
   TeamWithMembers,
+  TeamMember,
+  TeamHubData,
+  TeamInvite,
+  TeamActivity,
   PaginatedResponse,
   ApiResponse,
   GameFilters,
   TeamFilters,
-  CourtFilters,
-  CreateGameFormData,
-  CreateTeamFormData
+  CourtFilters
 } from '@/types';
+
+type QueryHookOptions<TData> = Omit<
+  UseQueryOptions<TData, ApiError>,
+  'queryKey' | 'queryFn'
+>;
 
 
 // Query keys
@@ -55,6 +66,7 @@ export const queryKeys = {
     list: (filters?: TeamFilters, page?: number, limit?: number) =>
       ['teams', 'list', { filters, page, limit }] as const,
     detail: (id: string) => ['teams', 'detail', id] as const,
+    hub: (id: string) => ['teams', 'hub', id] as const,
     nearby: (lat: number, lng: number, radius: number, filters?: TeamFilters) =>
       ['teams', 'nearby', { lat, lng, radius, filters }] as const,
     userTeams: (userId: string, page?: number, limit?: number) =>
@@ -63,6 +75,10 @@ export const queryKeys = {
       ['teams', 'members', teamId, { page, limit }] as const,
     invitations: (status?: string, page?: number, limit?: number) =>
       ['teams', 'invitations', { status, page, limit }] as const,
+    teamInvites: (teamId: string, status?: string) =>
+      ['teams', 'team-invites', teamId, { status }] as const,
+    activity: (teamId: string, page?: number, limit?: number) =>
+      ['teams', 'activity', teamId, { page, limit }] as const,
     stats: (teamId: string) => ['teams', 'stats', teamId] as const,
     leaderboard: (filters?: any, page?: number, limit?: number) =>
       ['teams', 'leaderboard', { filters, page, limit }] as const,
@@ -146,7 +162,7 @@ export const useTeamGames = (
   status?: string,
   page: number = 1,
   limit: number = 10,
-  options?: UseQueryOptions<ApiResponse<PaginatedResponse<GameWithDetails>>, ApiError>
+  options?: QueryHookOptions<ApiResponse<PaginatedResponse<GameWithDetails>>>
 ) => {
   return useQuery({
     queryKey: queryKeys.games.teamGames(teamId, status, page, limit),
@@ -226,7 +242,7 @@ export const useUserTeams = (
   userId: string,
   page: number = 1,
   limit: number = 10,
-  options?: UseQueryOptions<ApiResponse<PaginatedResponse<TeamWithMembers>>, ApiError>
+  options?: QueryHookOptions<ApiResponse<PaginatedResponse<TeamWithMembers>>>
 ) => {
   return useQuery({
     queryKey: queryKeys.teams.userTeams(userId, page, limit),
@@ -243,6 +259,46 @@ export const useTeam = (
   return useQuery({
     queryKey: queryKeys.teams.detail(teamId),
     queryFn: () => teamsService.getTeamById(teamId),
+    enabled: !!teamId,
+    ...options,
+  });
+};
+
+export const useTeamHub = (
+  teamId: string,
+  options?: QueryHookOptions<ApiResponse<TeamHubData>>
+) => {
+  return useQuery({
+    queryKey: queryKeys.teams.hub(teamId),
+    queryFn: () => teamsService.getTeamHub(teamId),
+    enabled: !!teamId,
+    staleTime: 30 * 1000,
+    ...options,
+  });
+};
+
+export const useTeamInvites = (
+  teamId: string,
+  status?: 'pending' | 'accepted' | 'expired' | 'declined' | 'cancelled',
+  options?: QueryHookOptions<ApiResponse<TeamInvite[]>>
+) => {
+  return useQuery({
+    queryKey: queryKeys.teams.teamInvites(teamId, status),
+    queryFn: () => teamsService.getTeamInvites(teamId, status),
+    enabled: !!teamId,
+    ...options,
+  });
+};
+
+export const useTeamActivity = (
+  teamId: string,
+  page: number = 1,
+  limit: number = 20,
+  options?: QueryHookOptions<ApiResponse<PaginatedResponse<TeamActivity>>>
+) => {
+  return useQuery({
+    queryKey: queryKeys.teams.activity(teamId, page, limit),
+    queryFn: () => teamsService.getTeamActivity(teamId, page, limit),
     enabled: !!teamId,
     ...options,
   });
@@ -269,6 +325,24 @@ export const useCreateTeam = (options?: UseMutationOptions<ApiResponse<Team>, Ap
     mutationFn: (data: CreateTeamFormData) => teamsService.createTeam(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
+      queryClient.invalidateQueries({ queryKey: ['teams', 'user'] });
+    },
+    ...options,
+  });
+};
+
+export const useUpdateTeam = (
+  options?: UseMutationOptions<ApiResponse<Team>, ApiError, { teamId: string; data: Partial<Team> }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, data }) => teamsService.updateTeam(teamId, data),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
+      queryClient.invalidateQueries({ queryKey: ['teams', 'user'] });
     },
     ...options,
   });
@@ -282,6 +356,84 @@ export const useJoinTeam = (options?: UseMutationOptions<any, ApiError, string>)
     onSuccess: (_, teamId) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.teams.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+    },
+    ...options,
+  });
+};
+
+export const useSendTeamInvite = (
+  options?: UseMutationOptions<ApiResponse<TeamInvite>, ApiError, { teamId: string; username: string }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, username }) => teamsService.sendTeamInviteByUsername(teamId, username),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.teamInvites(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+    },
+    ...options,
+  });
+};
+
+export const useUpdateTeamInviteStatus = (
+  options?: UseMutationOptions<ApiResponse<TeamInvite>, ApiError, { teamId: string; inviteId: string; status: 'accepted' | 'declined' | 'cancelled' | 'expired' }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, inviteId, status }) =>
+      teamsService.updateTeamInviteStatus(teamId, inviteId, status),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.teamInvites(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+      queryClient.invalidateQueries({ queryKey: ['teams', 'user'] });
+    },
+    ...options,
+  });
+};
+
+export const useUpdateTeamMemberRole = (
+  options?: UseMutationOptions<ApiResponse<TeamMember>, ApiError, { teamId: string; memberId: string; role: 'co_captain' | 'member' }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, memberId, role }) => teamsService.updateMemberRole(teamId, memberId, role),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+    },
+    ...options,
+  });
+};
+
+export const useRemoveTeamMember = (
+  options?: UseMutationOptions<ApiResponse<void>, ApiError, { teamId: string; memberId: string }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, memberId }) => teamsService.removeMember(teamId, memberId),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+    },
+    ...options,
+  });
+};
+
+export const useTransferTeamCaptain = (
+  options?: UseMutationOptions<ApiResponse<{ teamId: string; captainId: string }>, ApiError, { teamId: string; newCaptainUserId: string }>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ teamId, newCaptainUserId }) => teamsService.transferCaptain(teamId, newCaptainUserId),
+    onSuccess: (_, { teamId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.hub(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.detail(teamId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.teams.activity(teamId) });
+      queryClient.invalidateQueries({ queryKey: ['teams', 'user'] });
     },
     ...options,
   });

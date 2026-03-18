@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { logTeamActivity } from '../../_utils'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request)
@@ -15,7 +16,7 @@ export async function POST(
       )
     }
 
-    const teamId = params.id
+    const { id: teamId } = await params
 
     // Get team details
     const team = await prisma.team.findUnique({
@@ -58,15 +59,33 @@ export async function POST(
         { status: 404 }
       )
     }
+    if (membership.status !== 'ACTIVE') {
+      return NextResponse.json(
+        { success: false, message: 'You are not an active member of this team' },
+        { status: 409 }
+      )
+    }
 
-    // Remove user from team
-    await prisma.teamMember.delete({
+    // Mark user as left team
+    await prisma.teamMember.update({
       where: {
         teamId_userId: {
           teamId,
           userId: user.userId
         }
-      }
+      },
+      data: {
+        status: 'LEFT',
+        isStarter: false,
+        role: 'MEMBER',
+      },
+    })
+
+    await logTeamActivity({
+      teamId,
+      userId: user.userId,
+      type: 'MEMBER_LEFT',
+      description: 'A member left the team',
     })
 
     return NextResponse.json({

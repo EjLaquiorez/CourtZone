@@ -83,6 +83,61 @@ export interface TeamWithMembers extends Team {
   memberCount: number;
 }
 
+export interface TeamActivity {
+  id: string;
+  teamId: string;
+  userId?: string;
+  type:
+    | 'team_created'
+    | 'member_joined'
+    | 'member_left'
+    | 'member_removed'
+    | 'member_promoted'
+    | 'captain_transferred'
+    | 'game_scheduled'
+    | 'game_result'
+    | 'invite_sent'
+    | 'invite_accepted'
+    | 'team_updated';
+  description: string;
+  createdAt: Date | string;
+  user?: Pick<User, 'id' | 'username' | 'avatar'>;
+}
+
+export interface TeamInvite {
+  id: string;
+  teamId: string;
+  invitedUserId: string;
+  invitedById: string;
+  status: 'pending' | 'accepted' | 'expired' | 'declined' | 'cancelled';
+  inviteCode: string;
+  expiresAt: Date | string;
+  createdAt: Date | string;
+  invitedUser?: Pick<User, 'id' | 'username' | 'avatar' | 'rating' | 'skillLevel'>;
+  invitedBy?: Pick<User, 'id' | 'username' | 'avatar'>;
+}
+
+export interface TeamHubStats {
+  currentMembers: number;
+  averageSkillLevel: number;
+  teamRating: number;
+  winRecord: string;
+  winRate: number;
+  totalGamesPlayed: number;
+  averagePointsScored: number;
+  averagePointsAllowed: number;
+}
+
+export interface TeamHubData {
+  team: TeamWithMembers;
+  role: 'captain' | 'co_captain' | 'member';
+  stats: TeamHubStats;
+  upcomingGames: GameWithDetails[];
+  recentResults: GameWithDetails[];
+  activity: TeamActivity[];
+  pendingInvites: TeamInvite[];
+}
+
 // Court Types
 export interface Court {
   id: string;
@@ -143,6 +198,8 @@ export interface Game {
   finalScore?: string;
   hostScore?: number;
   opponentScore?: number;
+  hostRatingChange?: number;
+  opponentRatingChange?: number;
   organizer?: User;
   court?: Court;
   hostTeam?: Team;

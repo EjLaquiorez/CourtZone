@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { logTeamActivity, mapRoleToClient } from '../_utils'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request)
@@ -15,7 +16,7 @@ export async function GET(
       )
     }
 
-    const teamId = params.id
+    const { id: teamId } = await params
 
     const team = await prisma.team.findUnique({
       where: { id: teamId },
@@ -32,6 +33,9 @@ export async function GET(
           }
         },
         members: {
+          where: {
+            status: 'ACTIVE',
+          },
           include: {
             user: {
               select: {
@@ -45,11 +49,7 @@ export async function GET(
               }
             }
           },
-          orderBy: [
-            { role: 'asc' },
-            { isStarter: 'desc' },
-            { joinedAt: 'asc' }
-          ]
+          orderBy: [{ role: 'asc' }, { isStarter: 'desc' }, { joinedAt: 'asc' }]
         },
         hostGames: {
           include: {
@@ -119,6 +119,10 @@ export async function GET(
 
     const teamWithGames = {
       ...team,
+      members: team.members.map((member) => ({
+        ...member,
+        role: mapRoleToClient(member.role as 'CAPTAIN' | 'CO_CAPTAIN' | 'MEMBER'),
+      })),
       memberCount: team.members.length,
       recentGames: allGames
     }
@@ -140,7 +144,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request)
@@ -151,7 +155,7 @@ export async function PATCH(
       )
     }
 
-    const teamId = params.id
+    const { id: teamId } = await params
     const body = await request.json()
 
     // Check if user is team captain
@@ -179,6 +183,7 @@ export async function PATCH(
       where: { id: teamId },
       data: {
         ...(body.name && { name: body.name }),
+        ...(body.logoUrl !== undefined && { logoUrl: body.logoUrl }),
         ...(body.description !== undefined && { description: body.description }),
         ...(body.maxSize && { maxSize: parseInt(body.maxSize) }),
         ...(body.minSkillLevel !== undefined && { minSkillLevel: parseInt(body.minSkillLevel) }),
@@ -213,9 +218,22 @@ export async function PATCH(
       }
     })
 
+    await logTeamActivity({
+      teamId,
+      userId: user.userId,
+      type: 'TEAM_UPDATED',
+      description: 'Team settings were updated',
+    })
+
     return NextResponse.json({
       success: true,
-      data: updatedTeam,
+      data: {
+        ...updatedTeam,
+        members: updatedTeam.members.map((member) => ({
+          ...member,
+          role: mapRoleToClient(member.role as 'CAPTAIN' | 'CO_CAPTAIN' | 'MEMBER'),
+        })),
+      },
       message: 'Team updated successfully'
     })
 
@@ -230,7 +248,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request)
@@ -241,7 +259,7 @@ export async function DELETE(
       )
     }
 
-    const teamId = params.id
+    const { id: teamId } = await params
 
     // Check if user is team captain
     const team = await prisma.team.findUnique({

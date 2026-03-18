@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { logTeamActivity } from './_utils'
 
 export async function GET(request: NextRequest) {
   try {
@@ -191,8 +192,16 @@ export async function POST(request: NextRequest) {
         teamId: team.id,
         userId: user.userId,
         role: 'CAPTAIN',
+        status: 'ACTIVE',
         isStarter: true
       }
+    })
+
+    await logTeamActivity({
+      teamId: team.id,
+      userId: user.userId,
+      type: 'TEAM_CREATED',
+      description: `${team.name} was created`,
     })
 
     return NextResponse.json({

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getUserFromRequest } from '@/lib/auth'
+import { logTeamActivity } from '../../_utils'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getUserFromRequest(request)
@@ -15,7 +16,7 @@ export async function POST(
       )
     }
 
-    const teamId = params.id
+    const { id: teamId } = await params
 
     // Get team details
     const team = await prisma.team.findUnique({
@@ -47,7 +48,7 @@ export async function POST(
 
     // Check if user is already a member
     const existingMember = team.members.find(member => member.userId === user.userId)
-    if (existingMember) {
+    if (existingMember?.status === 'ACTIVE') {
       return NextResponse.json(
         { success: false, message: 'You are already a member of this team' },
         { status: 409 }
@@ -55,7 +56,8 @@ export async function POST(
     }
 
     // Check if team is full
-    if (team.members.length >= team.maxSize) {
+    const activeMemberCount = team.members.filter(member => member.status === 'ACTIVE').length
+    if (activeMemberCount >= team.maxSize) {
       return NextResponse.json(
         { success: false, message: 'Team is full' },
         { status: 409 }
@@ -86,34 +88,71 @@ export async function POST(
       )
     }
 
-    // Add user to team
-    const teamMember = await prisma.teamMember.create({
-      data: {
-        teamId,
-        userId: user.userId,
-        role: 'MEMBER',
-        position: userData.position,
-        isStarter: false
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            avatar: true,
-            rating: true,
-            skillLevel: true,
-            position: true,
-            isVerified: true
+    // Add or reactivate user membership
+    const teamMember = existingMember
+      ? await prisma.teamMember.update({
+          where: { id: existingMember.id },
+          data: {
+            role: 'MEMBER',
+            status: 'ACTIVE',
+            position: userData.position,
+            isStarter: false,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                rating: true,
+                skillLevel: true,
+                position: true,
+                isVerified: true
+              }
+            },
+            team: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           }
-        },
-        team: {
-          select: {
-            id: true,
-            name: true
+        })
+      : await prisma.teamMember.create({
+          data: {
+            teamId,
+            userId: user.userId,
+            role: 'MEMBER',
+            status: 'ACTIVE',
+            position: userData.position,
+            isStarter: false
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true,
+                rating: true,
+                skillLevel: true,
+                position: true,
+                isVerified: true
+              }
+            },
+            team: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           }
-        }
-      }
+        })
+
+    await logTeamActivity({
+      teamId,
+      userId: user.userId,
+      type: 'MEMBER_JOINED',
+      description: `${userData.username} joined the team`,
     })
 
     return NextResponse.json({

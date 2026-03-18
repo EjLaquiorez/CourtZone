@@ -41,6 +41,9 @@ model User {
   // Relations
   captainTeams      Team[]       @relation("TeamCaptain")
   teamMemberships   TeamMember[]
+  teamInvitesReceived TeamInvite[] @relation("TeamInvitee")
+  teamInvitesSent   TeamInvite[] @relation("TeamInviter")
+  teamActivities    TeamActivity[]
   organizedGames    Game[]       @relation("GameOrganizer")
   gameParticipants  GameParticipant[]
   gameWaitlist      GameWaitlist[]
@@ -73,6 +76,8 @@ model Team {
   captainId String
   captain   User         @relation("TeamCaptain", fields: [captainId], references: [id])
   members   TeamMember[]
+  invites   TeamInvite[]
+  activities TeamActivity[]
   hostGames Game[]       @relation("HostTeam")
   opponentGames Game[]   @relation("OpponentTeam")
 
@@ -82,6 +87,7 @@ model Team {
 model TeamMember {
   id        String   @id @default(cuid())
   role      Role     @default(MEMBER)
+  status    TeamMembershipStatus @default(ACTIVE)
   position  Position?
   isStarter Boolean  @default(false)
   joinedAt  DateTime @default(now())
@@ -111,6 +117,8 @@ model Game {
   hasNoShowIssues Boolean  @default(false)
   hostScore     Int?
   opponentScore Int?
+  hostRatingChange Int?
+  opponentRatingChange Int?
   winnerTeamId  String?
   finalScore    String?    // e.g., "21-18" for pickup games
   gameEndedAt   DateTime?
@@ -262,6 +270,34 @@ enum ParticipantStatus {
   NO_SHOW
 }
 
+enum TeamMembershipStatus {
+  ACTIVE
+  LEFT
+  REMOVED
+}
+
+enum TeamInviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  DECLINED
+  CANCELLED
+}
+
+enum TeamActivityType {
+  TEAM_CREATED
+  MEMBER_JOINED
+  MEMBER_LEFT
+  MEMBER_REMOVED
+  MEMBER_PROMOTED
+  CAPTAIN_TRANSFERRED
+  GAME_SCHEDULED
+  GAME_RESULT
+  INVITE_SENT
+  INVITE_ACCEPTED
+  TEAM_UPDATED
+}
+
 model CourtReservation {
   id          String            @id @default(cuid())
   startTime   DateTime
@@ -326,6 +362,42 @@ model GameStats {
 
   @@unique([gameId, userId])
   @@map("game_stats")
+}
+
+model TeamInvite {
+  id            String           @id @default(cuid())
+  status        TeamInviteStatus @default(PENDING)
+  inviteCode    String           @unique
+  expiresAt     DateTime
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  // Relations
+  teamId        String
+  team          Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  invitedUserId String
+  invitedUser   User             @relation("TeamInvitee", fields: [invitedUserId], references: [id], onDelete: Cascade)
+  invitedById   String
+  invitedBy     User             @relation("TeamInviter", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, invitedUserId, status])
+  @@map("team_invites")
+}
+
+model TeamActivity {
+  id          String           @id @default(cuid())
+  type        TeamActivityType
+  description String
+  createdAt   DateTime         @default(now())
+
+  // Relations
+  teamId      String
+  team        Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([teamId, createdAt])
+  @@map("team_activities")
 }
 
 model PlayerSeasonStats {
