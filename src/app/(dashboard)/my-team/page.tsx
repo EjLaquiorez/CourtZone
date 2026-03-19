@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Calendar, Clock3, Search, Share2, UserPlus, Users } from 'lucide-react';
+import { Calendar, Clock3, Globe2, Lock, Search, Share2, UserPlus, Users } from 'lucide-react';
 
 import { AuthenticatedHeader } from '@/components/layout/header';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
@@ -393,18 +393,20 @@ export default function MyTeamPage() {
                     <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-400">
                       {hubTeam.description || 'Competitive pickup squad'}
                     </p>
-                    <p className="mt-4 text-sm text-slate-500">
-                      {hubStats.currentMembers}/{hubTeam.maxSize} members
-                      <span className="px-2">•</span>
-                      {hubTeam.isPublic ? 'Public' : 'Private'}
-                      <span className="px-2">•</span>
-                      Rating {hubStats.teamRating}
-                      <span className="px-2">•</span>
-                      Games {hubStats.totalGamesPlayed}
-                      <span className="px-2">•</span>
-                      Win rate {hubStats.winRate}%
-                      <span className="px-2">•</span>
-                      Record {hubStats.winRecord}
+                    <p className="mt-4 flex flex-wrap items-center justify-center gap-2 text-sm text-slate-500">
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-700 bg-slate-900/60 px-2 py-0.5 text-xs"
+                        title={hubTeam.isPublic ? 'Public team' : 'Private team'}
+                      >
+                        {hubTeam.isPublic ? <Globe2 className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
+                        <span>{hubTeam.isPublic ? 'Public' : 'Private'}</span>
+                      </span>
+                      <span>•</span>
+                      <span>Games {hubStats.totalGamesPlayed}</span>
+                      <span>•</span>
+                      <span>Win rate {hubStats.winRate}%</span>
+                      <span>•</span>
+                      <span>Record {hubStats.winRecord}</span>
                     </p>
                     <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
                       {canManage && (
