@@ -250,7 +250,6 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
             >
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-medium text-white">{user.username || 'User'}</p>
-                <p className="text-xs text-white font-accent">Rating: {user.rating || 0}</p>
               </div>
               <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-bold">
                 {user.avatar ? (
