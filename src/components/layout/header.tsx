@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { GameButton } from '@/components/ui/game-button';
 import { NotificationCenter } from '@/components/ui/notification-center';
 import { useNotificationStore } from '@/lib/stores/notification-store';
+import { CourtZoneLogo } from '@/components/brand/court-zone-logo';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -46,9 +47,7 @@ export function Header({ onMenuToggle, className }: HeaderProps) {
 
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary-400">CZ</span>
-              </div>
+              <CourtZoneLogo className="h-8 w-8" size={32} />
               <div className="hidden sm:block">
                 <h1 className="text-sm font-semibold text-slate-100">
                   Court Zone
@@ -193,9 +192,7 @@ export function AuthenticatedHeader({ user, onMenuToggle, className, socketConne
             </button>
 
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary-400">CZ</span>
-              </div>
+              <CourtZoneLogo className="h-8 w-8" size={32} />
               <div className="hidden sm:block">
                 <h1 className="text-sm font-semibold text-slate-100">
                   Court Zone

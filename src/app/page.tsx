@@ -9,6 +9,7 @@ import { GameButton, QuickMatchButton, FindCourtsButton, CreateTeamButton } from
 import { StatCard } from '@/components/ui/stat-card';
 import { WelcomeSection } from '@/components/auth/welcome-section';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { CourtZoneLogo } from '@/components/brand/court-zone-logo';
 
 export default function Home() {
   const router = useRouter();
@@ -342,10 +343,8 @@ export default function Home() {
       <footer className="bg-dark-400 border-t border-primary-400/20 py-12" role="contentinfo">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center basketball-glow">
-                <span className="text-white font-bold" role="img" aria-label="Basketball">🏀</span>
-              </div>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <CourtZoneLogo className="h-10 w-10" size={40} />
               <span className="text-xl font-display font-bold text-primary-400">Court Zone</span>
             </div>
             <p className="text-primary-300 text-sm">

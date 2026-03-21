@@ -21,6 +21,7 @@ import { apiClient } from '@/lib/api';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { useCurrentUser } from '@/lib/hooks/use-api';
 import { cn } from '@/lib/utils';
+import { CourtZoneLogo } from '@/components/brand/court-zone-logo';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -120,25 +121,28 @@ export function Sidebar({ isOpen = true, onToggle, className }: SidebarProps) {
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <div className="p-4 border-b border-slate-800">
-        <div className="flex items-center justify-between">
-          {isOpen && (
-            <motion.div
-              className="flex items-center space-x-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary-400">CZ</span>
-              </div>
-              <span className="text-sm font-semibold text-slate-100">Court Zone</span>
-            </motion.div>
+      <div className={cn('border-b border-slate-800', isOpen ? 'p-4' : 'px-2 py-3')}>
+        <div
+          className={cn(
+            'flex gap-2',
+            isOpen ? 'flex-row items-center justify-between' : 'flex-col items-center'
           )}
+        >
+          <motion.div
+            className={cn('flex items-center', isOpen ? 'space-x-2 min-w-0' : 'justify-center')}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <CourtZoneLogo className={isOpen ? 'h-8 w-8' : 'h-7 w-7'} size={isOpen ? 32 : 28} />
+            {isOpen && (
+              <span className="text-sm font-semibold text-slate-100 truncate">Court Zone</span>
+            )}
+          </motion.div>
 
           <motion.button
             onClick={onToggle}
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors shrink-0"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
