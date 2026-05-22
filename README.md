@@ -1,174 +1,189 @@
-# 🏀 Court Zone - Basketball Matchmaking Platform
+# Court Zone
 
-**Find Your Game, Build Your Legacy**
+Basketball matchmaking web app — find games, manage teams, discover courts, and schedule matches. Built with Next.js, TypeScript, and a basketball-themed UI.
 
-Court Zone is a comprehensive basketball matchmaking web application that connects players, facilitates team creation, and enables court-based game scheduling with a basketball-themed user interface.
+## Quick start
 
-## ✨ Features
+```bash
+git clone https://github.com/EjLaquiorez/CourtZone.git
+cd CourtZone
+npm install
+# create .env.local (see below)
+npm run db:migrate
+npm run dev
+```
 
-### 🎮 Gaming-Inspired UI
-- **Basketball Orange Theme**: Primary colors (#FF6B35, #E55A2B) with deep navy (#1A1D29, #0F1419) and court green accents (#228B22, #32CD32)
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Smooth Animations**: Framer Motion powered interactions with basketball-themed effects
-- **Custom Components**: Gaming-style buttons, stat cards, and interactive elements
+Open [http://localhost:3000](http://localhost:3000).
 
-### 🏀 Core Functionality
-- **Smart Matchmaking**: AI-powered algorithm for skill-based player and team matching
-- **Court Discovery**: Interactive map with real-time court availability and ratings
-- **Team Management**: Create, manage, and organize basketball teams with lineup tools
-- **Game Scheduling**: Real-time scheduling with automatic notifications
-- **Achievement System**: Track progress with badges, statistics, and leaderboards
-- **User Profiles**: Comprehensive player profiles with skill ratings and statistics
+## Prerequisites
 
-### 📱 Mobile-First Design
-- **Touch-Optimized**: Large touch targets and swipe gestures
-- **Bottom Navigation**: Basketball-themed mobile navigation bar
-- **Quick Actions**: Floating action button for rapid game finding
-- **Responsive Layout**: Seamless experience across all devices
+| Tool | Version | Notes |
+|------|---------|--------|
+| **Node.js** | 18+ | LTS recommended |
+| **npm** | 9+ | Ships with Node |
+| **PostgreSQL** | 14+ | Required for auth, teams, games, courts |
+| **Git** | any | Clone and contribute |
 
-## 🛠️ Tech Stack
+Optional (feature-specific):
 
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first styling with custom basketball theme
-- **Framer Motion** - Smooth animations and transitions
-- **Lucide React** - Beautiful icons
-- **Radix UI** - Accessible component primitives
+- **Mapbox** — court map tiles (`NEXT_PUBLIC_MAPBOX_TOKEN`)
+- **Stripe** — payments (`src/lib/payment/stripe.ts`)
 
-## 🚀 Getting Started
+## First-time setup
 
-### Before You Start (After Cloning)
+### 1. Clone and install
 
-Files listed in `.gitignore` are not downloaded from GitHub by design.
+```bash
+git clone https://github.com/EjLaquiorez/CourtZone.git
+cd CourtZone
+npm install
+```
 
-- `node_modules/` and build output folders are recreated locally.
-- `.env*` files are not committed, so you must create your own `.env.local`.
+Files in `.gitignore` (including `node_modules/` and `.env*`) are not on GitHub. You recreate them locally after cloning.
 
-Setup order for a new machine:
-1. `npm install`
-2. create `.env.local`
-3. `npm run db:migrate`
-4. `npm run dev`
+### 2. PostgreSQL
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Git
+Create a database, for example:
 
-### Installation
+```sql
+CREATE DATABASE courtzone;
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/EjLaquiorez/CourtZone.git
-   cd CourtZone
-   ```
+Local connection string format:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```text
+postgresql://USER:PASSWORD@localhost:5432/courtzone
+```
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your configuration
-   ```
+### 3. Environment variables
 
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Local Environment Variables
-
-Create `.env.local` with at least:
+Create `.env.local` in the project root:
 
 ```env
+# Required — database
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/courtzone"
+
+# Required — auth (use a long random string in production)
 JWT_SECRET="replace-with-a-strong-secret"
 JWT_EXPIRES_IN="7d"
+
+# App URLs
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_API_URL="/api"
-NEXT_PUBLIC_USE_MOCK_DATA="false"
+
+# Optional — court maps (Mapbox)
+NEXT_PUBLIC_MAPBOX_TOKEN=""
+
+# Optional — push notifications
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
+
+# Optional — real-time (off by default in local dev)
 NEXT_PUBLIC_ENABLE_WEBSOCKET="false"
 NEXT_PUBLIC_SOCKET_URL="http://localhost:3003"
 NEXT_PUBLIC_WEBSOCKET_URL="http://localhost:3003"
-NEXT_PUBLIC_MAPBOX_TOKEN=""
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
+
+# Optional — use mock API responses without hitting the DB for some flows
+NEXT_PUBLIC_USE_MOCK_DATA="false"
 ```
 
-## 🎨 Design System
+Verify the database connection:
 
-### Color Palette
-```css
-/* Basketball Orange Primary */
---primary-500: #FF6B35;
---primary-600: #E55A2B;
-
-/* Deep Navy Dark */
---dark-300: #1A1D29;
---dark-900: #0F1419;
-
-/* Court Green Accents */
---court-500: #228B22;
---court-600: #32CD32;
+```bash
+node test-db-connection.js
 ```
 
-### Typography
-- **Display Font**: Orbitron (headers and titles)
-- **Primary Font**: Inter (body text)
-- **Accent Font**: Rajdhani (statistics and numbers)
+### 4. Database setup
 
-## 🌟 Key Features Implemented
+```bash
+npm run db:generate   # Prisma client
+npm run db:migrate    # apply migrations
+npm run db:seed       # optional sample users, teams, courts, games
+```
 
-### ✅ Phase 1: Foundation (Complete)
-- [x] Next.js 14 project setup with TypeScript
-- [x] Basketball-themed Tailwind CSS configuration
-- [x] Custom color palette and typography
-- [x] Project structure and component organization
-- [x] Environment configuration
+Browse data in Prisma Studio:
 
-### ✅ Phase 2: Landing Page (Complete)
-- [x] Basketball court-inspired hero section
-- [x] Animated basketball graphics and effects
-- [x] Feature showcase with interactive cards
-- [x] Responsive design for all devices
-- [x] Call-to-action sections
+```bash
+npm run db:studio
+```
 
-### ✅ Phase 3: Authentication (Complete)
-- [x] Login page with basketball court background
-- [x] Registration with skill assessment
-- [x] Position selection (PG, SG, SF, PF, C)
-- [x] Interactive skill level rating (1-10)
-- [x] Form validation and error handling
-- [x] Basketball-themed form components
+### 5. Run the dev server
 
-### ✅ Phase 4: Dashboard (Complete)
-- [x] Authenticated header with user info
-- [x] Responsive sidebar navigation
-- [x] Quick action cards (Quick Match, Find Courts, Create Team)
-- [x] Statistics overview with animated counters
-- [x] Recent games and upcoming matches
-- [x] Mobile bottom navigation
-- [x] Basketball-themed UI components
+```bash
+npm run dev
+```
 
-## 🎯 Next Steps
+For WebSocket / Socket.IO features, run the custom server in a **second terminal**:
 
-The foundation of Court Zone is now complete with a fully functional landing page, authentication system, and dashboard. The application features:
+```bash
+npm run dev:socket
+```
 
-- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- **Basketball Theme**: Custom orange/navy color scheme with court green accents
-- **Smooth Animations**: Framer Motion powered interactions
-- **Type Safety**: Full TypeScript implementation
-- **Modern Architecture**: Next.js 14 with App Router
+Set `NEXT_PUBLIC_ENABLE_WEBSOCKET=true` in `.env.local` when testing real-time chat or live updates.
 
-## Current Development Focus
+## npm scripts
 
-Court Zone is now organized around a single real-data MVP flow:
+| Script | Purpose |
+|--------|---------|
+| `npm run dev` | Next.js dev server (port 3000) |
+| `npm run dev:socket` | Custom server with Socket.IO (port 3003) |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | ESLint |
+| `npm run db:migrate` | Run Prisma migrations |
+| `npm run db:generate` | Regenerate Prisma client |
+| `npm run db:seed` | Seed database |
+| `npm run db:studio` | Prisma Studio UI |
+| `npm run db:reset` | Reset DB and re-run migrations (destructive) |
+
+## Project structure
+
+```text
+CourtZone/
+├── prisma/
+│   ├── schema.prisma      # DB models (User, Team, Game, Court, …)
+│   ├── migrations/        # SQL migrations
+│   └── seed.ts            # Dev seed data
+├── src/
+│   ├── app/               # Next.js App Router
+│   │   ├── (auth)/        # login, register
+│   │   ├── (dashboard)/   # dashboard, teams, games, courts, profile
+│   │   └── api/           # REST route handlers
+│   ├── components/        # UI, forms, layout, maps
+│   └── lib/               # API client, auth, stores, hooks, socket
+├── lib/                   # Shared auth + Prisma (used by seed/middleware)
+├── middleware.ts          # JWT route protection
+├── server.js              # Socket.IO dev server
+└── public/                # Static assets
+```
+
+### Main routes
+
+| Path | Description |
+|------|-------------|
+| `/` | Landing page |
+| `/login`, `/register` | Auth (redirects to dashboard when logged in) |
+| `/dashboard` | Main hub after login |
+| `/teams`, `/games`, `/courts` | Core features |
+| `/profile`, `/profile/setup` | Player profile |
+| `/api/*` | Backend API (protected routes need `auth-token` cookie) |
+
+Protected paths are enforced in `middleware.ts` using the `auth-token` JWT cookie.
+
+## Tech stack
+
+**Frontend:** Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Framer Motion, Radix UI, Lucide icons, TanStack Query, Zustand
+
+**Backend:** Next.js Route Handlers, Prisma 6, PostgreSQL, JWT auth (`lib/auth.ts`), Socket.IO (optional)
+
+**Maps / realtime:** Mapbox GL, react-map-gl, Socket.IO client
+
+## Design system
+
+Basketball orange primary (`#FF6B35`, `#E55A2B`), deep navy dark (`#1A1D29`, `#0F1419`), court green accents (`#228B22`, `#32CD32`). Fonts: Orbitron (display), Inter (body), Rajdhani (stats). See `tailwind.config.ts` and `src/app/globals.css`.
+
+## Current development focus
+
+Court Zone is organized around a single real-data MVP flow:
 
 `register/login -> complete profile -> discover scheduled games -> create or join a game`
 
@@ -179,10 +194,43 @@ Current build priority:
 3. Expand the same pattern to `teams` and `courts`.
 4. Add automated verification and deployment checks.
 
-Mock mode should be treated as opt-in only and enabled with `NEXT_PUBLIC_USE_MOCK_DATA=true`.
+Mock mode is opt-in only — set `NEXT_PUBLIC_USE_MOCK_DATA=true` when needed.
 
-Supporting implementation notes live in [`DEVELOPMENT_CHECKLIST.md`](DEVELOPMENT_CHECKLIST.md).
+Supporting notes: [`DEVELOPMENT_CHECKLIST.md`](DEVELOPMENT_CHECKLIST.md).
+
+## Development tips
+
+**Auth flow** — Register or log in via `/register` or `/login`. API sets an `auth-token` httpOnly cookie. Test protected APIs with the cookie or `Authorization: Bearer <token>`.
+
+**Mock data** — Some dashboard pages still use inline mock data; the API client can fall back to mocks when `NEXT_PUBLIC_USE_MOCK_DATA=true`. Prefer real DB data after `db:seed` for integration work.
+
+**Adding a DB field** — Edit `prisma/schema.prisma`, then `npm run db:migrate` and update types/services under `src/lib/api/`.
+
+**Types** — Shared types live under `src/types` (imported across components and API).
+
+## Troubleshooting
+
+| Problem | What to try |
+|---------|-------------|
+| `ECONNREFUSED` on DB | Start PostgreSQL; check `DATABASE_URL` host/port |
+| Prisma client errors | `npm run db:generate` |
+| Empty tables | `npm run db:migrate` then `npm run db:seed` |
+| 401 on dashboard/API | Log in again; check `JWT_SECRET` matches the token issuer |
+| Maps not loading | Set `NEXT_PUBLIC_MAPBOX_TOKEN` |
+| WebSockets not connecting | Run `npm run dev:socket` and set `NEXT_PUBLIC_ENABLE_WEBSOCKET=true` |
+
+## Production deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel, Docker, env vars, and security notes.
+
+## Feature status
+
+- [x] Landing, auth, dashboard shell
+- [x] Teams, games, courts (UI + API routes)
+- [x] Prisma schema, migrations, seed
+- [ ] Full production realtime (WebSocket server optional locally)
+- [ ] Replace remaining page-level mock data with live API data
 
 ---
 
-Made with ❤️ and 🏀 by the Court Zone team
+Made with care for hoopers and developers alike.
